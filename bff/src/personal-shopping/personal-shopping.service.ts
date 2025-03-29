@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  CreatePersonalShoppingItemInput,
   PersonalShoppingItem,
   PersonalShoppingStatus,
 } from 'src/graphql/schema';
@@ -39,5 +40,17 @@ export class PersonalShoppingService {
         category: 'clothes',
       },
     ];
+  }
+
+  create(
+    this: void,
+    input: CreatePersonalShoppingItemInput,
+  ): PersonalShoppingItem {
+    return {
+      id: 6,
+      name: input.name,
+      status: PersonalShoppingStatus.UNPURCHASED,
+      category: input.category,
+    };
   }
 }
