@@ -8,6 +8,11 @@ type PersonalShoppingItem {
     category: String!
 }
 
+input CreatePersonalShoppingItemInput {
+    name: String!
+    category: String!
+}
+
 enum PersonalShoppingStatus {
     UNPURCHASED
     PURCHASED
@@ -15,4 +20,8 @@ enum PersonalShoppingStatus {
 
 type Query {
     getPersonalShoppingItems: [PersonalShoppingItem!]!
+}
+
+type Mutation {
+    createPersonalShoppingItem(input: CreatePersonalShoppingItemInput!): PersonalShoppingItem!
 }

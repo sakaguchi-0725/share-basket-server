@@ -13,6 +13,11 @@ export enum PersonalShoppingStatus {
     PURCHASED = "PURCHASED"
 }
 
+export class CreatePersonalShoppingItemInput {
+    name: string;
+    category: string;
+}
+
 export class PersonalShoppingItem {
     id: number;
     name: string;
@@ -22,6 +27,10 @@ export class PersonalShoppingItem {
 
 export abstract class IQuery {
     abstract getPersonalShoppingItems(): PersonalShoppingItem[] | Promise<PersonalShoppingItem[]>;
+}
+
+export abstract class IMutation {
+    abstract createPersonalShoppingItem(input: CreatePersonalShoppingItemInput): PersonalShoppingItem | Promise<PersonalShoppingItem>;
 }
 
 type Nullable<T> = T | null;
