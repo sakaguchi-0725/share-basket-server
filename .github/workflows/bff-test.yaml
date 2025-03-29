@@ -22,8 +22,10 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: bff
 
       - name: Run tests
         run: npm test
+        working-directory: bff
 
 
