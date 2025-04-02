@@ -1,0 +1,15 @@
+input LoginInput {
+    email: String!
+    password: String!
+}
+
+input SignUpInput {
+    name: String!
+    email: String!
+    password: String!
+}
+
+type Mutation {
+    signUp(input: SignUpInput): Boolean!
+    login(input: LoginInput!): Boolean!
+}

@@ -4,7 +4,10 @@ import {
   PersonalShoppingItem,
 } from 'src/graphql/schema';
 import { PersonalShoppingService } from './personal-shopping.service';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Resolver(() => PersonalShoppingItem)
 export class PersonalShoppingResolver {
   constructor(private readonly service: PersonalShoppingService) {}
