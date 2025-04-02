@@ -6,6 +6,8 @@ import {
   PersonalShoppingItem,
   PersonalShoppingStatus,
 } from 'src/graphql/schema';
+import { AuthService } from 'src/auth/auth.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 describe('PersonalShoppingResolver', () => {
   let resolver: PersonalShoppingResolver;
@@ -20,6 +22,18 @@ describe('PersonalShoppingResolver', () => {
           useValue: {
             findAll: jest.fn(),
             create: jest.fn(),
+          },
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            verifyToken: jest.fn().mockReturnValue('mock-user-id'),
+          },
+        },
+        {
+          provide: AuthGuard,
+          useValue: {
+            canActivate: jest.fn().mockReturnValue(true),
           },
         },
       ],
