@@ -46,7 +46,7 @@ func TestShoppingItem(t *testing.T) {
 				assert.Equal(t, tt.expected, actual)
 				if tt.expectedErr != nil {
 					assert.Error(t, err)
-					assert.EqualError(t, tt.expectedErr, err.Error())
+					assert.EqualError(t, err, tt.expectedErr.Error())
 				} else {
 					assert.NoError(t, err)
 				}
