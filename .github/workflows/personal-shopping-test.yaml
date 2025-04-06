@@ -1,0 +1,31 @@
+name: PersonalShopping Test
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'personal-shopping/**'
+  pull_request:
+    paths:
+      - 'personal-shopping/**'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ./personal-shopping/go.mod
+          cache-dependency-path: ./personal-shopping/go.sum
+
+      - name: Install dependencies
+        working-directory: personal-shopping
+        run: go mod download
+
+      - name: Run test
+        working-directory: personal-shopping
+        run: go test ./...
