@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package personal_shopping;
+option go_package = "personal-shopping/presentation/proto";
+
+service PersonalShoppingService {
+  rpc GetAll (GetAllRequest) returns (GetAllResponse);
+}
+
+message GetAllRequest {
+  Status status = 1;
+}
+
+message GetAllResponse {
+  repeated ShoppingItem items = 1;
+}
+
+enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_UNPURCHASED = 1;
+    STATUS_PURCHASED = 2;
+}
+
+message Category {
+  int64 id = 1;
+  string name = 2;
+}
+
+message ShoppingItem {
+  int64 id = 1;
+  string name = 2;
+  Status status = 3;
+  Category category = 4;
+}
