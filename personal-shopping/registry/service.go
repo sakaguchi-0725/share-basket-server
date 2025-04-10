@@ -29,6 +29,11 @@ func (service *personalShoppingService) GetAll(ctx context.Context, req *proto.G
 	return handler.Handle(ctx, req)
 }
 
+func (service *personalShoppingService) Create(ctx context.Context, req *proto.CreateShoppingItemRequest) (*proto.ShoppingItem, error) {
+	handler := service.container.CreateShoppingItemHandler()
+	return handler.Handle(ctx, req)
+}
+
 func newPersonalShoppingService(container *container) proto.PersonalShoppingServiceServer {
 	return &personalShoppingService{container: container}
 }

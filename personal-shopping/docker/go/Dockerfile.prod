@@ -1,0 +1,27 @@
+FROM golang:1.24-alpine AS builder
+
+ENV TZ=Asia/Tokyo
+ENV GO111MODULE=on
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+WORKDIR /go/src/app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN go build -o /go/bin/app ./cmd/grpc
+
+FROM alpine:3.21
+
+RUN apk --no-cache add ca-certificates tzdata
+
+COPY --from=builder /go/bin/app /app
+
+EXPOSE 50051
+
+CMD ["/app"]
+

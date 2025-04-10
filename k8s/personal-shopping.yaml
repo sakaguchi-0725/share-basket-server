@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: personal-shopping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: personal-shopping
+  template:
+    metadata:
+      labels:
+        app: personal-shopping
+    spec:
+      containers:
+        - name: personal-shopping
+          image: personal-shopping:latest
+          ports:
+            - containerPort: 50051
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: personal-shopping
+spec:
+  type: ClusterIP
+  selector:
+    app: personal-shopping
+  ports:
+    - port: 50051
+      targetPort: 50051
