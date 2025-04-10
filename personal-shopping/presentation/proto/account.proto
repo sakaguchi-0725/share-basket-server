@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package account;
+option go_package = "personal-shopping/presentation/proto";
+
+import "google/protobuf/empty.proto";
+
+service AccountService {
+    rpc Get (GetAccountRequest) returns (GetAccountResponse);
+    rpc Create (CreateAccountRequest) returns (google.protobuf.Empty);
+}
+
+message GetAccountRequest {
+    string id = 1;
+}
+
+message GetAccountResponse {
+    string id = 1;
+    string name = 2;
+}
+
+message CreateAccountRequest {
+    string user_id = 1;
+    string name = 2;
+}
+
+message Account {
+    string id = 1;
+    string user_id = 2;
+    string name = 3;
+}
