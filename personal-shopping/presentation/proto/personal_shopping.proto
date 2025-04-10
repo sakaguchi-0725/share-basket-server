@@ -4,14 +4,14 @@ package personal_shopping;
 option go_package = "personal-shopping/presentation/proto";
 
 service PersonalShoppingService {
-  rpc GetAll (GetAllRequest) returns (GetAllResponse);
+  rpc GetAll (GetShoppingItemsRequest) returns (GetShoppingItemsResponse);
 }
 
-message GetAllRequest {
+message GetShoppingItemsRequest {
   Status status = 1;
 }
 
-message GetAllResponse {
+message GetShoppingItemsResponse {
   repeated ShoppingItem items = 1;
 }
 

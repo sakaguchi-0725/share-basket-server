@@ -20,7 +20,7 @@ type personalShoppingService struct {
 	proto.UnimplementedPersonalShoppingServiceServer
 }
 
-func (service *personalShoppingService) GetAll(ctx context.Context, req *proto.GetAllRequest) (*proto.GetAllResponse, error) {
+func (service *personalShoppingService) GetAll(ctx context.Context, req *proto.GetShoppingItemsRequest) (*proto.GetShoppingItemsResponse, error) {
 	handler := service.container.GetShoppingItemsHandler()
 	return handler.Handle(ctx, req)
 }
