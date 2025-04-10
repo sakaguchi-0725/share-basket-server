@@ -26,7 +26,7 @@ func (handler *getShoppingItemsHandler) Handle(ctx context.Context, req *proto.G
 	return handler.makeResponse(outputs), nil
 }
 
-func (handle *getShoppingItemsHandler) makeResponse(outputs []usecase.GetShoppingItemOutput) *proto.GetAllResponse {
+func (handle *getShoppingItemsHandler) makeResponse(outputs []usecase.GetShoppingItemOutput) *proto.GetShoppingItemsResponse {
 	items := make([]*proto.ShoppingItem, len(outputs))
 	for i, output := range outputs {
 		items[i] = &proto.ShoppingItem{

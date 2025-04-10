@@ -28,6 +28,7 @@ func New(addr string) *Server {
 
 func (s *Server) MapServices(services registry.Services) {
 	proto.RegisterPersonalShoppingServiceServer(s.Server, services.PersonalShopping)
+	proto.RegisterAccountServiceServer(s.Server, services.Account)
 }
 
 func (s *Server) Run() {

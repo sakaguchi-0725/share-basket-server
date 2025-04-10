@@ -7,16 +7,23 @@ import (
 
 type container struct {
 	getShoppingItems usecase.GetShoppingItemsUseCase
+	getAccount       usecase.GetAccountUseCase
 }
 
 func Inject() (*container, error) {
 	getShoppingItems := usecase.NewGetShoppingItemsUseCase()
+	getAccount := usecase.NewGetAccountUseCase()
 
 	return &container{
 		getShoppingItems,
+		getAccount,
 	}, nil
 }
 
 func (c *container) GetShoppingItemsHandler() handler.GetShoppingItemsHandler {
 	return handler.NewGetShoppingItemsHandler(c.getShoppingItems)
+}
+
+func (c *container) GetAccountHandler() handler.GetAccountHandler {
+	return handler.NewGetAccountHandler(c.getAccount)
 }
