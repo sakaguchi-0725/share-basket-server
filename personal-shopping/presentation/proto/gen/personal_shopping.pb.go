@@ -70,27 +70,27 @@ func (Status) EnumDescriptor() ([]byte, []int) {
 	return file_personal_shopping_proto_rawDescGZIP(), []int{0}
 }
 
-type GetAllRequest struct {
+type GetShoppingItemsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Status        Status                 `protobuf:"varint,1,opt,name=status,proto3,enum=personal_shopping.Status" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetAllRequest) Reset() {
-	*x = GetAllRequest{}
+func (x *GetShoppingItemsRequest) Reset() {
+	*x = GetShoppingItemsRequest{}
 	mi := &file_personal_shopping_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetAllRequest) String() string {
+func (x *GetShoppingItemsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetAllRequest) ProtoMessage() {}
+func (*GetShoppingItemsRequest) ProtoMessage() {}
 
-func (x *GetAllRequest) ProtoReflect() protoreflect.Message {
+func (x *GetShoppingItemsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_personal_shopping_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -102,39 +102,39 @@ func (x *GetAllRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetAllRequest.ProtoReflect.Descriptor instead.
-func (*GetAllRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetShoppingItemsRequest.ProtoReflect.Descriptor instead.
+func (*GetShoppingItemsRequest) Descriptor() ([]byte, []int) {
 	return file_personal_shopping_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GetAllRequest) GetStatus() Status {
+func (x *GetShoppingItemsRequest) GetStatus() Status {
 	if x != nil {
 		return x.Status
 	}
 	return Status_STATUS_UNSPECIFIED
 }
 
-type GetAllResponse struct {
+type GetShoppingItemsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*ShoppingItem        `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetAllResponse) Reset() {
-	*x = GetAllResponse{}
+func (x *GetShoppingItemsResponse) Reset() {
+	*x = GetShoppingItemsResponse{}
 	mi := &file_personal_shopping_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetAllResponse) String() string {
+func (x *GetShoppingItemsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetAllResponse) ProtoMessage() {}
+func (*GetShoppingItemsResponse) ProtoMessage() {}
 
-func (x *GetAllResponse) ProtoReflect() protoreflect.Message {
+func (x *GetShoppingItemsResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_personal_shopping_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -146,12 +146,12 @@ func (x *GetAllResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetAllResponse.ProtoReflect.Descriptor instead.
-func (*GetAllResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetShoppingItemsResponse.ProtoReflect.Descriptor instead.
+func (*GetShoppingItemsResponse) Descriptor() ([]byte, []int) {
 	return file_personal_shopping_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetAllResponse) GetItems() []*ShoppingItem {
+func (x *GetShoppingItemsResponse) GetItems() []*ShoppingItem {
 	if x != nil {
 		return x.Items
 	}
@@ -282,10 +282,10 @@ var File_personal_shopping_proto protoreflect.FileDescriptor
 
 const file_personal_shopping_proto_rawDesc = "" +
 	"\n" +
-	"\x17personal_shopping.proto\x12\x11personal_shopping\"B\n" +
-	"\rGetAllRequest\x121\n" +
-	"\x06status\x18\x01 \x01(\x0e2\x19.personal_shopping.StatusR\x06status\"G\n" +
-	"\x0eGetAllResponse\x125\n" +
+	"\x17personal_shopping.proto\x12\x11personal_shopping\"L\n" +
+	"\x17GetShoppingItemsRequest\x121\n" +
+	"\x06status\x18\x01 \x01(\x0e2\x19.personal_shopping.StatusR\x06status\"Q\n" +
+	"\x18GetShoppingItemsResponse\x125\n" +
 	"\x05items\x18\x01 \x03(\v2\x1f.personal_shopping.ShoppingItemR\x05items\".\n" +
 	"\bCategory\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
@@ -298,9 +298,9 @@ const file_personal_shopping_proto_rawDesc = "" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12STATUS_UNPURCHASED\x10\x01\x12\x14\n" +
-	"\x10STATUS_PURCHASED\x10\x022h\n" +
-	"\x17PersonalShoppingService\x12M\n" +
-	"\x06GetAll\x12 .personal_shopping.GetAllRequest\x1a!.personal_shopping.GetAllResponseB&Z$personal-shopping/presentation/protob\x06proto3"
+	"\x10STATUS_PURCHASED\x10\x022|\n" +
+	"\x17PersonalShoppingService\x12a\n" +
+	"\x06GetAll\x12*.personal_shopping.GetShoppingItemsRequest\x1a+.personal_shopping.GetShoppingItemsResponseB&Z$personal-shopping/presentation/protob\x06proto3"
 
 var (
 	file_personal_shopping_proto_rawDescOnce sync.Once
@@ -317,19 +317,19 @@ func file_personal_shopping_proto_rawDescGZIP() []byte {
 var file_personal_shopping_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_personal_shopping_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_personal_shopping_proto_goTypes = []any{
-	(Status)(0),            // 0: personal_shopping.Status
-	(*GetAllRequest)(nil),  // 1: personal_shopping.GetAllRequest
-	(*GetAllResponse)(nil), // 2: personal_shopping.GetAllResponse
-	(*Category)(nil),       // 3: personal_shopping.Category
-	(*ShoppingItem)(nil),   // 4: personal_shopping.ShoppingItem
+	(Status)(0),                      // 0: personal_shopping.Status
+	(*GetShoppingItemsRequest)(nil),  // 1: personal_shopping.GetShoppingItemsRequest
+	(*GetShoppingItemsResponse)(nil), // 2: personal_shopping.GetShoppingItemsResponse
+	(*Category)(nil),                 // 3: personal_shopping.Category
+	(*ShoppingItem)(nil),             // 4: personal_shopping.ShoppingItem
 }
 var file_personal_shopping_proto_depIdxs = []int32{
-	0, // 0: personal_shopping.GetAllRequest.status:type_name -> personal_shopping.Status
-	4, // 1: personal_shopping.GetAllResponse.items:type_name -> personal_shopping.ShoppingItem
+	0, // 0: personal_shopping.GetShoppingItemsRequest.status:type_name -> personal_shopping.Status
+	4, // 1: personal_shopping.GetShoppingItemsResponse.items:type_name -> personal_shopping.ShoppingItem
 	0, // 2: personal_shopping.ShoppingItem.status:type_name -> personal_shopping.Status
 	3, // 3: personal_shopping.ShoppingItem.category:type_name -> personal_shopping.Category
-	1, // 4: personal_shopping.PersonalShoppingService.GetAll:input_type -> personal_shopping.GetAllRequest
-	2, // 5: personal_shopping.PersonalShoppingService.GetAll:output_type -> personal_shopping.GetAllResponse
+	1, // 4: personal_shopping.PersonalShoppingService.GetAll:input_type -> personal_shopping.GetShoppingItemsRequest
+	2, // 5: personal_shopping.PersonalShoppingService.GetAll:output_type -> personal_shopping.GetShoppingItemsResponse
 	5, // [5:6] is the sub-list for method output_type
 	4, // [4:5] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name

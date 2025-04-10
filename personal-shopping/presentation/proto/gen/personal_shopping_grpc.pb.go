@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PersonalShoppingServiceClient interface {
-	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	GetAll(ctx context.Context, in *GetShoppingItemsRequest, opts ...grpc.CallOption) (*GetShoppingItemsResponse, error)
 }
 
 type personalShoppingServiceClient struct {
@@ -37,9 +37,9 @@ func NewPersonalShoppingServiceClient(cc grpc.ClientConnInterface) PersonalShopp
 	return &personalShoppingServiceClient{cc}
 }
 
-func (c *personalShoppingServiceClient) GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+func (c *personalShoppingServiceClient) GetAll(ctx context.Context, in *GetShoppingItemsRequest, opts ...grpc.CallOption) (*GetShoppingItemsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetAllResponse)
+	out := new(GetShoppingItemsResponse)
 	err := c.cc.Invoke(ctx, PersonalShoppingService_GetAll_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (c *personalShoppingServiceClient) GetAll(ctx context.Context, in *GetAllRe
 // All implementations must embed UnimplementedPersonalShoppingServiceServer
 // for forward compatibility.
 type PersonalShoppingServiceServer interface {
-	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
+	GetAll(context.Context, *GetShoppingItemsRequest) (*GetShoppingItemsResponse, error)
 	mustEmbedUnimplementedPersonalShoppingServiceServer()
 }
 
@@ -62,7 +62,7 @@ type PersonalShoppingServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedPersonalShoppingServiceServer struct{}
 
-func (UnimplementedPersonalShoppingServiceServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
+func (UnimplementedPersonalShoppingServiceServer) GetAll(context.Context, *GetShoppingItemsRequest) (*GetShoppingItemsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
 func (UnimplementedPersonalShoppingServiceServer) mustEmbedUnimplementedPersonalShoppingServiceServer() {
@@ -88,7 +88,7 @@ func RegisterPersonalShoppingServiceServer(s grpc.ServiceRegistrar, srv Personal
 }
 
 func _PersonalShoppingService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllRequest)
+	in := new(GetShoppingItemsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func _PersonalShoppingService_GetAll_Handler(srv interface{}, ctx context.Contex
 		FullMethod: PersonalShoppingService_GetAll_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PersonalShoppingServiceServer).GetAll(ctx, req.(*GetAllRequest))
+		return srv.(PersonalShoppingServiceServer).GetAll(ctx, req.(*GetShoppingItemsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

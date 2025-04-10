@@ -10,14 +10,14 @@ import (
 )
 
 type GetShoppingItemsHandler interface {
-	Handle(ctx context.Context, req *proto.GetAllRequest) (*proto.GetAllResponse, error)
+	Handle(ctx context.Context, req *proto.GetShoppingItemsRequest) (*proto.GetShoppingItemsResponse, error)
 }
 
 type getShoppingItemsHandler struct {
 	usecase usecase.GetShoppingItemsUseCase
 }
 
-func (handler *getShoppingItemsHandler) Handle(ctx context.Context, req *proto.GetAllRequest) (*proto.GetAllResponse, error) {
+func (handler *getShoppingItemsHandler) Handle(ctx context.Context, req *proto.GetShoppingItemsRequest) (*proto.GetShoppingItemsResponse, error) {
 	outputs, err := handler.usecase.Execute(req.Status.String())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
@@ -40,7 +40,7 @@ func (handle *getShoppingItemsHandler) makeResponse(outputs []usecase.GetShoppin
 		}
 	}
 
-	return &proto.GetAllResponse{Items: items}
+	return &proto.GetShoppingItemsResponse{Items: items}
 }
 
 func NewGetShoppingItemsHandler(usecase usecase.GetShoppingItemsUseCase) GetShoppingItemsHandler {
