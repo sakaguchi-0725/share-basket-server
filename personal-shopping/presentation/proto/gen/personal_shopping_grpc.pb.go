@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	PersonalShoppingService_GetAll_FullMethodName = "/personal_shopping.PersonalShoppingService/GetAll"
+	PersonalShoppingService_Create_FullMethodName = "/personal_shopping.PersonalShoppingService/Create"
 )
 
 // PersonalShoppingServiceClient is the client API for PersonalShoppingService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PersonalShoppingServiceClient interface {
 	GetAll(ctx context.Context, in *GetShoppingItemsRequest, opts ...grpc.CallOption) (*GetShoppingItemsResponse, error)
+	Create(ctx context.Context, in *CreateShoppingItemRequest, opts ...grpc.CallOption) (*ShoppingItem, error)
 }
 
 type personalShoppingServiceClient struct {
@@ -47,11 +49,22 @@ func (c *personalShoppingServiceClient) GetAll(ctx context.Context, in *GetShopp
 	return out, nil
 }
 
+func (c *personalShoppingServiceClient) Create(ctx context.Context, in *CreateShoppingItemRequest, opts ...grpc.CallOption) (*ShoppingItem, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ShoppingItem)
+	err := c.cc.Invoke(ctx, PersonalShoppingService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PersonalShoppingServiceServer is the server API for PersonalShoppingService service.
 // All implementations must embed UnimplementedPersonalShoppingServiceServer
 // for forward compatibility.
 type PersonalShoppingServiceServer interface {
 	GetAll(context.Context, *GetShoppingItemsRequest) (*GetShoppingItemsResponse, error)
+	Create(context.Context, *CreateShoppingItemRequest) (*ShoppingItem, error)
 	mustEmbedUnimplementedPersonalShoppingServiceServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedPersonalShoppingServiceServer struct{}
 
 func (UnimplementedPersonalShoppingServiceServer) GetAll(context.Context, *GetShoppingItemsRequest) (*GetShoppingItemsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+}
+func (UnimplementedPersonalShoppingServiceServer) Create(context.Context, *CreateShoppingItemRequest) (*ShoppingItem, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedPersonalShoppingServiceServer) mustEmbedUnimplementedPersonalShoppingServiceServer() {
 }
@@ -105,6 +121,24 @@ func _PersonalShoppingService_GetAll_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PersonalShoppingService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateShoppingItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PersonalShoppingServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PersonalShoppingService_Create_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PersonalShoppingServiceServer).Create(ctx, req.(*CreateShoppingItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PersonalShoppingService_ServiceDesc is the grpc.ServiceDesc for PersonalShoppingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -115,6 +149,10 @@ var PersonalShoppingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAll",
 			Handler:    _PersonalShoppingService_GetAll_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _PersonalShoppingService_Create_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

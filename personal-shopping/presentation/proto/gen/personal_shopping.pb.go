@@ -158,6 +158,58 @@ func (x *GetShoppingItemsResponse) GetItems() []*ShoppingItem {
 	return nil
 }
 
+type CreateShoppingItemRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	CategoryId    int64                  `protobuf:"varint,2,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateShoppingItemRequest) Reset() {
+	*x = CreateShoppingItemRequest{}
+	mi := &file_personal_shopping_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateShoppingItemRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateShoppingItemRequest) ProtoMessage() {}
+
+func (x *CreateShoppingItemRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_personal_shopping_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateShoppingItemRequest.ProtoReflect.Descriptor instead.
+func (*CreateShoppingItemRequest) Descriptor() ([]byte, []int) {
+	return file_personal_shopping_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CreateShoppingItemRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateShoppingItemRequest) GetCategoryId() int64 {
+	if x != nil {
+		return x.CategoryId
+	}
+	return 0
+}
+
 type Category struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -168,7 +220,7 @@ type Category struct {
 
 func (x *Category) Reset() {
 	*x = Category{}
-	mi := &file_personal_shopping_proto_msgTypes[2]
+	mi := &file_personal_shopping_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -180,7 +232,7 @@ func (x *Category) String() string {
 func (*Category) ProtoMessage() {}
 
 func (x *Category) ProtoReflect() protoreflect.Message {
-	mi := &file_personal_shopping_proto_msgTypes[2]
+	mi := &file_personal_shopping_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -193,7 +245,7 @@ func (x *Category) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Category.ProtoReflect.Descriptor instead.
 func (*Category) Descriptor() ([]byte, []int) {
-	return file_personal_shopping_proto_rawDescGZIP(), []int{2}
+	return file_personal_shopping_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Category) GetId() int64 {
@@ -222,7 +274,7 @@ type ShoppingItem struct {
 
 func (x *ShoppingItem) Reset() {
 	*x = ShoppingItem{}
-	mi := &file_personal_shopping_proto_msgTypes[3]
+	mi := &file_personal_shopping_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -234,7 +286,7 @@ func (x *ShoppingItem) String() string {
 func (*ShoppingItem) ProtoMessage() {}
 
 func (x *ShoppingItem) ProtoReflect() protoreflect.Message {
-	mi := &file_personal_shopping_proto_msgTypes[3]
+	mi := &file_personal_shopping_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -247,7 +299,7 @@ func (x *ShoppingItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShoppingItem.ProtoReflect.Descriptor instead.
 func (*ShoppingItem) Descriptor() ([]byte, []int) {
-	return file_personal_shopping_proto_rawDescGZIP(), []int{3}
+	return file_personal_shopping_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ShoppingItem) GetId() int64 {
@@ -286,7 +338,11 @@ const file_personal_shopping_proto_rawDesc = "" +
 	"\x17GetShoppingItemsRequest\x121\n" +
 	"\x06status\x18\x01 \x01(\x0e2\x19.personal_shopping.StatusR\x06status\"Q\n" +
 	"\x18GetShoppingItemsResponse\x125\n" +
-	"\x05items\x18\x01 \x03(\v2\x1f.personal_shopping.ShoppingItemR\x05items\".\n" +
+	"\x05items\x18\x01 \x03(\v2\x1f.personal_shopping.ShoppingItemR\x05items\"P\n" +
+	"\x19CreateShoppingItemRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1f\n" +
+	"\vcategory_id\x18\x02 \x01(\x03R\n" +
+	"categoryId\".\n" +
 	"\bCategory\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\"\x9e\x01\n" +
@@ -298,9 +354,10 @@ const file_personal_shopping_proto_rawDesc = "" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12STATUS_UNPURCHASED\x10\x01\x12\x14\n" +
-	"\x10STATUS_PURCHASED\x10\x022|\n" +
+	"\x10STATUS_PURCHASED\x10\x022\xd5\x01\n" +
 	"\x17PersonalShoppingService\x12a\n" +
-	"\x06GetAll\x12*.personal_shopping.GetShoppingItemsRequest\x1a+.personal_shopping.GetShoppingItemsResponseB&Z$personal-shopping/presentation/protob\x06proto3"
+	"\x06GetAll\x12*.personal_shopping.GetShoppingItemsRequest\x1a+.personal_shopping.GetShoppingItemsResponse\x12W\n" +
+	"\x06Create\x12,.personal_shopping.CreateShoppingItemRequest\x1a\x1f.personal_shopping.ShoppingItemB&Z$personal-shopping/presentation/protob\x06proto3"
 
 var (
 	file_personal_shopping_proto_rawDescOnce sync.Once
@@ -315,23 +372,26 @@ func file_personal_shopping_proto_rawDescGZIP() []byte {
 }
 
 var file_personal_shopping_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_personal_shopping_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_personal_shopping_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_personal_shopping_proto_goTypes = []any{
-	(Status)(0),                      // 0: personal_shopping.Status
-	(*GetShoppingItemsRequest)(nil),  // 1: personal_shopping.GetShoppingItemsRequest
-	(*GetShoppingItemsResponse)(nil), // 2: personal_shopping.GetShoppingItemsResponse
-	(*Category)(nil),                 // 3: personal_shopping.Category
-	(*ShoppingItem)(nil),             // 4: personal_shopping.ShoppingItem
+	(Status)(0),                       // 0: personal_shopping.Status
+	(*GetShoppingItemsRequest)(nil),   // 1: personal_shopping.GetShoppingItemsRequest
+	(*GetShoppingItemsResponse)(nil),  // 2: personal_shopping.GetShoppingItemsResponse
+	(*CreateShoppingItemRequest)(nil), // 3: personal_shopping.CreateShoppingItemRequest
+	(*Category)(nil),                  // 4: personal_shopping.Category
+	(*ShoppingItem)(nil),              // 5: personal_shopping.ShoppingItem
 }
 var file_personal_shopping_proto_depIdxs = []int32{
 	0, // 0: personal_shopping.GetShoppingItemsRequest.status:type_name -> personal_shopping.Status
-	4, // 1: personal_shopping.GetShoppingItemsResponse.items:type_name -> personal_shopping.ShoppingItem
+	5, // 1: personal_shopping.GetShoppingItemsResponse.items:type_name -> personal_shopping.ShoppingItem
 	0, // 2: personal_shopping.ShoppingItem.status:type_name -> personal_shopping.Status
-	3, // 3: personal_shopping.ShoppingItem.category:type_name -> personal_shopping.Category
+	4, // 3: personal_shopping.ShoppingItem.category:type_name -> personal_shopping.Category
 	1, // 4: personal_shopping.PersonalShoppingService.GetAll:input_type -> personal_shopping.GetShoppingItemsRequest
-	2, // 5: personal_shopping.PersonalShoppingService.GetAll:output_type -> personal_shopping.GetShoppingItemsResponse
-	5, // [5:6] is the sub-list for method output_type
-	4, // [4:5] is the sub-list for method input_type
+	3, // 5: personal_shopping.PersonalShoppingService.Create:input_type -> personal_shopping.CreateShoppingItemRequest
+	2, // 6: personal_shopping.PersonalShoppingService.GetAll:output_type -> personal_shopping.GetShoppingItemsResponse
+	5, // 7: personal_shopping.PersonalShoppingService.Create:output_type -> personal_shopping.ShoppingItem
+	6, // [6:8] is the sub-list for method output_type
+	4, // [4:6] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
 	4, // [4:4] is the sub-list for extension extendee
 	0, // [0:4] is the sub-list for field type_name
@@ -348,7 +408,7 @@ func file_personal_shopping_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_personal_shopping_proto_rawDesc), len(file_personal_shopping_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
