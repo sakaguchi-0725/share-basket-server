@@ -28,6 +28,14 @@ func NewUser(id UserID, cognitoUID, email string) (User, error) {
 	}, nil
 }
 
+func RecreateUser(id UserID, cognitoUID, email string) User {
+	return User{
+		ID:         id,
+		CognitoUID: cognitoUID,
+		Email:      email,
+	}
+}
+
 func validateEmail(email string) error {
 	if email == "" {
 		return errors.New("email is required")

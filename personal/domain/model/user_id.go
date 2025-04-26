@@ -19,3 +19,7 @@ func NewUserID(s string) (UserID, error) {
 	}
 	return UserID(id.String()), nil
 }
+
+func (id UserID) String() string {
+	return string(id)
+}

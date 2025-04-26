@@ -1,17 +1,34 @@
 package main
 
 import (
+	"log"
+	"log/slog"
+	"share-basket-server/core/config"
+	"share-basket-server/core/db"
+	"share-basket-server/core/logger"
+	"share-basket-server/core/server"
 	personalRouter "share-basket-server/personal/presentation/router"
 	personalRegistry "share-basket-server/personal/registry"
-	"share-basket-server/server"
 
 	"github.com/go-chi/chi/v5"
 )
 
 func main() {
-	s := server.New(":8080")
+	cfg := config.Load()
+	logger := logger.New(cfg.Env)
+	slog.SetDefault(logger.Logger)
 
-	personalHandlers := personalRegistry.Inject()
+	db, err := db.New(cfg.DB)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	personalHandlers, err := personalRegistry.Inject(db, cfg.AWS)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	s := server.New(":8080")
 	s.MapRoutes(func(r chi.Router) {
 		personalRouter.RegisterRoutes(r, personalHandlers)
 	})

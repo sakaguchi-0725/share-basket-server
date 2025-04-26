@@ -4,11 +4,15 @@ import "os"
 
 type App struct {
 	Env string
+	DB  DB
+	AWS AWS
 }
 
 func Load() App {
 	return App{
 		Env: getEnv("APP_ENV", "dev"),
+		DB:  newDBConfig(),
+		AWS: newAWSConfig(),
 	}
 }
 

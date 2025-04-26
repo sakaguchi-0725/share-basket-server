@@ -6,6 +6,7 @@ const (
 	ErrUnauthorized ErrorCode = iota + 1
 	ErrBadRequest
 	ErrNotFound
+	ErrExpiredCode
 )
 
 func (code ErrorCode) String() string {
@@ -16,6 +17,8 @@ func (code ErrorCode) String() string {
 		return "BadRequest"
 	case ErrNotFound:
 		return "NotFound"
+	case ErrExpiredCode:
+		return "BadRequest/ExpiredCode"
 	default:
 		return "InternalServer"
 	}
