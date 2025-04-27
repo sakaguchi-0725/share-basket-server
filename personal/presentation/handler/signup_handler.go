@@ -3,8 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"share-basket-server/core/middleware"
 	"share-basket-server/personal/presentation/presenter"
+	"share-basket-server/personal/presentation/response"
 	"share-basket-server/personal/usecase/input"
 )
 
@@ -17,7 +17,7 @@ type SignUpRequest struct {
 func MakeSignUpHandler(usecase input.SignUpInputPort) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req SignUpRequest
-		errRw := w.(*middleware.ErrResponseWriter)
+		errRw := w.(*response.ErrResponseWriter)
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			errRw.Err = err
