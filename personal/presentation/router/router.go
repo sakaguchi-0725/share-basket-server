@@ -11,6 +11,7 @@ type Handlers struct {
 	PingHandler          http.HandlerFunc
 	SignUpHandler        http.HandlerFunc
 	SignUpConfirmHandler http.HandlerFunc
+	LoginHandler         http.HandlerFunc
 }
 
 func RegisterRoutes(r chi.Router, handlers Handlers) {
@@ -19,5 +20,6 @@ func RegisterRoutes(r chi.Router, handlers Handlers) {
 		r.Get("/ping", handlers.PingHandler)
 		r.Post("/signup", handlers.SignUpHandler)
 		r.Post("/signup/confirm", handlers.SignUpConfirmHandler)
+		r.Post("/login", handlers.LoginHandler)
 	})
 }

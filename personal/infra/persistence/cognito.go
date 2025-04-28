@@ -40,9 +40,36 @@ var (
 	notAuthorizedException    = &types.NotAuthorizedException{}
 )
 
-// Login implements repository.Authenticator.
 func (c *cognito) Login(ctx context.Context, email string, password string) (string, error) {
-	panic("unimplemented")
+	secretHash := c.genSecretHash(email)
+	result, err := c.client.InitiateAuth(ctx, &cognitoidentityprovider.InitiateAuthInput{
+		AuthFlow: types.AuthFlowTypeUserPasswordAuth,
+		ClientId: aws.String(c.clientID),
+		AuthParameters: map[string]string{
+			"USERNAME":    email,
+			"PASSWORD":    password,
+			"SECRET_HASH": secretHash,
+		},
+	})
+
+	if err != nil {
+		if errors.Is(err, notAuthorizedException) {
+			return "", apperr.ErrUnauthenticated
+		}
+
+		if errors.Is(err, invalidParameterException) || errors.Is(err, invalidPasswordException) {
+			return "", apperr.ErrInvalidData
+		}
+
+		return "", err
+	}
+
+	accessToken := result.AuthenticationResult.AccessToken
+	if accessToken == nil {
+		return "", apperr.ErrUnauthenticated
+	}
+
+	return util.Derefer(accessToken), nil
 }
 
 func (c *cognito) SignUp(ctx context.Context, email string, password string) (string, error) {

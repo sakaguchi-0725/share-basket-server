@@ -34,10 +34,12 @@ func Inject(db *gorm.DB, cfg config.AWS) (router.Handlers, error) {
 	)
 
 	signUpConfirmUseCase := usecase.NewSignUpConfirmUseCase(authenticator)
+	loginUseCase := usecase.NewLoginUseCase(authenticator)
 
 	return router.Handlers{
 		PingHandler:          handler.MakePingHandler(),
 		SignUpHandler:        handler.MakeSignUpHandler(signUpUseCase),
 		SignUpConfirmHandler: handler.MakeSignUpConfirmHandler(signUpConfirmUseCase),
+		LoginHandler:         handler.MakeLoginHandler(loginUseCase),
 	}, nil
 }
