@@ -10,7 +10,7 @@ import (
 
 type SignUpConfirmRequest struct {
 	Email            string `json:"email"`
-	ConfirmationCode string `json:"confirmation_code"`
+	ConfirmationCode string `json:"confirmationCode"`
 }
 
 func MakeSignUpConfirmHandler(usecase input.SignUpConfirmInputPort) http.HandlerFunc {

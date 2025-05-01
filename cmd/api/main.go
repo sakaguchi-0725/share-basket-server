@@ -11,6 +11,8 @@ import (
 	personalRegistry "share-basket-server/personal/registry"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 func main() {
@@ -30,6 +32,15 @@ func main() {
 
 	s := server.New(":8080")
 	s.MapRoutes(func(r chi.Router) {
+		r.Use(middleware.Logger)
+		r.Use(middleware.Recoverer)
+		r.Use(cors.Handler(cors.Options{
+			AllowedOrigins:   []string{cfg.FrontendURL},
+			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+			AllowCredentials: true,
+		}))
+
 		personalRouter.RegisterRoutes(r, personalHandlers)
 	})
 

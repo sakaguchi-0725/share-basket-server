@@ -53,11 +53,11 @@ func (c *cognito) Login(ctx context.Context, email string, password string) (str
 	})
 
 	if err != nil {
-		if errors.Is(err, notAuthorizedException) {
+		if errors.As(err, &notAuthorizedException) {
 			return "", apperr.ErrUnauthenticated
 		}
 
-		if errors.Is(err, invalidParameterException) || errors.Is(err, invalidPasswordException) {
+		if errors.As(err, &invalidParameterException) || errors.As(err, &invalidPasswordException) {
 			return "", apperr.ErrInvalidData
 		}
 
@@ -83,10 +83,10 @@ func (c *cognito) SignUp(ctx context.Context, email string, password string) (st
 	})
 
 	if err != nil {
-		if errors.Is(err, usernameExistsException) {
+		if errors.As(err, &usernameExistsException) {
 			return "", apperr.ErrDuplicatedKey
 		}
-		if errors.Is(err, invalidParameterException) || errors.Is(err, invalidPasswordException) {
+		if errors.As(err, &invalidParameterException) || errors.As(err, &invalidPasswordException) {
 			return "", apperr.ErrInvalidData
 		}
 		return "", fmt.Errorf("failed to sign up: %w", err)
@@ -111,11 +111,11 @@ func (c *cognito) SignUpConfirm(ctx context.Context, email string, confirmationC
 	})
 
 	if err != nil {
-		if errors.Is(err, invalidParameterException) || errors.Is(err, codeMismatchException) {
+		if errors.As(err, &invalidParameterException) || errors.As(err, &codeMismatchException) {
 			return apperr.ErrInvalidData
 		}
 
-		if errors.Is(err, expiredCodeException) {
+		if errors.As(err, &expiredCodeException) {
 			return apperr.ErrExpiredCodeException
 		}
 
