@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: Share Basket Personal API
+  description: Share Basket アプリケーション
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: ローカル開発サーバー
+paths:
+  /personal/ping:
+    get:
+      summary: 健全性確認
+      operationId: ping
+      tags:
+        - personal
+      responses:
+        200:
+          description: 正常
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "pong"
+  /personal/signup:
+    post:
+      summary: ユーザー登録
+      operationId: signUp
+      tags:
+        - personal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  example: "山田太郎"
+                email:
+                  type: string
+                  format: email
+                  example: "test@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "Password123"
+      responses:
+        204:
+          description: 正常系
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /personal/signup/confirm:
+    post:
+      summary: ユーザー登録の確認
+      description: メールで送信された確認コードを使用してユーザー登録を完了する
+      operationId: signUpConfirm
+      tags:
+        - personal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - confirmation_code
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "taro@example.com"
+                confirmation_code:
+                  type: string
+                  example: "123456"
+      responses:
+        204:
+          description: 正常系
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+  responses:
+    BadRequest:
+      description: 無効なリクエスト
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: BadRequest
+    InternalServerError:
+      description: サーバーエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: InternalServer
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 

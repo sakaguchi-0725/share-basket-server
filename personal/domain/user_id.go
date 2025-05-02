@@ -1,4 +1,4 @@
-package model
+package domain
 
 import (
 	"fmt"
@@ -8,14 +8,19 @@ import (
 
 type UserID string
 
-func GenUserID() UserID {
+func NewUserID() UserID {
 	return UserID(uuid.NewString())
 }
 
-func NewUserID(s string) (UserID, error) {
+func ParseUserID(s string) (UserID, error) {
 	id, err := uuid.Parse(s)
 	if err != nil {
 		return "", fmt.Errorf("invalid user id: %w", err)
 	}
+
 	return UserID(id.String()), nil
+}
+
+func (id UserID) String() string {
+	return string(id)
 }
