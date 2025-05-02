@@ -1,8 +1,7 @@
 package persistence
 
 import (
-	"share-basket-server/personal/domain/model"
-	"share-basket-server/personal/domain/repository"
+	"share-basket-server/personal/domain"
 	"share-basket-server/personal/infra/dto"
 
 	"gorm.io/gorm"
@@ -12,7 +11,7 @@ type accountPersistence struct {
 	db *gorm.DB
 }
 
-func (a *accountPersistence) Store(acc *model.Account) error {
+func (a *accountPersistence) Store(acc *domain.Account) error {
 	accDto := dto.NewAccountDto(*acc)
 
 	err := a.db.Save(&accDto).Error
@@ -26,6 +25,6 @@ func (a *accountPersistence) Store(acc *model.Account) error {
 	return nil
 }
 
-func NewAccountPersistence(db *gorm.DB) repository.Account {
+func NewAccountPersistence(db *gorm.DB) domain.AccountRepository {
 	return &accountPersistence{db}
 }

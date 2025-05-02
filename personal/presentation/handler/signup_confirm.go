@@ -1,20 +1,26 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"share-basket-server/core/apperr"
-	"share-basket-server/personal/presentation/presenter"
 	"share-basket-server/personal/presentation/response"
-	"share-basket-server/personal/usecase/input"
+	"share-basket-server/personal/usecase"
 )
 
-type signUpConfirmRequest struct {
-	Email            string `json:"email"`
-	ConfirmationCode string `json:"confirmationCode"`
-}
+type (
+	signUpConfirmRequest struct {
+		Email            string `json:"email"`
+		ConfirmationCode string `json:"confirmationCode"`
+	}
 
-func MakeSignUpConfirmHandler(usecase input.SignUpConfirmInputPort) http.HandlerFunc {
+	signUpConfirmPresenter struct {
+		w http.ResponseWriter
+	}
+)
+
+func MakeSignUpConfirmHandler(usecase usecase.SignUpConfirmInputPort) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req signUpConfirmRequest
 
@@ -23,19 +29,25 @@ func MakeSignUpConfirmHandler(usecase input.SignUpConfirmInputPort) http.Handler
 			return
 		}
 
-		out := presenter.NewSignUpConfirmPresenter(w)
-		ctx := r.Context()
-
-		err := usecase.Execute(ctx, req.makeInput(), out)
+		err := usecase.Execute(r.Context(), req.makeInput(), NewSignUpConfirmPresenter(w))
 		if err != nil {
 			response.Error(w, err)
 		}
 	}
 }
 
-func (req signUpConfirmRequest) makeInput() input.SignUpConfirmInput {
-	return input.SignUpConfirmInput{
+func (req signUpConfirmRequest) makeInput() usecase.SignUpConfirmInput {
+	return usecase.SignUpConfirmInput{
 		Email:            req.Email,
 		ConfirmationCode: req.ConfirmationCode,
 	}
+}
+
+func (presenter *signUpConfirmPresenter) Render(ctx context.Context) error {
+	response.NoContent(presenter.w)
+	return nil
+}
+
+func NewSignUpConfirmPresenter(w http.ResponseWriter) usecase.SignUpConfirmOutputPort {
+	return &signUpConfirmPresenter{w}
 }

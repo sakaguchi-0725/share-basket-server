@@ -1,20 +1,26 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"share-basket-server/core/apperr"
-	"share-basket-server/personal/presentation/presenter"
 	"share-basket-server/personal/presentation/response"
-	"share-basket-server/personal/usecase/input"
+	"share-basket-server/personal/usecase"
 )
 
-type loginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
+type (
+	loginRequest struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
 
-func MakeLoginHandler(usecase input.LoginInputPort) http.HandlerFunc {
+	loginPresenter struct {
+		w http.ResponseWriter
+	}
+)
+
+func MakeLoginHandler(usecase usecase.LoginInputPort) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req loginRequest
 
@@ -23,19 +29,37 @@ func MakeLoginHandler(usecase input.LoginInputPort) http.HandlerFunc {
 			return
 		}
 
-		out := presenter.NewLoginPresenter(w)
-		ctx := r.Context()
-
-		err := usecase.Execute(ctx, req.makeInput(), out)
+		err := usecase.Execute(r.Context(), req.makeInput(), NewLoginPresenter(w))
 		if err != nil {
 			response.Error(w, err)
 		}
 	}
 }
 
-func (req loginRequest) makeInput() input.LoginInput {
-	return input.LoginInput{
+func (req loginRequest) makeInput() usecase.LoginInput {
+	return usecase.LoginInput{
 		Email:    req.Email,
 		Password: req.Password,
 	}
+}
+
+func (presenter *loginPresenter) Render(ctx context.Context, token string) error {
+	cookie := &http.Cookie{
+		Name:     "access_token",
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false, // dev環境ではfalse
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   86400, // 24時間（1日）
+	}
+
+	http.SetCookie(presenter.w, cookie)
+	response.NoContent(presenter.w)
+
+	return nil
+}
+
+func NewLoginPresenter(w http.ResponseWriter) usecase.LoginOutputPort {
+	return &loginPresenter{w}
 }

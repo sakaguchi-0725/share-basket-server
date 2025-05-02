@@ -1,13 +1,20 @@
-package model
+package domain
 
 import "errors"
 
-type ShoppingItem struct {
-	ID         *uint
-	Name       string
-	Status     ShoppingStatus
-	CategoryID uint
-}
+type (
+	ShoppingItem struct {
+		ID         *uint
+		Name       string
+		Status     ShoppingStatus
+		CategoryID uint
+	}
+
+	ShoppingItemRepository interface {
+		GetAll() ([]ShoppingItem, error)
+		Store(item *ShoppingItem) error
+	}
+)
 
 func NewShoppingItem(
 	id *uint, name string, status ShoppingStatus, categoryID uint,

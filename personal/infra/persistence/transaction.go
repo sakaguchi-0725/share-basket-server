@@ -2,7 +2,7 @@ package persistence
 
 import (
 	"context"
-	"share-basket-server/personal/domain/repository"
+	"share-basket-server/personal/domain"
 
 	"gorm.io/gorm"
 )
@@ -17,6 +17,6 @@ func (t *transaction) Run(ctx context.Context, fn func(ctx context.Context) erro
 	})
 }
 
-func NewTransaction(db *gorm.DB) repository.Transaction {
+func NewTransaction(db *gorm.DB) domain.Transaction {
 	return &transaction{db}
 }

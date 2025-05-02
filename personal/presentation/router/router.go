@@ -7,10 +7,11 @@ import (
 )
 
 type Handlers struct {
-	PingHandler          http.HandlerFunc
-	SignUpHandler        http.HandlerFunc
-	SignUpConfirmHandler http.HandlerFunc
-	LoginHandler         http.HandlerFunc
+	PingHandler                  http.HandlerFunc
+	SignUpHandler                http.HandlerFunc
+	SignUpConfirmHandler         http.HandlerFunc
+	LoginHandler                 http.HandlerFunc
+	GetShoppingCaterogiesHandler http.HandlerFunc
 }
 
 func RegisterRoutes(r chi.Router, handlers Handlers) {
@@ -19,5 +20,6 @@ func RegisterRoutes(r chi.Router, handlers Handlers) {
 		r.Post("/signup", handlers.SignUpHandler)
 		r.Post("/signup/confirm", handlers.SignUpConfirmHandler)
 		r.Post("/login", handlers.LoginHandler)
+		r.Get("/categories", handlers.GetShoppingCaterogiesHandler)
 	})
 }

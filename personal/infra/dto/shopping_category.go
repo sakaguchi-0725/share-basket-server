@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"share-basket-server/personal/domain/model"
+	"share-basket-server/personal/domain"
 	"time"
 )
 
@@ -14,11 +14,11 @@ type ShoppingCategory struct {
 
 type ShoppingCategories []ShoppingCategory
 
-func (categories ShoppingCategories) ToModels() []model.ShoppingCategory {
-	models := make([]model.ShoppingCategory, len(categories))
+func (categories ShoppingCategories) ToModels() []domain.ShoppingCategory {
+	models := make([]domain.ShoppingCategory, len(categories))
 
 	for i, c := range categories {
-		models[i] = model.NewShoppingCategory(c.ID, c.Name)
+		models[i] = domain.NewShoppingCategory(c.ID, c.Name)
 	}
 
 	return models

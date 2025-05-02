@@ -11,7 +11,7 @@ import (
 	"share-basket-server/core/apperr"
 	appConfig "share-basket-server/core/config"
 	"share-basket-server/core/util"
-	"share-basket-server/personal/domain/repository"
+	"share-basket-server/personal/domain"
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -146,7 +146,7 @@ func (c *cognito) genSecretHash(username string) string {
 	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
 }
 
-func NewCognito(ctx context.Context, cfg appConfig.AWS) (repository.Authenticator, error) {
+func NewCognito(ctx context.Context, cfg appConfig.AWS) (domain.Authenticator, error) {
 	awsCfg, err := awsConfig.LoadDefaultConfig(ctx, awsConfig.WithRegion(cfg.Region))
 	if err != nil {
 		return nil, fmt.Errorf("failed to load AWS config: %w", err)

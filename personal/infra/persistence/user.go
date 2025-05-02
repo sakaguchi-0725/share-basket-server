@@ -3,8 +3,7 @@ package persistence
 import (
 	"errors"
 	"share-basket-server/core/apperr"
-	"share-basket-server/personal/domain/model"
-	"share-basket-server/personal/domain/repository"
+	"share-basket-server/personal/domain"
 	"share-basket-server/personal/infra/dto"
 
 	"gorm.io/gorm"
@@ -14,21 +13,21 @@ type userPersistence struct {
 	db *gorm.DB
 }
 
-func (u *userPersistence) GetByEmail(email string) (model.User, error) {
+func (u *userPersistence) GetByEmail(email string) (domain.User, error) {
 	var user dto.User
 
 	err := u.db.Where("email = ?", email).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.User{}, apperr.ErrDataNotFound
+			return domain.User{}, apperr.ErrDataNotFound
 		}
-		return model.User{}, err
+		return domain.User{}, err
 	}
 
 	return user.ToModel(), nil
 }
 
-func (u *userPersistence) Store(user *model.User) error {
+func (u *userPersistence) Store(user *domain.User) error {
 	userDto := dto.NewUserDto(*user)
 
 	err := u.db.Save(&userDto).Error
@@ -42,6 +41,6 @@ func (u *userPersistence) Store(user *model.User) error {
 	return nil
 }
 
-func NewUserPersistence(db *gorm.DB) repository.User {
+func NewUserPersistence(db *gorm.DB) domain.UserRepository {
 	return &userPersistence{db}
 }

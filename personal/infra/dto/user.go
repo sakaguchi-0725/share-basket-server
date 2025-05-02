@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"share-basket-server/personal/domain/model"
+	"share-basket-server/personal/domain"
 	"time"
 )
 
@@ -13,19 +13,17 @@ type User struct {
 	UpdatedAt  time.Time `gorm:"autoUpdateTime"`
 }
 
-func NewUserDto(model model.User) User {
+func NewUserDto(user domain.User) User {
 	return User{
-		ID:         model.ID.String(),
-		CognitoUID: model.CognitoUID,
-		Email:      model.Email,
+		ID:         user.ID.String(),
+		CognitoUID: user.CognitoUID,
+		Email:      user.Email,
 	}
 }
 
-func (user User) ToModel() model.User {
-	id, _ := model.NewUserID(user.ID)
-
-	return model.User{
-		ID:         id,
+func (user User) ToModel() domain.User {
+	return domain.User{
+		ID:         domain.UserID(user.ID),
 		CognitoUID: user.CognitoUID,
 		Email:      user.Email,
 	}

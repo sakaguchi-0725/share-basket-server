@@ -1,16 +1,28 @@
-package model
+package domain
 
 import (
 	"errors"
 	"fmt"
 	"regexp"
+	"share-basket-server/core/apperr"
 )
 
-type User struct {
-	ID         UserID
-	CognitoUID string
-	Email      string
-}
+type (
+	User struct {
+		ID         UserID
+		CognitoUID string
+		Email      string
+	}
+
+	UserRepository interface {
+		GetByEmail(email string) (User, error)
+		Store(user *User) error
+	}
+
+	UserService interface {
+		IsEmailAvailable(email string) (bool, error)
+	}
+)
 
 func NewUser(id UserID, cognitoUID, email string) (User, error) {
 	if cognitoUID == "" {
@@ -53,4 +65,25 @@ func validateEmail(email string) error {
 	}
 
 	return nil
+}
+
+type userService struct {
+	repo UserRepository
+}
+
+// Emailが使用可能か判定する
+func (service *userService) IsEmailAvailable(email string) (bool, error) {
+	_, err := service.repo.GetByEmail(email)
+	if err != nil {
+		if errors.Is(err, apperr.ErrDataNotFound) {
+			return true, nil
+		}
+		return false, err
+	}
+
+	return false, nil
+}
+
+func NewUserService(repo UserRepository) UserService {
+	return &userService{repo}
 }

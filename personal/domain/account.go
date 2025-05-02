@@ -1,12 +1,18 @@
-package model
+package domain
 
 import "errors"
 
-type Account struct {
-	ID     AccountID
-	UserID UserID
-	Name   string
-}
+type (
+	Account struct {
+		ID     AccountID
+		UserID UserID
+		Name   string
+	}
+
+	AccountRepository interface {
+		Store(acc *Account) error
+	}
+)
 
 func NewAccount(id AccountID, userID UserID, name string) (Account, error) {
 	if name == "" {

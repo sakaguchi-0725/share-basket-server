@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"share-basket-server/personal/domain/model"
+	"share-basket-server/personal/domain"
 	"time"
 )
 
@@ -14,17 +14,18 @@ type Account struct {
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }
 
-func NewAccountDto(model model.Account) Account {
+func NewAccountDto(acc domain.Account) Account {
 	return Account{
-		ID:     model.ID.String(),
-		UserID: model.UserID.String(),
-		Name:   model.Name,
+		ID:     acc.ID.String(),
+		UserID: acc.UserID.String(),
+		Name:   acc.Name,
 	}
 }
 
-func (acc Account) ToModel() model.Account {
-	id, _ := model.NewAccountID(acc.ID)
-	userID, _ := model.NewUserID(acc.UserID)
-
-	return model.RecreateAccount(id, userID, acc.Name)
+func (acc Account) ToModel() domain.Account {
+	return domain.RecreateAccount(
+		domain.AccountID(acc.ID),
+		domain.UserID(acc.UserID),
+		acc.Name,
+	)
 }
