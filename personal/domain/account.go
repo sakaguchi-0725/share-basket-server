@@ -2,6 +2,8 @@ package domain
 
 import "errors"
 
+var ErrAccountNameRequired = errors.New("account name is required")
+
 type (
 	Account struct {
 		ID     AccountID
@@ -16,7 +18,7 @@ type (
 
 func NewAccount(id AccountID, userID UserID, name string) (Account, error) {
 	if name == "" {
-		return Account{}, errors.New("name is required")
+		return Account{}, ErrAccountNameRequired
 	}
 
 	return Account{
