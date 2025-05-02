@@ -1,6 +1,11 @@
 package domain
 
-import "errors"
+import (
+	"errors"
+	"share-basket-server/core/util"
+)
+
+var ErrShoppingItemNameRequired = errors.New("shopping item name is required")
 
 type (
 	ShoppingItem struct {
@@ -17,32 +22,22 @@ type (
 )
 
 func NewShoppingItem(
-	id *uint, name string, status ShoppingStatus, categoryID uint,
+	name string, status *ShoppingStatus, categoryID uint,
 ) (ShoppingItem, error) {
-	if id == nil {
-		return ShoppingItem{}, errors.New("shopping id is required")
+	if name == "" {
+		return ShoppingItem{}, ErrShoppingItemNameRequired
 	}
 
-	if name == "" {
-		return ShoppingItem{}, errors.New("name is required")
-	}
-
-	return ShoppingItem{
-		ID:         id,
-		Name:       name,
-		Status:     status,
-		CategoryID: categoryID,
-	}, nil
-}
-
-func CreateShoppingItem(name string, categoryID uint) (ShoppingItem, error) {
-	if name == "" {
-		return ShoppingItem{}, errors.New("name is required")
+	var itemStatus ShoppingStatus
+	if status == nil {
+		itemStatus = UnPurchased
+	} else {
+		itemStatus = util.Derefer(status)
 	}
 
 	return ShoppingItem{
 		Name:       name,
-		Status:     UnPurchased,
+		Status:     itemStatus,
 		CategoryID: categoryID,
 	}, nil
 }
