@@ -6,11 +6,14 @@ import (
 )
 
 func NoContent(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func JSON[T any](w http.ResponseWriter, status int, body T) error {
+func StatusOK[T any](w http.ResponseWriter, body T) error {
+	return httpJSON(w, http.StatusOK, body)
+}
+
+func httpJSON[T any](w http.ResponseWriter, status int, body T) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 

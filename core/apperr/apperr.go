@@ -19,6 +19,6 @@ func NewInvalidError(err error) *AppError {
 	}
 }
 
-func (err *AppError) Code() string {
-	return err.code.String()
+func (err *AppError) Code() ErrorCode {
+	return err.code
 }

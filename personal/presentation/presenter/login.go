@@ -11,7 +11,7 @@ type loginPresenter struct {
 	w http.ResponseWriter
 }
 
-func (l *loginPresenter) Render(ctx context.Context, token string) error {
+func (presenter *loginPresenter) Render(ctx context.Context, token string) error {
 	cookie := &http.Cookie{
 		Name:     "access_token",
 		Value:    token,
@@ -21,9 +21,10 @@ func (l *loginPresenter) Render(ctx context.Context, token string) error {
 		SameSite: http.SameSiteStrictMode,
 		MaxAge:   86400, // 24時間（1日）
 	}
-	http.SetCookie(l.w, cookie)
 
-	response.NoContent(l.w)
+	http.SetCookie(presenter.w, cookie)
+	response.NoContent(presenter.w)
+
 	return nil
 }
 

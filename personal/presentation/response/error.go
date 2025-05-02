@@ -2,21 +2,38 @@ package response
 
 import (
 	"net/http"
+	"share-basket-server/core/apperr"
 )
 
-type ErrResponseWriter struct {
-	http.ResponseWriter
-	Err error
+type errorResponse struct {
+	Code   string `json:"code"`
+	Detail string `json:"detail"`
 }
 
-func (ew *ErrResponseWriter) Header() http.Header {
-	return ew.ResponseWriter.Header()
-}
+func Error(w http.ResponseWriter, err error) error {
+	if appErr, ok := err.(*apperr.AppError); ok {
+		var status int
 
-func (ew *ErrResponseWriter) Write(b []byte) (int, error) {
-	return ew.ResponseWriter.Write(b)
-}
+		switch appErr.Code() {
+		case apperr.ErrBadRequest:
+		case apperr.ErrExpiredCode:
+			status = http.StatusBadRequest
+		case apperr.ErrUnauthorized:
+			status = http.StatusUnauthorized
+		case apperr.ErrNotFound:
+			status = http.StatusNotFound
+		default:
+			status = http.StatusInternalServerError
+		}
 
-func (ew *ErrResponseWriter) WriteHeader(statusCode int) {
-	ew.ResponseWriter.WriteHeader(statusCode)
+		return httpJSON(w, status, &errorResponse{
+			Code:   appErr.Code().String(),
+			Detail: appErr.Error(),
+		})
+	}
+
+	return httpJSON(w, http.StatusInternalServerError, errorResponse{
+		Code:   "InternalServerError",
+		Detail: err.Error(),
+	})
 }

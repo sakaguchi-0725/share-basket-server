@@ -16,11 +16,11 @@ type getShoppingCategoriesResponse struct {
 	Name string `json:"name"`
 }
 
-func (g *getShoppingCategories) Render(ctx context.Context, out output.GetShoppingCategories) error {
-	return response.JSON(g.w, http.StatusOK, g.makeResponse(out))
+func (presenter *getShoppingCategories) Render(ctx context.Context, out output.GetShoppingCategories) error {
+	return response.StatusOK(presenter.w, presenter.makeResponse(out))
 }
 
-func (g *getShoppingCategories) makeResponse(outputs output.GetShoppingCategories) []getShoppingCategoriesResponse {
+func (presenter *getShoppingCategories) makeResponse(outputs output.GetShoppingCategories) []getShoppingCategoriesResponse {
 	res := make([]getShoppingCategoriesResponse, len(outputs))
 
 	for i, v := range outputs {

@@ -11,8 +11,8 @@ type signUpPresenter struct {
 	w http.ResponseWriter
 }
 
-func (s *signUpPresenter) Render(ctx context.Context) error {
-	response.NoContent(s.w)
+func (presenter *signUpPresenter) Render(ctx context.Context) error {
+	response.NoContent(presenter.w)
 	return nil
 }
 

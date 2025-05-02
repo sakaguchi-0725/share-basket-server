@@ -9,7 +9,9 @@ import (
 
 func MakeGetShoppingCategoriesHandler(usecase input.GetShoppingCategoriesPort) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		errRw := w.(*response.ErrResponseWriter)
-		errRw.Err = usecase.Execute(r.Context(), presenter.NewGetShoppingCategories(w))
+		err := usecase.Execute(r.Context(), presenter.NewGetShoppingCategories(w))
+		if err != nil {
+			response.Error(w, err)
+		}
 	}
 }
