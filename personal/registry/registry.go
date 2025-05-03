@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"share-basket-server/core/config"
 	"share-basket-server/personal/domain"
-	"share-basket-server/personal/infra/persistence"
+	"share-basket-server/personal/infra/aws"
+	"share-basket-server/personal/infra/database"
 	"share-basket-server/personal/presentation/handler"
 	"share-basket-server/personal/presentation/router"
 	"share-basket-server/personal/presentation/validator"
@@ -55,21 +56,21 @@ func Inject(db *gorm.DB, cfg config.AWS) (router.Handlers, error) {
 }
 
 func injectRepository(ctx context.Context, db *gorm.DB, cfg config.AWS) (repositories, error) {
-	authenticator, err := persistence.NewCognito(ctx, cfg)
+	authenticator, err := aws.NewCognito(ctx, cfg)
 	if err != nil {
 		return repositories{}, fmt.Errorf("failed to inject authenticator: %w", err)
 	}
 
-	userRepo := persistence.NewUserPersistence(db)
+	userRepo := database.NewUserPersistence(db)
 
 	return repositories{
 		userRepo:             userRepo,
 		userService:          domain.NewUserService(userRepo),
-		accountRepo:          persistence.NewAccountPersistence(db),
-		shoppingCategoryRepo: persistence.NewShoppingCategory(db),
+		accountRepo:          database.NewAccountPersistence(db),
+		shoppingCategoryRepo: database.NewShoppingCategoryPersistence(db),
 
 		authenticator: authenticator,
-		transaction:   persistence.NewTransaction(db),
+		transaction:   database.NewTransaction(db),
 	}, nil
 }
 
