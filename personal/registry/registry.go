@@ -56,11 +56,12 @@ func Inject(db *gorm.DB, cfg config.AWS) (router.Handlers, error) {
 }
 
 func injectRepository(ctx context.Context, db *gorm.DB, cfg config.AWS) (repositories, error) {
-	authenticator, err := aws.NewCognito(ctx, cfg)
+	cognitoClient, err := aws.NewCognitoClient(ctx, cfg)
 	if err != nil {
 		return repositories{}, fmt.Errorf("failed to inject authenticator: %w", err)
 	}
 
+	authenticator := aws.NewCognitoPersistence(cognitoClient)
 	userRepo := database.NewUserPersistence(db)
 
 	return repositories{

@@ -11,7 +11,8 @@ require (
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/google/uuid v1.6.0
 	github.com/rubenv/sql-migrate v1.8.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
+	go.uber.org/mock v0.5.2
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.26.0
 )
