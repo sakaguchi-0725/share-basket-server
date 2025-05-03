@@ -46,3 +46,7 @@ func (categories shoppingCategoryDtos) toModels() []domain.ShoppingCategory {
 
 	return models
 }
+
+func (dto shoppingCategoryDto) TableName() string {
+	return "shopping_categories"
+}

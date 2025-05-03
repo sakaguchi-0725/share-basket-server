@@ -55,3 +55,7 @@ func (acc accountDto) toModel() domain.Account {
 		acc.Name,
 	)
 }
+
+func (accountDto) TableName() string {
+	return "accounts"
+}

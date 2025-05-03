@@ -70,3 +70,7 @@ func (user userDto) toModel() domain.User {
 		Email:      user.Email,
 	}
 }
+
+func (userDto) TableName() string {
+	return "users"
+}
