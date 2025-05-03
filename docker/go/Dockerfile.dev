@@ -9,6 +9,7 @@ COPY go.mod go.sum ./
 
 RUN go install github.com/air-verse/air@latest
 RUN go install github.com/rubenv/sql-migrate/...@latest
+RUN go install go.uber.org/mock/mockgen@latest
 
 RUN go mod download
 
