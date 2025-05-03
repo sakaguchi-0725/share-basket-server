@@ -1,5 +1,7 @@
 package config
 
+import "share-basket-server/core/util"
+
 type AWS struct {
 	Region              string
 	CognitoClientID     string
@@ -9,9 +11,9 @@ type AWS struct {
 
 func newAWSConfig() AWS {
 	return AWS{
-		Region:              getEnv("AWS_REGION", "ap-northeast-1"),
-		CognitoClientID:     getEnv("COGNITO_CLIENT_ID", ""),
-		CognitoClientSecret: getEnv("COGNITO_CLIENT_SECRET", ""),
-		CognitoUserPoolID:   getEnv("COGNITO_USER_POOL_ID", ""),
+		Region:              util.GetEnv("AWS_REGION", "ap-northeast-1"),
+		CognitoClientID:     util.GetEnv("COGNITO_CLIENT_ID", ""),
+		CognitoClientSecret: util.GetEnv("COGNITO_CLIENT_SECRET", ""),
+		CognitoUserPoolID:   util.GetEnv("COGNITO_USER_POOL_ID", ""),
 	}
 }

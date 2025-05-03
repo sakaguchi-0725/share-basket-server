@@ -15,8 +15,7 @@ func Error(w http.ResponseWriter, err error) error {
 		var status int
 
 		switch appErr.Code() {
-		case apperr.ErrBadRequest:
-		case apperr.ErrExpiredCode:
+		case apperr.ErrBadRequest, apperr.ErrExpiredCode:
 			status = http.StatusBadRequest
 		case apperr.ErrUnauthorized:
 			status = http.StatusUnauthorized

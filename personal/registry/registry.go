@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"share-basket-server/core/config"
 	"share-basket-server/personal/domain"
-	"share-basket-server/personal/infra/persistence"
+	"share-basket-server/personal/infra/aws"
+	"share-basket-server/personal/infra/database"
 	"share-basket-server/personal/presentation/handler"
 	"share-basket-server/personal/presentation/router"
+	"share-basket-server/personal/presentation/validator"
 	"share-basket-server/personal/usecase"
 
 	"gorm.io/gorm"
@@ -42,31 +44,33 @@ func Inject(db *gorm.DB, cfg config.AWS) (router.Handlers, error) {
 
 	interactors := injectInteractor(repos)
 
+	validator := validator.New()
+
 	return router.Handlers{
 		PingHandler:                  handler.MakePingHandler(),
-		SignUpHandler:                handler.MakeSignUpHandler(interactors.signUpInteractor),
-		SignUpConfirmHandler:         handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor),
-		LoginHandler:                 handler.MakeLoginHandler(interactors.loginInteractor),
+		SignUpHandler:                handler.MakeSignUpHandler(interactors.signUpInteractor, validator),
+		SignUpConfirmHandler:         handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor, validator),
+		LoginHandler:                 handler.MakeLoginHandler(interactors.loginInteractor, validator),
 		GetShoppingCaterogiesHandler: handler.MakeGetShoppingCategoriesHandler(interactors.getShoppingCategoriesInteractor),
 	}, nil
 }
 
 func injectRepository(ctx context.Context, db *gorm.DB, cfg config.AWS) (repositories, error) {
-	authenticator, err := persistence.NewCognito(ctx, cfg)
+	authenticator, err := aws.NewCognito(ctx, cfg)
 	if err != nil {
 		return repositories{}, fmt.Errorf("failed to inject authenticator: %w", err)
 	}
 
-	userRepo := persistence.NewUserPersistence(db)
+	userRepo := database.NewUserPersistence(db)
 
 	return repositories{
 		userRepo:             userRepo,
 		userService:          domain.NewUserService(userRepo),
-		accountRepo:          persistence.NewAccountPersistence(db),
-		shoppingCategoryRepo: persistence.NewShoppingCategory(db),
+		accountRepo:          database.NewAccountPersistence(db),
+		shoppingCategoryRepo: database.NewShoppingCategoryPersistence(db),
 
 		authenticator: authenticator,
-		transaction:   persistence.NewTransaction(db),
+		transaction:   database.NewTransaction(db),
 	}, nil
 }
 

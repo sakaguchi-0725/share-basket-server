@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"share-basket-server/core/util"
 )
 
 type DB struct {
@@ -14,11 +15,11 @@ type DB struct {
 
 func newDBConfig() DB {
 	return DB{
-		Port:     getEnv("DB_PORT", "5432"),
-		Host:     getEnv("DB_HOST", "db"),
-		Name:     getEnv("POSTGRES_DB", "share-basket"),
-		User:     getEnv("POSTGRES_USER", "postgres"),
-		Password: getEnv("POSTGRES_PASSWORD", "postgres"),
+		Port:     util.GetEnv("DB_PORT", "5432"),
+		Host:     util.GetEnv("DB_HOST", "db"),
+		Name:     util.GetEnv("POSTGRES_DB", "share-basket"),
+		User:     util.GetEnv("POSTGRES_USER", "postgres"),
+		Password: util.GetEnv("POSTGRES_PASSWORD", "postgres"),
 	}
 }
 

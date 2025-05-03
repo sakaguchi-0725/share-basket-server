@@ -1,6 +1,8 @@
 package config
 
-import "os"
+import (
+	"share-basket-server/core/util"
+)
 
 type App struct {
 	Env         string
@@ -11,16 +13,9 @@ type App struct {
 
 func Load() App {
 	return App{
-		Env:         getEnv("APP_ENV", "dev"),
-		FrontendURL: getEnv("FRONTEND_URL", "http://localhost:5173"),
+		Env:         util.GetEnv("APP_ENV", "dev"),
+		FrontendURL: util.GetEnv("FRONTEND_URL", "http://localhost:5173"),
 		DB:          newDBConfig(),
 		AWS:         newAWSConfig(),
 	}
-}
-
-func getEnv(key, fallback string) string {
-	if val, ok := os.LookupEnv(key); ok {
-		return val
-	}
-	return fallback
 }
