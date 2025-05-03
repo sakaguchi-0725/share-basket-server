@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"net/http"
 	"share-basket-server/core/apperr"
+	"share-basket-server/core/validator"
 	"share-basket-server/personal/presentation/response"
 	"share-basket-server/personal/usecase"
 )
 
 type (
 	signUpConfirmRequest struct {
-		Email            string `json:"email"`
-		ConfirmationCode string `json:"confirmationCode"`
+		Email            string `json:"email" validate:"required,email"`
+		ConfirmationCode string `json:"confirmationCode" validate:"required"`
 	}
 
 	signUpConfirmPresenter struct {
@@ -20,11 +21,19 @@ type (
 	}
 )
 
-func MakeSignUpConfirmHandler(usecase usecase.SignUpConfirmInputPort) http.HandlerFunc {
+func MakeSignUpConfirmHandler(
+	usecase usecase.SignUpConfirmInputPort,
+	validator validator.Validator,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req signUpConfirmRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			response.Error(w, apperr.NewInvalidError(err))
+			return
+		}
+
+		if err := validator.Validate(&req); err != nil {
 			response.Error(w, apperr.NewInvalidError(err))
 			return
 		}

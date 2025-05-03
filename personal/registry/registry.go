@@ -8,6 +8,7 @@ import (
 	"share-basket-server/personal/infra/persistence"
 	"share-basket-server/personal/presentation/handler"
 	"share-basket-server/personal/presentation/router"
+	"share-basket-server/personal/presentation/validator"
 	"share-basket-server/personal/usecase"
 
 	"gorm.io/gorm"
@@ -42,11 +43,13 @@ func Inject(db *gorm.DB, cfg config.AWS) (router.Handlers, error) {
 
 	interactors := injectInteractor(repos)
 
+	validator := validator.New()
+
 	return router.Handlers{
 		PingHandler:                  handler.MakePingHandler(),
-		SignUpHandler:                handler.MakeSignUpHandler(interactors.signUpInteractor),
-		SignUpConfirmHandler:         handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor),
-		LoginHandler:                 handler.MakeLoginHandler(interactors.loginInteractor),
+		SignUpHandler:                handler.MakeSignUpHandler(interactors.signUpInteractor, validator),
+		SignUpConfirmHandler:         handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor, validator),
+		LoginHandler:                 handler.MakeLoginHandler(interactors.loginInteractor, validator),
 		GetShoppingCaterogiesHandler: handler.MakeGetShoppingCategoriesHandler(interactors.getShoppingCategoriesInteractor),
 	}, nil
 }
