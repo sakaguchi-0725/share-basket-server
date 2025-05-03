@@ -13,6 +13,23 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
 
+    env:
+      DB_PORT: 5432
+      TEST_DB_HOST: localhost
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+
     steps:
       - uses: actions/checkout@v4
       
