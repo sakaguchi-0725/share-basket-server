@@ -1,3 +1,4 @@
+//go:generate mockgen -destination=../mock/$GOPACKAGE/$GOFILE . Transaction
 package domain
 
 import "context"
