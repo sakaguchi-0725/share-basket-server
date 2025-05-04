@@ -8,7 +8,7 @@ import (
 	"share-basket-server/infra/aws"
 	"share-basket-server/infra/database"
 	"share-basket-server/presentation/handler"
-	"share-basket-server/presentation/router"
+	"share-basket-server/presentation/server"
 	"share-basket-server/presentation/validator"
 	"share-basket-server/usecase"
 
@@ -34,19 +34,19 @@ type (
 	}
 )
 
-func Inject(db *gorm.DB, cfg config.AWS) (router.Handlers, error) {
+func Inject(db *gorm.DB, cfg config.AWS) (server.Handlers, error) {
 	ctx := context.Background()
 
 	repos, err := injectRepository(ctx, db, cfg)
 	if err != nil {
-		return router.Handlers{}, err
+		return server.Handlers{}, err
 	}
 
 	interactors := injectInteractor(repos)
 
 	validator := validator.New()
 
-	return router.Handlers{
+	return server.Handlers{
 		PingHandler:                  handler.MakePingHandler(),
 		SignUpHandler:                handler.MakeSignUpHandler(interactors.signUpInteractor, validator),
 		SignUpConfirmHandler:         handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor, validator),
