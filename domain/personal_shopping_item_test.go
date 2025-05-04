@@ -9,7 +9,7 @@ import (
 	"share-basket-server/domain"
 )
 
-func TestNewShoppingItem(t *testing.T) {
+func TestNewPersonalShoppingItem(t *testing.T) {
 	categoryID := uint(2)
 	status := domain.ShoppingStatus("purchased")
 
@@ -17,14 +17,14 @@ func TestNewShoppingItem(t *testing.T) {
 		name       string
 		status     *domain.ShoppingStatus
 		categoryID uint
-		want       domain.ShoppingItem
+		want       domain.PersonalShoppingItem
 		err        error
 	}{
 		"正常系: 商品が正常に作成される": {
 			name:       "テスト商品",
 			status:     &status,
 			categoryID: categoryID,
-			want: domain.ShoppingItem{
+			want: domain.PersonalShoppingItem{
 				Name:       "テスト商品",
 				Status:     status,
 				CategoryID: categoryID,
@@ -35,7 +35,7 @@ func TestNewShoppingItem(t *testing.T) {
 			name:       "テスト商品",
 			status:     nil,
 			categoryID: categoryID,
-			want: domain.ShoppingItem{
+			want: domain.PersonalShoppingItem{
 				Name:       "テスト商品",
 				Status:     domain.UnPurchased,
 				CategoryID: categoryID,
@@ -46,14 +46,14 @@ func TestNewShoppingItem(t *testing.T) {
 			name:       "",
 			status:     &status,
 			categoryID: categoryID,
-			want:       domain.ShoppingItem{},
-			err:        domain.ErrShoppingItemNameRequired,
+			want:       domain.PersonalShoppingItem{},
+			err:        domain.ErrPersonalShoppingItemNameRequired,
 		},
 	}
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			got, err := domain.NewShoppingItem(tt.name, tt.status, tt.categoryID)
+			got, err := domain.NewPersonalShoppingItem(tt.name, tt.status, tt.categoryID)
 
 			if tt.err != nil {
 				require.Error(t, err)
