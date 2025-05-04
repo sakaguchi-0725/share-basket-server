@@ -1,3 +1,5 @@
+//go:generate mockgen -destination=../mock/usecase/signup_confirm_input.go . SignUpConfirmInputPort
+//go:generate mockgen -destination=../mock/usecase/signup_confirm_output.go . SignUpConfirmOutputPort
 package usecase
 
 import (

@@ -1,3 +1,5 @@
+//go:generate mockgen -destination=../mock/usecase/get_shopping_categories_input.go . GetShoppingCategoriesInputPort
+//go:generate mockgen -destination=../mock/usecase/get_shopping_categories_output.go . GetShoppingCategoriesOutputPort
 package usecase
 
 import (
