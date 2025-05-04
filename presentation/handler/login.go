@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"share-basket-server/core/apperr"
-	"share-basket-server/core/validator"
 	"share-basket-server/presentation/response"
+	"share-basket-server/presentation/validator"
 	"share-basket-server/usecase"
 )
 
@@ -23,7 +23,7 @@ type (
 
 func MakeLoginHandler(
 	usecase usecase.LoginInputPort,
-	validator validator.Validator,
+	validator validator.RequestValidator,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req loginRequest

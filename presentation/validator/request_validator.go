@@ -1,19 +1,23 @@
 package validator
 
 import (
-	core "share-basket-server/core/validator"
-
 	"github.com/go-playground/validator"
 )
 
-type goPlayground struct {
-	v *validator.Validate
-}
+type (
+	RequestValidator interface {
+		Validate(v any) error
+	}
+
+	goPlayground struct {
+		v *validator.Validate
+	}
+)
 
 func (playground *goPlayground) Validate(v any) error {
 	return playground.v.Struct(v)
 }
 
-func New() core.Validator {
+func New() RequestValidator {
 	return &goPlayground{validator.New()}
 }
