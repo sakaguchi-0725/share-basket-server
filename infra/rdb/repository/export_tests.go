@@ -1,4 +1,4 @@
-package database
+package repository
 
 // テスト用にDTOを公開
 type (

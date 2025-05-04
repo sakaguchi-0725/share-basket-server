@@ -4,7 +4,6 @@ import (
 	"log"
 	"log/slog"
 	"share-basket-server/core/config"
-	"share-basket-server/core/db"
 	"share-basket-server/core/logger"
 	"share-basket-server/presentation/server"
 	"share-basket-server/registry"
@@ -15,12 +14,7 @@ func main() {
 	logger := logger.New(cfg.Env)
 	slog.SetDefault(logger.Logger)
 
-	db, err := db.New(cfg.DB)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	handlers, err := registry.Inject(db, cfg.AWS)
+	handlers, err := registry.Inject(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

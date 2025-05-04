@@ -1,9 +1,9 @@
-package database_test
+package repository_test
 
 import (
 	"share-basket-server/core/apperr"
 	"share-basket-server/domain"
-	"share-basket-server/infra/database"
+	"share-basket-server/infra/rdb/repository"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,7 +11,7 @@ import (
 )
 
 func TestUserPersistence(t *testing.T) {
-	repo := database.NewUserPersistence(testDB)
+	repo := repository.NewUserPersistence(testDB)
 
 	t.Run("GetByEmail", func(t *testing.T) {
 		defer clearTestData()
@@ -26,7 +26,7 @@ func TestUserPersistence(t *testing.T) {
 		)
 
 		// 事前にユーザーを作成
-		userDto := database.UserDto{
+		userDto := repository.UserDto{
 			ID:         user.ID.String(),
 			CognitoUID: user.CognitoUID,
 			Email:      user.Email,
