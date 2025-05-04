@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	cognitoidentityprovider "github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
+	jwt "github.com/golang-jwt/jwt/v5"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -83,6 +84,21 @@ func (m *MockCognitoClient) InitiateAuth(ctx context.Context, email, password st
 func (mr *MockCognitoClientMockRecorder) InitiateAuth(ctx, email, password any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InitiateAuth", reflect.TypeOf((*MockCognitoClient)(nil).InitiateAuth), ctx, email, password)
+}
+
+// ParseToken mocks base method.
+func (m *MockCognitoClient) ParseToken(ctx context.Context, token string) (*jwt.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ParseToken", ctx, token)
+	ret0, _ := ret[0].(*jwt.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ParseToken indicates an expected call of ParseToken.
+func (mr *MockCognitoClientMockRecorder) ParseToken(ctx, token any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseToken", reflect.TypeOf((*MockCognitoClient)(nil).ParseToken), ctx, token)
 }
 
 // SignUp mocks base method.

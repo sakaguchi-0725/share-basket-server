@@ -7,7 +7,11 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"math/big"
+	"net/http"
 	appConfig "share-basket-server/core/config"
 	"sync"
 
@@ -15,6 +19,7 @@ import (
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type (
@@ -23,6 +28,7 @@ type (
 		SignUp(ctx context.Context, email, password string) (*cognitoidentityprovider.SignUpOutput, error)
 		ConfirmSignUp(ctx context.Context, email, confirmationCode string) (*cognitoidentityprovider.ConfirmSignUpOutput, error)
 		AdminDeleteUser(ctx context.Context, email string) error
+		ParseToken(ctx context.Context, token string) (*jwt.Token, error)
 	}
 
 	cognitoClient struct {
@@ -35,6 +41,10 @@ type (
 		mu         sync.Mutex
 	}
 )
+
+func (client *cognitoClient) ParseToken(ctx context.Context, token string) (*jwt.Token, error) {
+	return jwt.Parse(token, client.keyFunc)
+}
 
 func (client *cognitoClient) AdminDeleteUser(ctx context.Context, email string) error {
 	_, err := client.sdk.AdminDeleteUser(ctx, &cognitoidentityprovider.AdminDeleteUserInput{
@@ -80,6 +90,83 @@ func (client *cognitoClient) genSecretHash(username string) string {
 	mac := hmac.New(sha256.New, []byte(client.secret))
 	mac.Write([]byte(username + client.id))
 	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
+}
+
+// JWTの`kid`に対応する公開鍵を取得する
+func (client *cognitoClient) keyFunc(token *jwt.Token) (interface{}, error) {
+	if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+	}
+
+	kid, ok := token.Header["kid"].(string)
+	if !ok {
+		return nil, errors.New("missing kid in token header")
+	}
+
+	client.mu.Lock()
+	defer client.mu.Unlock()
+
+	if key, exists := client.keys[kid]; exists {
+		return key, nil
+	}
+
+	key, err := client.fetchJWKS(kid)
+	if err != nil {
+		return nil, err
+	}
+
+	client.keys[kid] = key
+	return key, nil
+}
+
+// CognitoのJWKSエンドポイントから公開鍵を取得する
+func (client *cognitoClient) fetchJWKS(kid string) (*rsa.PublicKey, error) {
+	resp, err := http.Get(client.jwksURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch JWKS: %w", err)
+	}
+	defer resp.Body.Close()
+
+	var jwks struct {
+		Keys []struct {
+			Kty string `json:"kty"`
+			Kid string `json:"kid"`
+			N   string `json:"n"`
+			E   string `json:"e"`
+		} `json:"keys"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&jwks); err != nil {
+		return nil, fmt.Errorf("failed to decode JWKS: %w", err)
+	}
+
+	for _, key := range jwks.Keys {
+		if key.Kid == kid {
+			nBytes, err := base64.RawURLEncoding.DecodeString(key.N)
+			if err != nil {
+				return nil, fmt.Errorf("failed to decode N: %w", err)
+			}
+
+			eBytes, err := base64.RawURLEncoding.DecodeString(key.E)
+			if err != nil {
+				return nil, fmt.Errorf("failed to decode E: %w", err)
+			}
+
+			e := 0
+			for _, b := range eBytes {
+				e = e<<8 + int(b)
+			}
+
+			rsaKey := &rsa.PublicKey{
+				N: new(big.Int).SetBytes(nBytes),
+				E: e,
+			}
+
+			return rsaKey, nil
+		}
+	}
+
+	return nil, errors.New("public key not found in JWKS")
 }
 
 func NewCognitoClient(ctx context.Context, cfg appConfig.AWS) (CognitoClient, error) {

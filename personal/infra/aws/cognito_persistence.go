@@ -7,8 +7,10 @@ import (
 	"share-basket-server/core/apperr"
 	"share-basket-server/core/util"
 	"share-basket-server/personal/domain"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type cognito struct {
@@ -87,7 +89,35 @@ func (c *cognito) SignUpConfirm(ctx context.Context, email string, confirmationC
 }
 
 func (c *cognito) VerifyToken(ctx context.Context, token string) (string, error) {
-	panic("unimplemented")
+	parsedToken, err := c.client.ParseToken(ctx, token)
+	if err != nil {
+		return "", apperr.ErrInvalidToken
+	}
+
+	if !parsedToken.Valid {
+		return "", apperr.ErrInvalidToken
+	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", apperr.ErrInvalidToken
+	}
+
+	exp, ok := claims["exp"].(float64)
+	if !ok {
+		return "", apperr.ErrInvalidToken
+	}
+
+	if int64(exp) < time.Now().Unix() {
+		return "", apperr.ErrTokenExpired
+	}
+
+	email, ok := claims["username"].(string)
+	if !ok {
+		return "", apperr.ErrInvalidToken
+	}
+
+	return email, nil
 }
 
 func (c *cognito) DeleteUser(ctx context.Context, email string) error {

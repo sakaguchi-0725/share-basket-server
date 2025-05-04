@@ -7,9 +7,11 @@ import (
 	"share-basket-server/personal/infra/aws"
 	mock_aws "share-basket-server/personal/mock/aws"
 	"testing"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )
@@ -203,6 +205,86 @@ func TestCognitoPersistence(t *testing.T) {
 					return
 				}
 				assert.NoError(t, err)
+			})
+		}
+	})
+
+	t.Run("VerifyToken", func(t *testing.T) {
+		cases := map[string]struct {
+			token   string
+			setup   func()
+			want    string
+			wantErr error
+		}{
+			"正常系: 有効なトークン": {
+				token: "valid-token",
+				setup: func() {
+					mockClient.EXPECT().ParseToken(ctx, "valid-token").Return(&jwt.Token{
+						Valid: true,
+						Claims: jwt.MapClaims{
+							"exp":      float64(time.Now().Add(1 * time.Hour).Unix()),
+							"username": "test@example.com",
+						},
+					}, nil)
+				},
+				want: "test@example.com",
+			},
+			"異常系: 無効なトークン": {
+				token: "invalid-token",
+				setup: func() {
+					mockClient.EXPECT().ParseToken(ctx, "invalid-token").Return(nil, errors.New("invalid token"))
+				},
+				wantErr: apperr.ErrInvalidToken,
+			},
+			"異常系: 期限切れのトークン": {
+				token: "expired-token",
+				setup: func() {
+					mockClient.EXPECT().ParseToken(ctx, "expired-token").Return(&jwt.Token{
+						Valid: true,
+						Claims: jwt.MapClaims{
+							"exp":      float64(time.Now().Add(-1 * time.Hour).Unix()),
+							"username": "test@example.com",
+						},
+					}, nil)
+				},
+				wantErr: apperr.ErrTokenExpired,
+			},
+			"異常系: 不正なクレーム形式": {
+				token: "invalid-claims-token",
+				setup: func() {
+					mockClient.EXPECT().ParseToken(ctx, "invalid-claims-token").Return(&jwt.Token{
+						Valid: true,
+						Claims: jwt.MapClaims{
+							"exp": "invalid-exp",
+						},
+					}, nil)
+				},
+				wantErr: apperr.ErrInvalidToken,
+			},
+			"異常系: メールアドレスが含まれていないトークン": {
+				token: "no-email-token",
+				setup: func() {
+					mockClient.EXPECT().ParseToken(ctx, "no-email-token").Return(&jwt.Token{
+						Valid: true,
+						Claims: jwt.MapClaims{
+							"exp": float64(time.Now().Add(1 * time.Hour).Unix()),
+						},
+					}, nil)
+				},
+				wantErr: apperr.ErrInvalidToken,
+			},
+		}
+
+		for name, tc := range cases {
+			t.Run(name, func(t *testing.T) {
+				tc.setup()
+				got, err := authenticator.VerifyToken(ctx, tc.token)
+				if tc.wantErr != nil {
+					assert.ErrorIs(t, err, tc.wantErr)
+					return
+				}
+				assert.NoError(t, err)
+				assert.Equal(t, tc.want, got)
 			})
 		}
 	})
