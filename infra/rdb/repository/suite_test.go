@@ -1,12 +1,12 @@
-package database_test
+package repository_test
 
 import (
 	"fmt"
 	"log"
 	"os"
 	"share-basket-server/core/config"
-	"share-basket-server/core/db"
 	"share-basket-server/core/util"
+	"share-basket-server/infra/rdb/db"
 	"sync"
 	"testing"
 
@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-const migrationsPath = "../../migrations"
+const migrationsPath = "../../../migrations"
 
 var (
 	once   sync.Once

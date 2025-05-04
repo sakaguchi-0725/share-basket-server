@@ -3,12 +3,14 @@ package registry
 import (
 	"context"
 	"fmt"
+	"log"
 	"share-basket-server/core/config"
 	"share-basket-server/domain"
 	"share-basket-server/infra/aws"
-	"share-basket-server/infra/database"
+	"share-basket-server/infra/rdb/db"
+	"share-basket-server/infra/rdb/repository"
 	"share-basket-server/presentation/handler"
-	"share-basket-server/presentation/router"
+	"share-basket-server/presentation/server"
 	"share-basket-server/presentation/validator"
 	"share-basket-server/usecase"
 
@@ -34,19 +36,24 @@ type (
 	}
 )
 
-func Inject(db *gorm.DB, cfg config.AWS) (router.Handlers, error) {
+func Inject(cfg config.App) (server.Handlers, error) {
 	ctx := context.Background()
 
-	repos, err := injectRepository(ctx, db, cfg)
+	db, err := db.New(cfg.DB)
 	if err != nil {
-		return router.Handlers{}, err
+		log.Fatal(err)
+	}
+
+	repos, err := injectRepository(ctx, db, cfg.AWS)
+	if err != nil {
+		return server.Handlers{}, err
 	}
 
 	interactors := injectInteractor(repos)
 
 	validator := validator.New()
 
-	return router.Handlers{
+	return server.Handlers{
 		PingHandler:                  handler.MakePingHandler(),
 		SignUpHandler:                handler.MakeSignUpHandler(interactors.signUpInteractor, validator),
 		SignUpConfirmHandler:         handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor, validator),
@@ -62,16 +69,16 @@ func injectRepository(ctx context.Context, db *gorm.DB, cfg config.AWS) (reposit
 	}
 
 	authenticator := aws.NewCognitoPersistence(cognitoClient)
-	userRepo := database.NewUserPersistence(db)
+	userRepo := repository.NewUserPersistence(db)
 
 	return repositories{
 		userRepo:             userRepo,
 		userService:          domain.NewUserService(userRepo),
-		accountRepo:          database.NewAccountPersistence(db),
-		shoppingCategoryRepo: database.NewShoppingCategoryPersistence(db),
+		accountRepo:          repository.NewAccountPersistence(db),
+		shoppingCategoryRepo: repository.NewShoppingCategoryPersistence(db),
 
 		authenticator: authenticator,
-		transaction:   database.NewTransaction(db),
+		transaction:   repository.NewTransaction(db),
 	}, nil
 }
 

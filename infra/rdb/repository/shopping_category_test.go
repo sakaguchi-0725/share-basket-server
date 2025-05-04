@@ -1,16 +1,16 @@
-package database_test
+package repository_test
 
 import (
 	"testing"
 
 	"share-basket-server/domain"
-	"share-basket-server/infra/database"
+	"share-basket-server/infra/rdb/repository"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestShoppingCategoryPersistence(t *testing.T) {
-	repo := database.NewShoppingCategoryPersistence(testDB)
+	repo := repository.NewShoppingCategoryPersistence(testDB)
 
 	t.Run("GetAll", func(t *testing.T) {
 		defer clearTestData()

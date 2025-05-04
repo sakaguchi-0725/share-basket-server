@@ -1,4 +1,4 @@
-package database
+package repository
 
 import (
 	"share-basket-server/domain"
