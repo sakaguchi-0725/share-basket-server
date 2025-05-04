@@ -7,8 +7,8 @@ import (
 	"share-basket-server/core/db"
 	"share-basket-server/core/logger"
 	"share-basket-server/core/server"
-	personalRouter "share-basket-server/personal/presentation/router"
-	personalRegistry "share-basket-server/personal/registry"
+	"share-basket-server/presentation/router"
+	"share-basket-server/registry"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	personalHandlers, err := personalRegistry.Inject(db, cfg.AWS)
+	personalHandlers, err := registry.Inject(db, cfg.AWS)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func main() {
 			AllowCredentials: true,
 		}))
 
-		personalRouter.RegisterRoutes(r, personalHandlers)
+		router.RegisterRoutes(r, personalHandlers)
 	})
 
 	s.Run()
