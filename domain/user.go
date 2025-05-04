@@ -1,5 +1,5 @@
-//go:generate mockgen -destination=../mock/domain/user_repository_mock.go . UserRepository
-//go:generate mockgen -destination=../mock/domain/user_service_mock.go . UserService
+//go:generate mockgen -destination=../mock/domain/user_repository.go . UserRepository
+//go:generate mockgen -destination=../mock/domain/user_service.go . UserService
 package domain
 
 import (
