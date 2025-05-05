@@ -41,18 +41,18 @@ func (m *MockPersonalShoppingItemRepository) EXPECT() *MockPersonalShoppingItemR
 }
 
 // GetAll mocks base method.
-func (m *MockPersonalShoppingItemRepository) GetAll() ([]domain.PersonalShoppingItem, error) {
+func (m *MockPersonalShoppingItemRepository) GetAll(accID domain.AccountID, status *domain.ShoppingStatus) ([]domain.PersonalShoppingItem, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAll")
+	ret := m.ctrl.Call(m, "GetAll", accID, status)
 	ret0, _ := ret[0].([]domain.PersonalShoppingItem)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAll indicates an expected call of GetAll.
-func (mr *MockPersonalShoppingItemRepositoryMockRecorder) GetAll() *gomock.Call {
+func (mr *MockPersonalShoppingItemRepositoryMockRecorder) GetAll(accID, status any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockPersonalShoppingItemRepository)(nil).GetAll))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockPersonalShoppingItemRepository)(nil).GetAll), accID, status)
 }
 
 // Store mocks base method.
