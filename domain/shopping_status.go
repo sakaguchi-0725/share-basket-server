@@ -3,7 +3,11 @@ package domain
 type ShoppingStatus string
 
 const (
-	UnPurchased = "UnPurchased"
-	InTheCart   = "InTheCart"
-	Purchased   = "Purchased"
+	UnPurchased ShoppingStatus = "UnPurchased"
+	InTheCart   ShoppingStatus = "InTheCart"
+	Purchased   ShoppingStatus = "Purchased"
 )
+
+func (status ShoppingStatus) String() string {
+	return string(status)
+}

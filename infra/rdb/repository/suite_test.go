@@ -7,6 +7,7 @@ import (
 	"share-basket-server/core/config"
 	"share-basket-server/core/util"
 	"share-basket-server/infra/rdb/db"
+	"share-basket-server/infra/rdb/repository"
 	"sync"
 	"testing"
 
@@ -26,6 +27,18 @@ var (
 		Name:     util.GetEnv("POSTGRES_DB", "share-basket"),
 		User:     util.GetEnv("POSTGRES_USER", "postgres"),
 		Password: util.GetEnv("POSTGRES_PASSWORD", "postgres"),
+	}
+
+	dummyUser = repository.UserDto{
+		ID:         "dummy-user-id",
+		CognitoUID: "dummy-cognito-uid",
+		Email:      "dummy@example.com",
+	}
+
+	dummyAccount = repository.AccountDto{
+		ID:     "dummy-account-id",
+		UserID: dummyUser.ID,
+		Name:   "dummy user",
 	}
 )
 
@@ -61,7 +74,7 @@ func setupTestDB() {
 }
 
 func clearTestData() {
-	tables := []string{"users", "accounts"}
+	tables := []string{"users", "accounts", "personal_shopping_items"}
 	for _, table := range tables {
 		err := testDB.Exec(fmt.Sprintf("TRUNCATE TABLE %s RESTART IDENTITY CASCADE;", table)).Error
 		if err != nil {
@@ -90,4 +103,16 @@ func teardownTestDB() {
 	}
 
 	fmt.Printf("Rolled back %d migration(s)\n", n)
+}
+
+func createDummyAccount() error {
+	if err := testDB.Create(&dummyUser).Error; err != nil {
+		return err
+	}
+
+	if err := testDB.Create(&dummyAccount).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -2,8 +2,9 @@ package repository
 
 // テスト用にDTOを公開
 type (
-	AccountDto           = accountDto
-	UserDto              = userDto
-	ShoppingCategoryDto  = shoppingCategoryDto
-	ShoppingCategoryDtos = shoppingCategoryDtos
+	AccountDto              = accountDto
+	UserDto                 = userDto
+	ShoppingCategoryDto     = shoppingCategoryDto
+	ShoppingCategoryDtos    = shoppingCategoryDtos
+	PersonalShoppingItemDto = personalShoppingItemDto
 )
