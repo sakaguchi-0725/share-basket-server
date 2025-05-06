@@ -20,6 +20,7 @@ import (
 
 func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 	var (
+		userID       = domain.NewUserID()
 		ctx          = context.WithValue(context.Background(), contextKey.UserID, domain.UserID("dummy-user-id"))
 		ctrl         = gomock.NewController(t)
 		accountRepo  = NewMockAccountRepository(ctrl)
@@ -35,8 +36,8 @@ func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 			personalRepo *MockPersonalShoppingItemRepository,
 			output *MockGetPersonalShoppingItemsOutputPort,
 		)
-		status string
-		err    error
+		input usecase.GetPersonalShoppingItemsInput
+		err   error
 	}{
 		"正常系: 買い物リストの取得に成功": {
 			setupMock: func(
@@ -46,11 +47,11 @@ func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 			) {
 				account := domain.Account{
 					ID:     domain.AccountID("dummy-account-id"),
-					UserID: domain.UserID("dummy-user-id"),
+					UserID: userID,
 					Name:   "dummy user",
 				}
 				accRepo.EXPECT().
-					FindByUserID(domain.UserID("dummy-user-id")).
+					FindByUserID(userID).
 					Return(account, nil)
 
 				items := []domain.PersonalShoppingItem{
@@ -77,8 +78,11 @@ func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 					}).
 					Return(nil)
 			},
-			status: "",
-			err:    nil,
+			input: usecase.GetPersonalShoppingItemsInput{
+				UserID: userID.String(),
+				Status: "",
+			},
+			err: nil,
 		},
 		"正常系: ステータスを指定して買い物リストの取得に成功": {
 			setupMock: func(
@@ -88,11 +92,11 @@ func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 			) {
 				account := domain.Account{
 					ID:     domain.AccountID("dummy-account-id"),
-					UserID: domain.UserID("dummy-user-id"),
+					UserID: userID,
 					Name:   "dummy user",
 				}
 				accRepo.EXPECT().
-					FindByUserID(domain.UserID("dummy-user-id")).
+					FindByUserID(userID).
 					Return(account, nil)
 
 				items := []domain.PersonalShoppingItem{
@@ -119,8 +123,20 @@ func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 					}).
 					Return(nil)
 			},
-			status: "UnPurchased",
-			err:    nil,
+			input: usecase.GetPersonalShoppingItemsInput{
+				UserID: userID.String(),
+				Status: domain.UnPurchased.String(),
+			},
+			err: nil,
+		},
+		"異常系: UserIDが正しくない": {
+			setupMock: func(accRepo *MockAccountRepository, personalRepo *MockPersonalShoppingItemRepository, output *MockGetPersonalShoppingItemsOutputPort) {
+			},
+			input: usecase.GetPersonalShoppingItemsInput{
+				UserID: "invalid-id",
+				Status: "",
+			},
+			err: apperr.NewInvalidError(errors.New("invalid user id: invalid UUID length: 10")),
 		},
 		"異常系: アカウントの取得に失敗": {
 			setupMock: func(
@@ -129,11 +145,14 @@ func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 				output *MockGetPersonalShoppingItemsOutputPort,
 			) {
 				accRepo.EXPECT().
-					FindByUserID(domain.UserID("dummy-user-id")).
+					FindByUserID(userID).
 					Return(domain.Account{}, apperr.ErrDataNotFound)
 			},
-			status: "",
-			err:    apperr.NewInvalidError(apperr.ErrDataNotFound),
+			input: usecase.GetPersonalShoppingItemsInput{
+				UserID: userID.String(),
+				Status: "",
+			},
+			err: apperr.NewInvalidError(apperr.ErrDataNotFound),
 		},
 		"異常系: 不正なステータスを指定": {
 			setupMock: func(
@@ -143,15 +162,18 @@ func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 			) {
 				account := domain.Account{
 					ID:     domain.AccountID("dummy-account-id"),
-					UserID: domain.UserID("dummy-user-id"),
+					UserID: userID,
 					Name:   "dummy user",
 				}
 				accRepo.EXPECT().
-					FindByUserID(domain.UserID("dummy-user-id")).
+					FindByUserID(userID).
 					Return(account, nil)
 			},
-			status: "InvalidStatus",
-			err:    apperr.NewInvalidError(errors.New("invalid shopping status")),
+			input: usecase.GetPersonalShoppingItemsInput{
+				UserID: userID.String(),
+				Status: "InvalidStatus",
+			},
+			err: apperr.NewInvalidError(errors.New("invalid shopping status")),
 		},
 		"異常系: 買い物リストの取得に失敗": {
 			setupMock: func(
@@ -161,19 +183,22 @@ func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 			) {
 				account := domain.Account{
 					ID:     domain.AccountID("dummy-account-id"),
-					UserID: domain.UserID("dummy-user-id"),
+					UserID: userID,
 					Name:   "dummy user",
 				}
 				accRepo.EXPECT().
-					FindByUserID(domain.UserID("dummy-user-id")).
+					FindByUserID(userID).
 					Return(account, nil)
 
 				personalRepo.EXPECT().
 					GetAll(account.ID, nil).
 					Return(nil, errors.New("database error"))
 			},
-			status: "",
-			err:    errors.New("database error"),
+			input: usecase.GetPersonalShoppingItemsInput{
+				UserID: userID.String(),
+				Status: "",
+			},
+			err: errors.New("database error"),
 		},
 	}
 
@@ -182,7 +207,7 @@ func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 			tt.setupMock(accountRepo, personalRepo, output)
 
 			usecase := usecase.NewGetPersonalShoppingItemsInteractor(accountRepo, personalRepo)
-			err := usecase.Execute(ctx, tt.status, output)
+			err := usecase.Execute(ctx, tt.input, output)
 
 			if tt.err == nil {
 				assert.NoError(t, err)

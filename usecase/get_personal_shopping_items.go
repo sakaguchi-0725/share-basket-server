@@ -6,14 +6,18 @@ import (
 	"context"
 	"errors"
 	"share-basket-server/core/apperr"
-	contextKey "share-basket-server/core/context"
 	"share-basket-server/core/util"
 	"share-basket-server/domain"
 )
 
 type (
 	GetPersonalShoppingItemsInputPort interface {
-		Execute(ctx context.Context, status string, output GetPersonalShoppingItemsOutputPort) error
+		Execute(ctx context.Context, input GetPersonalShoppingItemsInput, output GetPersonalShoppingItemsOutputPort) error
+	}
+
+	GetPersonalShoppingItemsInput struct {
+		UserID string
+		Status string
 	}
 
 	GetPersonalShoppingItemsOutputPort interface {
@@ -33,8 +37,11 @@ type (
 	}
 )
 
-func (g *getPersonalShoppingItemsInteractor) Execute(ctx context.Context, status string, output GetPersonalShoppingItemsOutputPort) error {
-	userID := ctx.Value(contextKey.UserID).(domain.UserID)
+func (g *getPersonalShoppingItemsInteractor) Execute(ctx context.Context, input GetPersonalShoppingItemsInput, output GetPersonalShoppingItemsOutputPort) error {
+	userID, err := domain.ParseUserID(input.UserID)
+	if err != nil {
+		return apperr.NewInvalidError(err)
+	}
 
 	account, err := g.accountRepo.FindByUserID(userID)
 	if err != nil {
@@ -44,16 +51,16 @@ func (g *getPersonalShoppingItemsInteractor) Execute(ctx context.Context, status
 		return err
 	}
 
-	var shoppingStatus *domain.ShoppingStatus
-	if status != "" {
-		s, err := domain.NewShoppingStatus(status)
+	var status *domain.ShoppingStatus
+	if input.Status != "" {
+		s, err := domain.NewShoppingStatus(input.Status)
 		if err != nil {
 			return apperr.NewInvalidError(err)
 		}
-		shoppingStatus = util.Ptr(s)
+		status = util.Ptr(s)
 	}
 
-	items, err := g.personalRepo.GetAll(account.ID, shoppingStatus)
+	items, err := g.personalRepo.GetAll(account.ID, status)
 	if err != nil {
 		return err
 	}
