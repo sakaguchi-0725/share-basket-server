@@ -19,20 +19,22 @@ import (
 
 type (
 	repositories struct {
-		userRepo             domain.UserRepository
-		userService          domain.UserService
-		accountRepo          domain.AccountRepository
-		shoppingCategoryRepo domain.ShoppingCategoryRepository
+		userRepo                 domain.UserRepository
+		userService              domain.UserService
+		accountRepo              domain.AccountRepository
+		shoppingCategoryRepo     domain.ShoppingCategoryRepository
+		personalShoppingItemRepo domain.PersonalShoppingItemRepository
 
 		transaction   domain.Transaction
 		authenticator domain.Authenticator
 	}
 
 	interactors struct {
-		signUpInteractor                usecase.SignUpInputPort
-		signUpConfirmInteractor         usecase.SignUpConfirmInputPort
-		loginInteractor                 usecase.LoginInputPort
-		getShoppingCategoriesInteractor usecase.GetShoppingCategoriesInputPort
+		signUpInteractor                   usecase.SignUpInputPort
+		signUpConfirmInteractor            usecase.SignUpConfirmInputPort
+		loginInteractor                    usecase.LoginInputPort
+		getShoppingCategoriesInteractor    usecase.GetShoppingCategoriesInputPort
+		getPersonalShoppingItemsInteractor usecase.GetPersonalShoppingItemsInputPort
 	}
 )
 
@@ -54,11 +56,12 @@ func Inject(cfg config.App) (server.Handlers, error) {
 	validator := validator.New()
 
 	return server.Handlers{
-		PingHandler:                  handler.MakePingHandler(),
-		SignUpHandler:                handler.MakeSignUpHandler(interactors.signUpInteractor, validator),
-		SignUpConfirmHandler:         handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor, validator),
-		LoginHandler:                 handler.MakeLoginHandler(interactors.loginInteractor, validator),
-		GetShoppingCaterogiesHandler: handler.MakeGetShoppingCategoriesHandler(interactors.getShoppingCategoriesInteractor),
+		PingHandler:                     handler.MakePingHandler(),
+		SignUpHandler:                   handler.MakeSignUpHandler(interactors.signUpInteractor, validator),
+		SignUpConfirmHandler:            handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor, validator),
+		LoginHandler:                    handler.MakeLoginHandler(interactors.loginInteractor, validator),
+		GetShoppingCaterogiesHandler:    handler.MakeGetShoppingCategoriesHandler(interactors.getShoppingCategoriesInteractor),
+		GetPersonalShoppingItemsHandler: handler.MakeGetPersonalShoppingItemsHandler(interactors.getPersonalShoppingItemsInteractor),
 	}, nil
 }
 
@@ -72,10 +75,11 @@ func injectRepository(ctx context.Context, db *gorm.DB, cfg config.AWS) (reposit
 	userRepo := repository.NewUserPersistence(db)
 
 	return repositories{
-		userRepo:             userRepo,
-		userService:          domain.NewUserService(userRepo),
-		accountRepo:          repository.NewAccountPersistence(db),
-		shoppingCategoryRepo: repository.NewShoppingCategoryPersistence(db),
+		userRepo:                 userRepo,
+		userService:              domain.NewUserService(userRepo),
+		accountRepo:              repository.NewAccountPersistence(db),
+		shoppingCategoryRepo:     repository.NewShoppingCategoryPersistence(db),
+		personalShoppingItemRepo: repository.NewPersonalShoppingItemPersistence(db),
 
 		authenticator: authenticator,
 		transaction:   repository.NewTransaction(db),
@@ -92,9 +96,10 @@ func injectInteractor(repos repositories) interactors {
 	)
 
 	return interactors{
-		signUpInteractor:                signUpInteractor,
-		signUpConfirmInteractor:         usecase.NewSignUpConfirmInteractor(repos.authenticator),
-		loginInteractor:                 usecase.NewLoginInteractor(repos.authenticator),
-		getShoppingCategoriesInteractor: usecase.NewGetShoppingCategoriesInteractor(repos.shoppingCategoryRepo),
+		signUpInteractor:                   signUpInteractor,
+		signUpConfirmInteractor:            usecase.NewSignUpConfirmInteractor(repos.authenticator),
+		loginInteractor:                    usecase.NewLoginInteractor(repos.authenticator),
+		getShoppingCategoriesInteractor:    usecase.NewGetShoppingCategoriesInteractor(repos.shoppingCategoryRepo),
+		getPersonalShoppingItemsInteractor: usecase.NewGetPersonalShoppingItemsInteractor(repos.accountRepo, repos.personalShoppingItemRepo),
 	}
 }

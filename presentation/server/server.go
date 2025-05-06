@@ -24,11 +24,12 @@ type (
 	Handlers struct {
 		AuthMiddleware func(http.Handler) http.Handler
 
-		PingHandler                  http.HandlerFunc
-		SignUpHandler                http.HandlerFunc
-		SignUpConfirmHandler         http.HandlerFunc
-		LoginHandler                 http.HandlerFunc
-		GetShoppingCaterogiesHandler http.HandlerFunc
+		PingHandler                     http.HandlerFunc
+		SignUpHandler                   http.HandlerFunc
+		SignUpConfirmHandler            http.HandlerFunc
+		LoginHandler                    http.HandlerFunc
+		GetShoppingCaterogiesHandler    http.HandlerFunc
+		GetPersonalShoppingItemsHandler http.HandlerFunc
 	}
 )
 
@@ -66,6 +67,10 @@ func (s *Server) MapRoutes(frontendURL string, handlers Handlers) {
 	s.router.Group(func(r chi.Router) {
 		r.Use(handlers.AuthMiddleware)
 		r.Get("/categories", handlers.GetShoppingCaterogiesHandler)
+
+		r.Route("/personal", func(r chi.Router) {
+			r.Get("/items", handlers.GetPersonalShoppingItemsHandler)
+		})
 	})
 }
 
