@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"share-basket-server/core/config"
+	"share-basket-server/core/logger"
 	"share-basket-server/domain"
 	"share-basket-server/infra/aws"
 	"share-basket-server/infra/rdb/db"
@@ -46,12 +47,14 @@ func Inject(cfg config.App) (server.Handlers, error) {
 		log.Fatal(err)
 	}
 
+	logger := logger.New(cfg.Env)
+
 	repos, err := injectRepository(ctx, db, cfg.AWS)
 	if err != nil {
 		return server.Handlers{}, err
 	}
 
-	interactors := injectInteractor(repos)
+	interactors := injectInteractor(repos, logger)
 
 	validator := validator.New()
 
@@ -61,7 +64,7 @@ func Inject(cfg config.App) (server.Handlers, error) {
 		SignUpConfirmHandler:            handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor, validator),
 		LoginHandler:                    handler.MakeLoginHandler(interactors.loginInteractor, validator),
 		GetShoppingCaterogiesHandler:    handler.MakeGetShoppingCategoriesHandler(interactors.getShoppingCategoriesInteractor),
-		GetPersonalShoppingItemsHandler: handler.MakeGetPersonalShoppingItemsHandler(interactors.getPersonalShoppingItemsInteractor),
+		GetPersonalShoppingItemsHandler: handler.MakeGetPersonalShoppingItemsHandler(interactors.getPersonalShoppingItemsInteractor, logger),
 	}, nil
 }
 
@@ -86,7 +89,7 @@ func injectRepository(ctx context.Context, db *gorm.DB, cfg config.AWS) (reposit
 	}, nil
 }
 
-func injectInteractor(repos repositories) interactors {
+func injectInteractor(repos repositories, logger logger.Logger) interactors {
 	signUpInteractor := usecase.NewSignUpInteractor(
 		repos.authenticator,
 		repos.userRepo,
@@ -100,6 +103,6 @@ func injectInteractor(repos repositories) interactors {
 		signUpConfirmInteractor:            usecase.NewSignUpConfirmInteractor(repos.authenticator),
 		loginInteractor:                    usecase.NewLoginInteractor(repos.authenticator),
 		getShoppingCategoriesInteractor:    usecase.NewGetShoppingCategoriesInteractor(repos.shoppingCategoryRepo),
-		getPersonalShoppingItemsInteractor: usecase.NewGetPersonalShoppingItemsInteractor(repos.accountRepo, repos.personalShoppingItemRepo),
+		getPersonalShoppingItemsInteractor: usecase.NewGetPersonalShoppingItemsInteractor(repos.accountRepo, repos.personalShoppingItemRepo, logger),
 	}
 }
