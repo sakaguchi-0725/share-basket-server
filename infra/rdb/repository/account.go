@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+	"share-basket-server/core/apperr"
 	"share-basket-server/domain"
 	"time"
 
@@ -22,6 +24,20 @@ type (
 	}
 )
 
+func (a *accountPersistence) FindByUserID(userID domain.UserID) (domain.Account, error) {
+	var account accountDto
+
+	err := a.db.Where("user_id = ?", userID.String()).First(&account).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return domain.Account{}, apperr.ErrDataNotFound
+		}
+		return domain.Account{}, err
+	}
+
+	return account.toModel(), nil
+}
+
 func (a *accountPersistence) Store(acc *domain.Account) error {
 	accDto := newAccountDto(*acc)
 
@@ -36,10 +52,6 @@ func (a *accountPersistence) Store(acc *domain.Account) error {
 	return nil
 }
 
-func NewAccountPersistence(db *gorm.DB) domain.AccountRepository {
-	return &accountPersistence{db}
-}
-
 func newAccountDto(acc domain.Account) accountDto {
 	return accountDto{
 		ID:     acc.ID.String(),
@@ -49,13 +61,17 @@ func newAccountDto(acc domain.Account) accountDto {
 }
 
 func (acc accountDto) toModel() domain.Account {
-	return domain.RecreateAccount(
-		domain.AccountID(acc.ID),
-		domain.UserID(acc.UserID),
-		acc.Name,
-	)
+	return domain.Account{
+		ID:     domain.AccountID(acc.ID),
+		UserID: domain.UserID(acc.UserID),
+		Name:   acc.Name,
+	}
 }
 
 func (accountDto) TableName() string {
 	return "accounts"
+}
+
+func NewAccountPersistence(db *gorm.DB) domain.AccountRepository {
+	return &accountPersistence{db}
 }

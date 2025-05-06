@@ -14,16 +14,17 @@ type (
 		Name       string
 		Status     ShoppingStatus
 		CategoryID uint
+		AccountID  AccountID
 	}
 
 	PersonalShoppingItemRepository interface {
-		GetAll() ([]PersonalShoppingItem, error)
+		GetAll(accID AccountID, status *ShoppingStatus) ([]PersonalShoppingItem, error)
 		Store(item *PersonalShoppingItem) error
 	}
 )
 
 func NewPersonalShoppingItem(
-	name string, status *ShoppingStatus, categoryID uint,
+	name string, status *ShoppingStatus, categoryID uint, accID AccountID,
 ) (PersonalShoppingItem, error) {
 	if name == "" {
 		return PersonalShoppingItem{}, ErrPersonalShoppingItemNameRequired
@@ -40,14 +41,6 @@ func NewPersonalShoppingItem(
 		Name:       name,
 		Status:     itemStatus,
 		CategoryID: categoryID,
+		AccountID:  accID,
 	}, nil
-}
-
-func RecreatePersonalShoppingItem(id *uint, name string, status ShoppingStatus, categoryID uint) PersonalShoppingItem {
-	return PersonalShoppingItem{
-		ID:         id,
-		Name:       name,
-		Status:     status,
-		CategoryID: categoryID,
-	}
 }
