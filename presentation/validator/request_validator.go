@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=../../mock/$GOPACKAGE/$GOFILE . RequestValidator
+//go:generate mockgen -destination=../../test/mock/$GOPACKAGE/$GOFILE . RequestValidator
 package validator
 
 import (

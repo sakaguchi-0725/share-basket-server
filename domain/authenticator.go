@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=../mock/$GOPACKAGE/$GOFILE . Authenticator
+//go:generate mockgen -destination=../test/mock/$GOPACKAGE/$GOFILE . Authenticator
 package domain
 
 import "context"

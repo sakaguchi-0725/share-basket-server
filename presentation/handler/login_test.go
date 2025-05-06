@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	"share-basket-server/core/apperr"
-	. "share-basket-server/mock/usecase"
-	. "share-basket-server/mock/validator"
 	"share-basket-server/presentation/handler"
+	. "share-basket-server/test/mock/usecase"
+	. "share-basket-server/test/mock/validator"
 	"share-basket-server/usecase"
 
 	"github.com/stretchr/testify/assert"

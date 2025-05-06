@@ -11,8 +11,9 @@ import (
 	"share-basket-server/domain"
 	"share-basket-server/usecase"
 
-	. "share-basket-server/mock/domain"
-	. "share-basket-server/mock/usecase"
+	. "share-basket-server/test/mock/domain"
+	. "share-basket-server/test/mock/usecase"
+	"share-basket-server/test/testutil"
 
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
@@ -206,7 +207,7 @@ func TestGetPersonalShoppingItemsInteractor(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			tt.setupMock(accountRepo, personalRepo, output)
 
-			usecase := usecase.NewGetPersonalShoppingItemsInteractor(accountRepo, personalRepo)
+			usecase := usecase.NewGetPersonalShoppingItemsInteractor(accountRepo, personalRepo, testutil.NewDummyLogger())
 			err := usecase.Execute(ctx, tt.input, output)
 
 			if tt.err == nil {

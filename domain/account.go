@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=../mock/$GOPACKAGE/$GOFILE . AccountRepository
+//go:generate mockgen -destination=../test/mock/$GOPACKAGE/$GOFILE . AccountRepository
 package domain
 
 import (

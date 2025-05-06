@@ -7,7 +7,7 @@ import (
 
 	"share-basket-server/core/apperr"
 	"share-basket-server/domain"
-	. "share-basket-server/mock/domain"
+	. "share-basket-server/test/mock/domain"
 	"share-basket-server/usecase"
 
 	"github.com/stretchr/testify/assert"

@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=../mock/usecase/verify_token_input.go . VerifyTokenInputPort
+//go:generate mockgen -destination=../test/mock/usecase/verify_token_input.go . VerifyTokenInputPort
 package usecase
 
 import (

@@ -1,5 +1,5 @@
-//go:generate mockgen -destination=../mock/usecase/signup_input.go . SignUpInputPort
-//go:generate mockgen -destination=../mock/usecase/signup_output.go . SignUpOutputPort
+//go:generate mockgen -destination=../test/mock/usecase/signup_input.go . SignUpInputPort
+//go:generate mockgen -destination=../test/mock/usecase/signup_output.go . SignUpOutputPort
 package usecase
 
 import (
