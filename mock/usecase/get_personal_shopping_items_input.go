@@ -42,15 +42,15 @@ func (m *MockGetPersonalShoppingItemsInputPort) EXPECT() *MockGetPersonalShoppin
 }
 
 // Execute mocks base method.
-func (m *MockGetPersonalShoppingItemsInputPort) Execute(ctx context.Context, status string, output usecase.GetPersonalShoppingItemsOutputPort) error {
+func (m *MockGetPersonalShoppingItemsInputPort) Execute(ctx context.Context, input usecase.GetPersonalShoppingItemsInput, output usecase.GetPersonalShoppingItemsOutputPort) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Execute", ctx, status, output)
+	ret := m.ctrl.Call(m, "Execute", ctx, input, output)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Execute indicates an expected call of Execute.
-func (mr *MockGetPersonalShoppingItemsInputPortMockRecorder) Execute(ctx, status, output any) *gomock.Call {
+func (mr *MockGetPersonalShoppingItemsInputPortMockRecorder) Execute(ctx, input, output any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockGetPersonalShoppingItemsInputPort)(nil).Execute), ctx, status, output)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockGetPersonalShoppingItemsInputPort)(nil).Execute), ctx, input, output)
 }
