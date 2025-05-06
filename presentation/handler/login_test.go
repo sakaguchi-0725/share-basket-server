@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"share-basket-server/core/apperr"
@@ -13,8 +14,9 @@ import (
 	"share-basket-server/presentation/handler"
 	"share-basket-server/usecase"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"gopkg.in/go-playground/assert.v1"
 )
 
 func TestLoginHandler(t *testing.T) {
@@ -110,5 +112,24 @@ func TestLoginHandler(t *testing.T) {
 				assert.Equal(t, tt.wantStatus, rec.Code)
 			})
 		}
+	})
+
+	t.Run("LoginPresenter", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		presenter := handler.NewLoginPresenter(rec)
+
+		err := presenter.Render(context.Background(), "dummy-token")
+		require.NoError(t, err)
+
+		assert.Equal(t, http.StatusNoContent, rec.Code)
+
+		cookies := rec.Result().Cookies()
+		require.Len(t, cookies, 1)
+
+		cookie := cookies[0]
+		assert.Equal(t, "access_token", cookie.Name)
+		assert.Equal(t, "dummy-token", cookie.Value)
+		assert.Equal(t, "/", cookie.Path)
+		assert.True(t, cookie.HttpOnly)
 	})
 }
