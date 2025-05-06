@@ -60,9 +60,9 @@ func Inject(cfg config.App) (server.Handlers, error) {
 
 	return server.Handlers{
 		PingHandler:                     handler.MakePingHandler(),
-		SignUpHandler:                   handler.MakeSignUpHandler(interactors.signUpInteractor, validator),
-		SignUpConfirmHandler:            handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor, validator),
-		LoginHandler:                    handler.MakeLoginHandler(interactors.loginInteractor, validator),
+		SignUpHandler:                   handler.MakeSignUpHandler(interactors.signUpInteractor, validator, logger),
+		SignUpConfirmHandler:            handler.MakeSignUpConfirmHandler(interactors.signUpConfirmInteractor, validator, logger),
+		LoginHandler:                    handler.MakeLoginHandler(interactors.loginInteractor, validator, logger),
 		GetShoppingCaterogiesHandler:    handler.MakeGetShoppingCategoriesHandler(interactors.getShoppingCategoriesInteractor),
 		GetPersonalShoppingItemsHandler: handler.MakeGetPersonalShoppingItemsHandler(interactors.getPersonalShoppingItemsInteractor, logger),
 	}, nil

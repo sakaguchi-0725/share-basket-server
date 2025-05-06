@@ -12,6 +12,7 @@ import (
 	"share-basket-server/presentation/handler"
 	. "share-basket-server/test/mock/usecase"
 	. "share-basket-server/test/mock/validator"
+	"share-basket-server/test/testutil"
 	"share-basket-server/usecase"
 
 	"github.com/stretchr/testify/assert"
@@ -107,7 +108,7 @@ func TestLoginHandler(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				tt.setupMock(validator, interactor)
 
-				handler := handler.MakeLoginHandler(interactor, validator)
+				handler := handler.MakeLoginHandler(interactor, validator, testutil.NewDummyLogger())
 				rec := server.Serve(bytes.NewReader([]byte(tt.reqBody)), handler)
 				assert.Equal(t, tt.wantStatus, rec.Code)
 			})
