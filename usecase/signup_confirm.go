@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"share-basket-server/core/apperr"
+	"share-basket-server/core/logger"
 	"share-basket-server/domain"
 )
 
@@ -25,6 +26,7 @@ type (
 
 	signUpConfirmInteractor struct {
 		authenticator domain.Authenticator
+		logger        logger.Logger
 	}
 )
 
@@ -35,17 +37,33 @@ func (s *signUpConfirmInteractor) Execute(
 
 	if err != nil {
 		if errors.Is(err, apperr.ErrInvalidData) {
+			s.logger.
+				With("email", input.Email).
+				With("error", err).
+				Info("invalid input")
 			return apperr.NewInvalidError(err)
 		}
+
 		if errors.Is(err, apperr.ErrExpiredCodeException) {
+			s.logger.
+				With("code", input.ConfirmationCode).
+				With("error", err).
+				Info("expired code")
 			return apperr.New(apperr.ErrExpiredCode, err)
 		}
+
+		s.logger.
+			With("error", err).
+			Error("failed to sigin up confirm")
 		return err
 	}
 
 	return output.Render(ctx)
 }
 
-func NewSignUpConfirmInteractor(authenticator domain.Authenticator) SignUpConfirmInputPort {
-	return &signUpConfirmInteractor{authenticator}
+func NewSignUpConfirmInteractor(
+	authenticator domain.Authenticator,
+	logger logger.Logger,
+) SignUpConfirmInputPort {
+	return &signUpConfirmInteractor{authenticator, logger}
 }

@@ -8,6 +8,7 @@ import (
 	"share-basket-server/core/apperr"
 	"share-basket-server/domain"
 	. "share-basket-server/test/mock/domain"
+	"share-basket-server/test/testutil"
 	"share-basket-server/usecase"
 
 	"github.com/stretchr/testify/assert"
@@ -78,7 +79,7 @@ func TestVerifyTokenInteractor(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			tt.setupMock(authenticator, userRepo)
 
-			usecase := usecase.NewVerifyTokenInteractor(authenticator, userRepo)
+			usecase := usecase.NewVerifyTokenInteractor(authenticator, userRepo, testutil.NewDummyLogger())
 			got, err := usecase.Execute(context.Background(), tt.token)
 
 			if tt.err == nil {

@@ -4,6 +4,7 @@ package usecase
 
 import (
 	"context"
+	"share-basket-server/core/logger"
 	"share-basket-server/domain"
 )
 
@@ -22,13 +23,17 @@ type (
 	}
 
 	getShoppingCategoriesInteractor struct {
-		repo domain.ShoppingCategoryRepository
+		repo   domain.ShoppingCategoryRepository
+		logger logger.Logger
 	}
 )
 
 func (usecase *getShoppingCategoriesInteractor) Execute(ctx context.Context, output GetShoppingCategoriesOutputPort) error {
 	categories, err := usecase.repo.GetAll()
 	if err != nil {
+		usecase.logger.
+			With("error", err).
+			Error("failed to get categories")
 		return err
 	}
 
@@ -48,6 +53,9 @@ func (usecase *getShoppingCategoriesInteractor) makeOutputs(models []domain.Shop
 	return categories
 }
 
-func NewGetShoppingCategoriesInteractor(repo domain.ShoppingCategoryRepository) GetShoppingCategoriesInputPort {
-	return &getShoppingCategoriesInteractor{repo}
+func NewGetShoppingCategoriesInteractor(
+	repo domain.ShoppingCategoryRepository,
+	logger logger.Logger,
+) GetShoppingCategoriesInputPort {
+	return &getShoppingCategoriesInteractor{repo, logger}
 }

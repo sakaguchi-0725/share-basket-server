@@ -9,6 +9,7 @@ import (
 	"share-basket-server/core/apperr"
 	. "share-basket-server/test/mock/domain"
 	. "share-basket-server/test/mock/usecase"
+	"share-basket-server/test/testutil"
 	"share-basket-server/usecase"
 
 	"github.com/stretchr/testify/assert"
@@ -147,7 +148,14 @@ func TestSignUpInteractor(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			tt.setupMock(authenticator, userRepo, accountRepo, userService, transaction, output)
 
-			usecase := usecase.NewSignUpInteractor(authenticator, userRepo, accountRepo, userService, transaction)
+			usecase := usecase.NewSignUpInteractor(
+				authenticator,
+				userRepo,
+				accountRepo,
+				userService,
+				transaction,
+				testutil.NewDummyLogger(),
+			)
 			err := usecase.Execute(context.Background(), tt.input, output)
 
 			if tt.err == nil {

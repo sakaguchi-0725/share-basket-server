@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"share-basket-server/core/apperr"
+	"share-basket-server/core/logger"
 	"share-basket-server/domain"
 )
 
@@ -31,47 +31,70 @@ type (
 		accountRepo   domain.AccountRepository
 		userService   domain.UserService
 		transaction   domain.Transaction
+		logger        logger.Logger
 	}
 )
 
 func (s *signupInteractor) Execute(ctx context.Context, input SignUpInput, output SignUpOutputPort) error {
 	emailAvailable, err := s.userService.IsEmailAvailable(input.Email)
 	if err != nil {
-		slog.Error("isEmailAvailable failed", slog.String("error", err.Error()))
+		s.logger.
+			With("error", err).
+			Error("failed to check email available")
 		return err
 	}
 
 	if !emailAvailable {
-		slog.Info("email is not available")
+		s.logger.
+			With("error", err).
+			With("email", input.Email).
+			Info("email is not available")
 		return apperr.NewInvalidError(fmt.Errorf("email is not available: %s", input.Email))
 	}
 
 	cognitoUID, err := s.authenticator.SignUp(ctx, input.Email, input.Password)
 	if err != nil {
 		if errors.Is(err, apperr.ErrDuplicatedKey) || errors.Is(err, apperr.ErrInvalidData) {
-			slog.Info("sign up failed", slog.String("error", err.Error()))
+			s.logger.
+				With("error", err).
+				Info("invalid input")
 			return apperr.NewInvalidError(err)
 		}
-		slog.Error("sign up failed", slog.String("error", err.Error()))
+
+		s.logger.
+			With("error", err).
+			Error("failed to sign up")
 		return err
 	}
 
 	err = s.transaction.Run(ctx, func(ctx context.Context) error {
 		user, err := domain.NewUser(domain.NewUserID(), cognitoUID, input.Email)
 		if err != nil {
+			s.logger.
+				With("error", err).
+				Info("failed to NewUser")
 			return apperr.NewInvalidError(err)
 		}
 
 		if err := s.userRepo.Store(&user); err != nil {
+			s.logger.
+				With("error", err).
+				Error("failed to store user")
 			return err
 		}
 
 		acc, err := domain.NewAccount(domain.NewAccountID(), user.ID, input.Name)
 		if err != nil {
+			s.logger.
+				With("error", err).
+				Error("failed to NewAccount")
 			return apperr.NewInvalidError(err)
 		}
 
 		if err := s.accountRepo.Store(&acc); err != nil {
+			s.logger.
+				With("error", err).
+				Error("failed to store account")
 			return err
 		}
 
@@ -80,6 +103,9 @@ func (s *signupInteractor) Execute(ctx context.Context, input SignUpInput, outpu
 
 	if err != nil {
 		if err := s.authenticator.DeleteUser(ctx, input.Email); err != nil {
+			s.logger.
+				With("error", err).
+				Error("failed to delete user")
 			return err
 		}
 		return err
@@ -94,6 +120,7 @@ func NewSignUpInteractor(
 	accountRepo domain.AccountRepository,
 	userService domain.UserService,
 	transaction domain.Transaction,
+	logger logger.Logger,
 ) SignUpInputPort {
 	return &signupInteractor{
 		authenticator,
@@ -101,5 +128,6 @@ func NewSignUpInteractor(
 		accountRepo,
 		userService,
 		transaction,
+		logger,
 	}
 }
