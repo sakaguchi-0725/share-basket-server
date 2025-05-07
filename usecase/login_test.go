@@ -8,6 +8,7 @@ import (
 	"share-basket-server/core/apperr"
 	. "share-basket-server/test/mock/domain"
 	. "share-basket-server/test/mock/usecase"
+	"share-basket-server/test/testutil"
 	"share-basket-server/usecase"
 
 	"github.com/stretchr/testify/assert"
@@ -80,7 +81,7 @@ func TestLoginInteractor(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			tt.setupMock(authenticator, output)
 
-			usecase := usecase.NewLoginInteractor(authenticator)
+			usecase := usecase.NewLoginInteractor(authenticator, testutil.NewDummyLogger())
 			err := usecase.Execute(context.Background(), tt.input, output)
 
 			if tt.err == nil {

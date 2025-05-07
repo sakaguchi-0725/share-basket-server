@@ -8,6 +8,7 @@ import (
 	"share-basket-server/domain"
 	. "share-basket-server/test/mock/domain"
 	. "share-basket-server/test/mock/usecase"
+	"share-basket-server/test/testutil"
 	"share-basket-server/usecase"
 
 	"github.com/stretchr/testify/assert"
@@ -58,7 +59,7 @@ func TestGetShoppingCategoriesInteractor(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			tt.setupMock(repo, output)
 
-			usecase := usecase.NewGetShoppingCategoriesInteractor(repo)
+			usecase := usecase.NewGetShoppingCategoriesInteractor(repo, testutil.NewDummyLogger())
 			err := usecase.Execute(context.Background(), output)
 
 			if tt.err == nil {

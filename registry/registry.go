@@ -96,13 +96,14 @@ func injectInteractor(repos repositories, logger logger.Logger) interactors {
 		repos.accountRepo,
 		repos.userService,
 		repos.transaction,
+		logger,
 	)
 
 	return interactors{
 		signUpInteractor:                   signUpInteractor,
-		signUpConfirmInteractor:            usecase.NewSignUpConfirmInteractor(repos.authenticator),
-		loginInteractor:                    usecase.NewLoginInteractor(repos.authenticator),
-		getShoppingCategoriesInteractor:    usecase.NewGetShoppingCategoriesInteractor(repos.shoppingCategoryRepo),
+		signUpConfirmInteractor:            usecase.NewSignUpConfirmInteractor(repos.authenticator, logger),
+		loginInteractor:                    usecase.NewLoginInteractor(repos.authenticator, logger),
+		getShoppingCategoriesInteractor:    usecase.NewGetShoppingCategoriesInteractor(repos.shoppingCategoryRepo, logger),
 		getPersonalShoppingItemsInteractor: usecase.NewGetPersonalShoppingItemsInteractor(repos.accountRepo, repos.personalShoppingItemRepo, logger),
 	}
 }
