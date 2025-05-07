@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"share-basket-server/core/apperr"
 	contextKey "share-basket-server/core/context"
+	"share-basket-server/core/logger"
 	"share-basket-server/presentation/response"
 	"share-basket-server/usecase"
 )
@@ -27,11 +28,15 @@ type (
 	}
 )
 
-func MakeGetPersonalShoppingItemsHandler(usecase usecase.GetPersonalShoppingItemsInputPort) http.HandlerFunc {
+func MakeGetPersonalShoppingItemsHandler(
+	usecase usecase.GetPersonalShoppingItemsInputPort,
+	logger logger.Logger,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req getPersonalShoppingItemsRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			logger.With("request body", r.Body).Info("invalid request")
 			response.Error(w, apperr.NewInvalidError(err))
 			return
 		}

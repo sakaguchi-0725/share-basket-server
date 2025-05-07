@@ -1,11 +1,12 @@
-//go:generate mockgen -destination=../mock/usecase/get_personal_shopping_items_input.go . GetPersonalShoppingItemsInputPort
-//go:generate mockgen -destination=../mock/usecase/get_personal_shopping_items_output.go . GetPersonalShoppingItemsOutputPort
+//go:generate mockgen -destination=../test/mock/usecase/get_personal_shopping_items_input.go . GetPersonalShoppingItemsInputPort
+//go:generate mockgen -destination=../test/mock/usecase/get_personal_shopping_items_output.go . GetPersonalShoppingItemsOutputPort
 package usecase
 
 import (
 	"context"
 	"errors"
 	"share-basket-server/core/apperr"
+	"share-basket-server/core/logger"
 	"share-basket-server/core/util"
 	"share-basket-server/domain"
 )
@@ -34,20 +35,31 @@ type (
 	getPersonalShoppingItemsInteractor struct {
 		accountRepo  domain.AccountRepository
 		personalRepo domain.PersonalShoppingItemRepository
+		logger       logger.Logger
 	}
 )
 
 func (g *getPersonalShoppingItemsInteractor) Execute(ctx context.Context, input GetPersonalShoppingItemsInput, output GetPersonalShoppingItemsOutputPort) error {
 	userID, err := domain.ParseUserID(input.UserID)
 	if err != nil {
+		g.logger.
+			With("user id", input.UserID).
+			With("error", err).
+			Info("invalid user id")
 		return apperr.NewInvalidError(err)
 	}
 
 	account, err := g.accountRepo.FindByUserID(userID)
 	if err != nil {
 		if errors.Is(err, apperr.ErrDataNotFound) {
+			g.logger.
+				With("user id", userID.String()).
+				With("error", err).
+				Info("account not found")
 			return apperr.NewInvalidError(err)
 		}
+
+		g.logger.With("error", err).Error("failed to find account")
 		return err
 	}
 
@@ -55,6 +67,10 @@ func (g *getPersonalShoppingItemsInteractor) Execute(ctx context.Context, input 
 	if input.Status != "" {
 		s, err := domain.NewShoppingStatus(input.Status)
 		if err != nil {
+			g.logger.
+				With("status", input.Status).
+				With("error", err).
+				Info("invalid status")
 			return apperr.NewInvalidError(err)
 		}
 		status = util.Ptr(s)
@@ -62,6 +78,9 @@ func (g *getPersonalShoppingItemsInteractor) Execute(ctx context.Context, input 
 
 	items, err := g.personalRepo.GetAll(account.ID, status)
 	if err != nil {
+		g.logger.
+			With("err", err).
+			Error("failed to get personal shopping items")
 		return err
 	}
 
@@ -86,6 +105,7 @@ func (g *getPersonalShoppingItemsInteractor) makeOutputs(items []domain.Personal
 func NewGetPersonalShoppingItemsInteractor(
 	accountRepo domain.AccountRepository,
 	personalRepo domain.PersonalShoppingItemRepository,
+	logger logger.Logger,
 ) GetPersonalShoppingItemsInputPort {
-	return &getPersonalShoppingItemsInteractor{accountRepo, personalRepo}
+	return &getPersonalShoppingItemsInteractor{accountRepo, personalRepo, logger}
 }

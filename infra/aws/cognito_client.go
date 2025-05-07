@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=../../mock/$GOPACKAGE/$GOFILE . CognitoClient
+//go:generate mockgen -destination=../../test/mock/$GOPACKAGE/$GOFILE . CognitoClient
 package aws
 
 import (

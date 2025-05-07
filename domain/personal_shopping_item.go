@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=../mock/$GOPACKAGE/$GOFILE . PersonalShoppingItemRepository
+//go:generate mockgen -destination=../test/mock/$GOPACKAGE/$GOFILE . PersonalShoppingItemRepository
 package domain
 
 import (

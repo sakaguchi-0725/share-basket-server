@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"share-basket-server/core/apperr"
+	"share-basket-server/core/logger"
 	"share-basket-server/presentation/response"
 	"share-basket-server/presentation/validator"
 	"share-basket-server/usecase"
@@ -24,16 +25,25 @@ type (
 func MakeSignUpConfirmHandler(
 	usecase usecase.SignUpConfirmInputPort,
 	validator validator.RequestValidator,
+	logger logger.Logger,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req signUpConfirmRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			logger.
+				With("resuest body", r.Body).
+				With("error", err).
+				Info("invalid request")
 			response.Error(w, apperr.NewInvalidError(err))
 			return
 		}
 
 		if err := validator.Validate(&req); err != nil {
+			logger.
+				With("request body", req).
+				With("error", err).
+				Info("validation error")
 			response.Error(w, apperr.NewInvalidError(err))
 			return
 		}

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"share-basket-server/core/apperr"
 	"share-basket-server/infra/aws"
-	mock_aws "share-basket-server/mock/aws"
+	mock_aws "share-basket-server/test/mock/aws"
 	"testing"
 	"time"
 
