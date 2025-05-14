@@ -80,7 +80,7 @@ func (u *usecaseImpl) NewSignUp() usecase.SignUp {
 }
 
 func (u *usecaseImpl) NewSignUpConfirm() usecase.SignUpConfirm {
-	return usecase.NewSignUpConfirm(u.repo.NewAuthenticator())
+	return usecase.NewSignUpConfirm(u.repo.NewAuthenticator(), u.logger)
 }
 
 func (u *usecaseImpl) NewVerifyToken() usecase.VerifyToken {
