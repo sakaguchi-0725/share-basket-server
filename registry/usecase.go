@@ -66,7 +66,7 @@ func (u *usecaseImpl) NewGetCategories() usecase.GetCategories {
 }
 
 func (u *usecaseImpl) NewLogin() usecase.Login {
-	return usecase.NewLogin(u.repo.NewAuthenticator())
+	return usecase.NewLogin(u.repo.NewAuthenticator(), u.logger)
 }
 
 func (u *usecaseImpl) NewSignUp() usecase.SignUp {
