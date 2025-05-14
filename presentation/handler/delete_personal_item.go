@@ -1,0 +1,49 @@
+package handler
+
+import (
+	"fmt"
+	"net/http"
+	"sharebasket/core"
+	"sharebasket/presentation/response"
+	"sharebasket/usecase"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
+)
+
+func NewDeletePersonalItem(usecase usecase.DeletePersonalItem) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := chi.URLParam(r, "id")
+
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			response.Error(w, core.NewInvalidError(
+				fmt.Errorf("invalid item id: %w", err),
+			))
+			return
+		}
+
+		ctx := r.Context()
+
+		userID, err := core.GetUserID(ctx)
+		if err != nil {
+			response.Error(w, core.NewInvalidError(err))
+			return
+		}
+
+		err = usecase.Execute(ctx, makeDeletePersonalItemInput(id, userID))
+		if err != nil {
+			response.Error(w, err)
+			return
+		}
+
+		response.NoContent(w)
+	}
+}
+
+func makeDeletePersonalItemInput(id int64, userID string) usecase.DeletePersonalItemInput {
+	return usecase.DeletePersonalItemInput{
+		ID:     id,
+		UserID: userID,
+	}
+}
