@@ -38,6 +38,7 @@ func (u *usecaseImpl) NewUpdatePersonalItem() usecase.UpdatePersonalItem {
 	return usecase.NewUpdatePersonalItem(
 		u.repo.NewAccount(),
 		u.repo.NewPersonalItem(),
+		u.logger,
 	)
 }
 

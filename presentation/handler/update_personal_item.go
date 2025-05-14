@@ -19,12 +19,17 @@ type updatePersonalItemRequest struct {
 	CategoryID int64  `json:"categoryId"`
 }
 
-func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem) http.HandlerFunc {
+func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem, logger core.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := chi.URLParam(r, "id")
 
 		id, err := strconv.ParseInt(idStr, 10, 64)
 		if err != nil {
+			logger.WithError(err).
+				With("item_id", idStr).
+				With("endpoint", r.URL.Path).
+				With("method", r.Method).
+				Info("invalid item id")
 			response.Error(w, core.NewInvalidError(
 				fmt.Errorf("invalid item id: %w", err),
 			))
@@ -33,6 +38,10 @@ func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem) http.HandlerFunc 
 
 		var req updatePersonalItemRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			logger.WithError(err).
+				With("endpoint", r.URL.Path).
+				With("method", r.Method).
+				Info("invalid request format")
 			response.Error(w, core.NewInvalidError(core.ErrInvalidData))
 			return
 		}
@@ -41,6 +50,8 @@ func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem) http.HandlerFunc 
 
 		in, err := req.makeUpdatePersonalItemInput(ctx, id)
 		if err != nil {
+			logger.WithError(err).
+				Info("failed to get user ID from context")
 			response.Error(w, err)
 			return
 		}
