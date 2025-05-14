@@ -60,7 +60,7 @@ func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 			r.Get("/items", handler.NewGetPersonalItems(usecase.NewGetPersonalItems()))
 			r.Post("/items", handler.NewCreatePersonalItem(usecase.NewCreatePersonalItem(), logger))
 			r.Put("/items/{id}", handler.NewUpdatePersonalItem(usecase.NewUpdatePersonalItem()))
-			r.Delete("/items/{id}", handler.NewDeletePersonalItem(usecase.NewDeletePersonalItem()))
+			r.Delete("/items/{id}", handler.NewDeletePersonalItem(usecase.NewDeletePersonalItem(), logger))
 		})
 	})
 }

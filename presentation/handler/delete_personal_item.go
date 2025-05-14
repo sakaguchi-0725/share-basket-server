@@ -11,12 +11,17 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewDeletePersonalItem(usecase usecase.DeletePersonalItem) http.HandlerFunc {
+func NewDeletePersonalItem(usecase usecase.DeletePersonalItem, logger core.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := chi.URLParam(r, "id")
 
 		id, err := strconv.ParseInt(idStr, 10, 64)
 		if err != nil {
+			logger.WithError(err).
+				With("item_id", idStr).
+				With("endpoint", r.URL.Path).
+				With("method", r.Method).
+				Info("invalid item id")
 			response.Error(w, core.NewInvalidError(
 				fmt.Errorf("invalid item id: %w", err),
 			))
@@ -27,6 +32,8 @@ func NewDeletePersonalItem(usecase usecase.DeletePersonalItem) http.HandlerFunc 
 
 		userID, err := core.GetUserID(ctx)
 		if err != nil {
+			logger.WithError(err).
+				Info("failed to get user ID from context")
 			response.Error(w, core.NewInvalidError(err))
 			return
 		}

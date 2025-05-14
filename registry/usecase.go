@@ -30,6 +30,7 @@ func (u *usecaseImpl) NewDeletePersonalItem() usecase.DeletePersonalItem {
 	return usecase.NewDeletePersonalItem(
 		u.repo.NewAccount(),
 		u.repo.NewPersonalItem(),
+		u.logger,
 	)
 }
 
