@@ -1,6 +1,9 @@
 package registry
 
-import "sharebasket/usecase"
+import (
+	"sharebasket/core"
+	"sharebasket/usecase"
+)
 
 type (
 	UseCase interface {
@@ -19,6 +22,7 @@ type (
 	usecaseImpl struct {
 		repo    Repository
 		service Service
+		logger  core.Logger
 	}
 )
 
@@ -47,6 +51,7 @@ func (u *usecaseImpl) NewCreatePersonalItem() usecase.CreatePersonalItem {
 	return usecase.NewCreatePersonalItem(
 		u.repo.NewAccount(),
 		u.repo.NewPersonalItem(),
+		u.logger,
 	)
 }
 
@@ -80,9 +85,10 @@ func (u *usecaseImpl) NewVerifyToken() usecase.VerifyToken {
 	return usecase.NewVerifyToken(u.repo.NewAuthenticator())
 }
 
-func NewUseCase(r Repository, s Service) UseCase {
+func NewUseCase(r Repository, s Service, l core.Logger) UseCase {
 	return &usecaseImpl{
 		repo:    r,
 		service: s,
+		logger:  l,
 	}
 }

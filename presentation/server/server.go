@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sharebasket/core"
 	"sharebasket/presentation/handler"
 	customMiddleware "sharebasket/presentation/middleware"
 	"sharebasket/registry"
@@ -40,7 +41,7 @@ func New(addr uint) *Server {
 	}
 }
 
-func (s *Server) MapHandler(usecase registry.UseCase) {
+func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 	s.router.Use(middleware.Logger)
 	s.router.Use(middleware.Recoverer)
 
@@ -57,7 +58,7 @@ func (s *Server) MapHandler(usecase registry.UseCase) {
 
 		r.Route("/personal", func(r chi.Router) {
 			r.Get("/items", handler.NewGetPersonalItems(usecase.NewGetPersonalItems()))
-			r.Post("/items", handler.NewCreatePersonalItem(usecase.NewCreatePersonalItem()))
+			r.Post("/items", handler.NewCreatePersonalItem(usecase.NewCreatePersonalItem(), logger))
 			r.Put("/items/{id}", handler.NewUpdatePersonalItem(usecase.NewUpdatePersonalItem()))
 			r.Delete("/items/{id}", handler.NewDeletePersonalItem(usecase.NewDeletePersonalItem()))
 		})
