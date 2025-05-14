@@ -27,6 +27,13 @@ type (
 func (d *deletePersonalItem) Execute(ctx context.Context, in DeletePersonalItemInput) error {
 	account, err := d.accountRepo.Get(in.UserID)
 	if err != nil {
+		if errors.Is(err, ErrAccountNotFound) {
+			d.logger.WithError(err).
+				With("user_id", in.UserID).
+				Warn("account not found")
+			return core.NewAppError(core.ErrUnauthorized, err)
+		}
+
 		d.logger.WithError(err).
 			With("user_id", in.UserID).
 			Error("failed to get account")

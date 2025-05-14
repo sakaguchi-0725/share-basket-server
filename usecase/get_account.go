@@ -21,7 +21,8 @@ type (
 	}
 
 	getAccount struct {
-		repo repository.Account
+		repo   repository.Account
+		logger core.Logger
 	}
 )
 
@@ -29,8 +30,14 @@ func (g *getAccount) Execute(ctx context.Context, userID string) (GetAccountOutp
 	account, err := g.repo.Get(userID)
 	if err != nil {
 		if errors.Is(err, ErrAccountNotFound) {
+			g.logger.WithError(err).
+				With("user_id", userID).
+				Warn("account not found")
 			return GetAccountOutput{}, core.NewAppError(core.ErrUnauthorized, err)
 		}
+
+		g.logger.WithError(err).
+			Error("failed to get account")
 		return GetAccountOutput{}, err
 	}
 
@@ -44,6 +51,9 @@ func (g *getAccount) makeOutput(acc model.Account) GetAccountOutput {
 	}
 }
 
-func NewGetAccount(r repository.Account) GetAccount {
-	return &getAccount{repo: r}
+func NewGetAccount(r repository.Account, l core.Logger) GetAccount {
+	return &getAccount{
+		repo:   r,
+		logger: l,
+	}
 }

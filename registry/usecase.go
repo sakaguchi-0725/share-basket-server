@@ -57,7 +57,7 @@ func (u *usecaseImpl) NewCreatePersonalItem() usecase.CreatePersonalItem {
 }
 
 func (u *usecaseImpl) NewGetAccount() usecase.GetAccount {
-	return usecase.NewGetAccount(u.repo.NewAccount())
+	return usecase.NewGetAccount(u.repo.NewAccount(), u.logger)
 }
 
 func (u *usecaseImpl) NewGetCategories() usecase.GetCategories {

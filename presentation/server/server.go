@@ -53,7 +53,7 @@ func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 
 	s.router.Group(func(r chi.Router) {
 		r.Use(customMiddleware.Auth(usecase.NewVerifyToken()))
-		r.Get("/me", handler.NewGetAccount(usecase.NewGetAccount()))
+		r.Get("/me", handler.NewGetAccount(usecase.NewGetAccount(), logger))
 		r.Get("/categories", handler.NewGetCategories(usecase.NewGetCategories()))
 
 		r.Route("/personal", func(r chi.Router) {
