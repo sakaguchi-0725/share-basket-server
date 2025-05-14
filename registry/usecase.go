@@ -45,6 +45,7 @@ func (u *usecaseImpl) NewGetPersonalItems() usecase.GetPersonalItems {
 	return usecase.NewGetPersonalItems(
 		u.repo.NewAccount(),
 		u.repo.NewPersonalItem(),
+		u.logger,
 	)
 }
 
