@@ -52,7 +52,7 @@ func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 	s.router.Post("/logout", handler.NewLogout())
 
 	s.router.Group(func(r chi.Router) {
-		r.Use(customMiddleware.Auth(usecase.NewVerifyToken()))
+		r.Use(customMiddleware.Auth(usecase.NewVerifyToken(), logger))
 		r.Get("/me", handler.NewGetAccount(usecase.NewGetAccount(), logger))
 		r.Get("/categories", handler.NewGetCategories(usecase.NewGetCategories()))
 

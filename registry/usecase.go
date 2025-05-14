@@ -86,7 +86,7 @@ func (u *usecaseImpl) NewSignUpConfirm() usecase.SignUpConfirm {
 }
 
 func (u *usecaseImpl) NewVerifyToken() usecase.VerifyToken {
-	return usecase.NewVerifyToken(u.repo.NewAuthenticator())
+	return usecase.NewVerifyToken(u.repo.NewAuthenticator(), u.logger)
 }
 
 func NewUseCase(r Repository, s Service, l core.Logger) UseCase {
