@@ -76,6 +76,7 @@ func (u *usecaseImpl) NewSignUp() usecase.SignUp {
 		u.repo.NewAccount(),
 		u.service.NewUser(),
 		u.repo.NewTransaction(),
+		u.logger,
 	)
 }
 

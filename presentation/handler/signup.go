@@ -14,11 +14,15 @@ type signUpRequest struct {
 	Password string `json:"password"`
 }
 
-func NewSignUp(usecase usecase.SignUp) http.HandlerFunc {
+func NewSignUp(usecase usecase.SignUp, logger core.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req signUpRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			logger.WithError(err).
+				With("endpoint", r.URL.Path).
+				With("method", r.Method).
+				Info("invalid request format")
 			response.Error(w, core.NewInvalidError(err))
 			return
 		}

@@ -47,7 +47,7 @@ func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 
 	s.router.Get("/health-check", handler.NewHealthCheck())
 	s.router.Post("/login", handler.NewLogin(usecase.NewLogin(), logger))
-	s.router.Post("/signup", handler.NewSignUp(usecase.NewSignUp()))
+	s.router.Post("/signup", handler.NewSignUp(usecase.NewSignUp(), logger))
 	s.router.Post("/signup/confirm", handler.NewSignUpConfirm(usecase.NewSignUpConfirm(), logger))
 	s.router.Post("/logout", handler.NewLogout())
 
