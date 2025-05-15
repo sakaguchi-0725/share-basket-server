@@ -1,0 +1,115 @@
+openapi: '3.1.0'
+
+info:
+  title: 'ShareBasket API'
+  version: '1.0.0'
+paths:
+  /login:
+    post:
+      tags:
+        - Auth
+      summary: 'ログイン'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: 'メールアドレス'
+                password:
+                  type: string
+                  format: password
+                  description: 'パスワード'
+              required:
+                - email
+                - password
+      responses:
+        '204':
+          description: 'ログイン成功'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServer'
+  /signup:
+    post:
+      tags:
+        - Auth
+      summary: '会員登録'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: ユーザー名
+                email:
+                  type: string
+                  format: email
+                  description: メールアドレス
+                password:
+                  type: string
+                  format: password
+                  description: パスワード
+      responses:
+        '204':
+          description: '会員登録完了'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: 'メールアドレス重複'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 'EMAIL_ALREADY_EXISTS'
+                detail: 'this email is already exists'
+        '500':
+          $ref: '#/components/responses/InternalServer'
+
+components:
+  responses:
+    BadRequest:
+      description: 'BadRequest'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'BAD_REQUEST'
+            detail: 'invalid login input'
+    InternalServer:
+      description: 'InternalServer'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'INTERNAL_SERVER_ERROR'
+    Unauthorized:
+      description: 'Unauthorized'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'UNAUTHORIZED'
+            detail: 'failed to login process'
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        detail:
+          type: string
