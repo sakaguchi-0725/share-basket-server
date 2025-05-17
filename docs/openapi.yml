@@ -102,6 +102,33 @@ paths:
                 code: 'EXPIRED_CODE'
         '500':
           $ref: '#/components/responses/InternalServer'
+  /personal/items:
+    get:
+      tags:
+        - PersonalShopping
+      summary: 個人買い物メモ取得API
+      description: |
+        ステータスを指定しない場合、全件取得。<br/>
+        メモが存在しない場合は、空の配列を返す。
+      parameters:
+        - in: query
+          name: status
+          required: false
+          schema:
+            $ref: '#/components/schemas/Status'
+      responses:
+        '200':
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PersonalItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServer'
 
 components:
   responses:
@@ -113,7 +140,7 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             code: 'BAD_REQUEST'
-            detail: 'invalid login input'
+            detail: 'invalid input'
     InternalServer:
       description: 'InternalServer'
       content:
@@ -133,6 +160,21 @@ components:
             detail: 'failed to login process'
 
   schemas:
+    Status:
+      type: string
+      enum: ['UnPurchased', 'InTheCart', 'Purchased']
+    PersonalItem:
+      type: object
+      properties:
+        id:
+          type: number
+          readOnly: true
+        name:
+          type: string
+        category_id:
+          type: number
+        status:
+          $ref: '#/components/schemas/Status'
     Email:
       type: string
       format: email
