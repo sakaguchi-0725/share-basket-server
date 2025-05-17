@@ -17,9 +17,7 @@ paths:
               type: object
               properties:
                 email:
-                  type: string
-                  format: email
-                  description: 'メールアドレス'
+                  $ref: '#/components/schemas/Email'
                 password:
                   type: string
                   format: password
@@ -52,9 +50,7 @@ paths:
                   type: string
                   description: ユーザー名
                 email:
-                  type: string
-                  format: email
-                  description: メールアドレス
+                  $ref: '#/components/schemas/Email'
                 password:
                   type: string
                   format: password
@@ -73,6 +69,37 @@ paths:
               example:
                 code: 'EMAIL_ALREADY_EXISTS'
                 detail: 'this email is already exists'
+        '500':
+          $ref: '#/components/responses/InternalServer'
+  /signup/comirm:
+    post:
+      tags:
+        - Auth
+      summary: 会員登録確認
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  $ref: '#/components/schemas/Email'
+                confirmationCode:
+                  type: string
+      responses:
+        '204':
+          description: '会員登録確認完了'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '410':
+          description: 確認コード期限切れ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 'EXPIRED_CODE'
         '500':
           $ref: '#/components/responses/InternalServer'
 
@@ -106,6 +133,9 @@ components:
             detail: 'failed to login process'
 
   schemas:
+    Email:
+      type: string
+      format: email
     Error:
       type: object
       properties:
