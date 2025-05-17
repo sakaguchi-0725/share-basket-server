@@ -17,6 +17,7 @@ type (
 		NewGetPersonalItems() usecase.GetPersonalItems
 		NewUpdatePersonalItem() usecase.UpdatePersonalItem
 		NewDeletePersonalItem() usecase.DeletePersonalItem
+		NewCreateFamily() usecase.CreateFamily
 	}
 
 	usecaseImpl struct {
@@ -25,6 +26,15 @@ type (
 		logger  core.Logger
 	}
 )
+
+func (u *usecaseImpl) NewCreateFamily() usecase.CreateFamily {
+	return usecase.NewCreateFamily(
+		u.repo.NewAccount(),
+		u.repo.NewFamily(),
+		u.service.NewFamily(),
+		u.logger,
+	)
+}
 
 func (u *usecaseImpl) NewDeletePersonalItem() usecase.DeletePersonalItem {
 	return usecase.NewDeletePersonalItem(

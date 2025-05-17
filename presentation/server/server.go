@@ -62,6 +62,10 @@ func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 			r.Put("/items/{id}", handler.NewUpdatePersonalItem(usecase.NewUpdatePersonalItem(), logger))
 			r.Delete("/items/{id}", handler.NewDeletePersonalItem(usecase.NewDeletePersonalItem(), logger))
 		})
+
+		r.Route("/family", func(r chi.Router) {
+			r.Post("/", handler.NewCreateFamily(usecase.NewCreateFamily(), logger))
+		})
 	})
 }
 
