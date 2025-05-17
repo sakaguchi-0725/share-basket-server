@@ -17,6 +17,7 @@ type (
 		NewCategory() repository.Category
 		NewPersonalItem() repository.PersonalItem
 		NewTransaction() repository.Transaction
+		NewFamily() repository.Family
 	}
 
 	repositoryImpl struct {
@@ -24,6 +25,10 @@ type (
 		client auth.CognitoClient
 	}
 )
+
+func (r *repositoryImpl) NewFamily() repository.Family {
+	return dao.NewFamily(r.conn)
+}
 
 func (r *repositoryImpl) NewPersonalItem() repository.PersonalItem {
 	return dao.NewPersonalItem(r.conn)

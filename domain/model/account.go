@@ -7,9 +7,10 @@ var (
 )
 
 type Account struct {
-	ID     AccountID
-	Name   string
-	UserID string
+	ID        AccountID
+	Name      string
+	UserID    string
+	IsPremium bool
 }
 
 // 新しいAccountインスタンスを生成する。
@@ -24,8 +25,9 @@ func NewAccount(id AccountID, name, userID string) (Account, error) {
 	}
 
 	return Account{
-		ID:     id,
-		Name:   name,
-		UserID: userID,
+		ID:        id,
+		Name:      name,
+		UserID:    userID,
+		IsPremium: false,
 	}, nil
 }
