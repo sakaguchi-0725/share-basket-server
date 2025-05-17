@@ -15,10 +15,12 @@ func Error(w http.ResponseWriter, err error) error {
 		var status int
 
 		switch appErr.Code() {
-		case core.ErrBadRequest, core.ErrExpiredCode:
+		case core.ErrBadRequest:
 			status = http.StatusBadRequest
 		case core.ErrEmailAlreadyExists:
 			status = http.StatusConflict
+		case core.ErrExpiredCode:
+			status = http.StatusGone
 		case core.ErrUnauthorized, core.ErrExpiredToken:
 			status = http.StatusUnauthorized
 		case core.ErrNotFound:
