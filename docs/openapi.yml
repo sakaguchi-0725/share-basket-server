@@ -102,6 +102,27 @@ paths:
                 code: 'EXPIRED_CODE'
         '500':
           $ref: '#/components/responses/InternalServer'
+  /categories:
+    get:
+      tags:
+        - Category
+      summary: 買い物カテゴリー一覧取得API
+      responses:
+        '200':
+          description: カテゴリー一覧取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+        '500':
+          $ref: '#/components/responses/InternalServer'
   /personal/items:
     get:
       tags:
