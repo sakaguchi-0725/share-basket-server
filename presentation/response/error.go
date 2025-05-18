@@ -23,6 +23,8 @@ func Error(w http.ResponseWriter, err error) error {
 			status = http.StatusGone
 		case core.ErrUnauthorized, core.ErrExpiredToken:
 			status = http.StatusUnauthorized
+		case core.ErrForbidden:
+			status = http.StatusForbidden
 		case core.ErrNotFound:
 			status = http.StatusNotFound
 		default:
