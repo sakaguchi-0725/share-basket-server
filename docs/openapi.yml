@@ -129,6 +129,25 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/InternalServer'
+    post:
+      tags:
+        - PersonalShopping
+      summary: 個人買い物メモ作成API
+      description: |
+        個人用買い物メモを作成する。<br/>
+        ステータスを渡さない場合、「UnPurchased」として登録する。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalItem'
+      responses:
+        '204':
+          description: 買い物メモ作成成功
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServer'
 
 components:
   responses:
@@ -175,6 +194,9 @@ components:
           type: number
         status:
           $ref: '#/components/schemas/Status'
+      required:
+        - name
+        - category_id
     Email:
       type: string
       format: email
