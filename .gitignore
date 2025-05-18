@@ -1,3 +1,4 @@
+.vscode/
 docker/postgres/
 .air/
 .env
