@@ -143,9 +143,28 @@ paths:
               $ref: '#/components/schemas/PersonalItem'
       responses:
         '204':
-          description: 買い物メモ作成成功
+          description: '買い物メモ作成成功'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServer'
+  /personal/items/{id}:
+    put:
+      tags:
+        - PersonalShopping
+      summary: '個人買い物メモ更新API'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalItem'
+      responses:
+        '204':
+          description: '買い物メモ更新成功'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServer'
 
@@ -177,6 +196,15 @@ components:
           example:
             code: 'UNAUTHORIZED'
             detail: 'failed to login process'
+    Forbidden:
+      description: 'Forbidden'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 'FORBIDDEN'
+            detail: 'permission denied'
 
   schemas:
     Status:
