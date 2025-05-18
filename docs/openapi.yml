@@ -71,7 +71,7 @@ paths:
                 detail: 'this email is already exists'
         '500':
           $ref: '#/components/responses/InternalServer'
-  /signup/comirm:
+  /signup/conirm:
     post:
       tags:
         - Auth
@@ -153,6 +153,12 @@ paths:
       tags:
         - PersonalShopping
       summary: '個人買い物メモ更新API'
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
       requestBody:
         content:
           application/json:
@@ -171,6 +177,12 @@ paths:
       tags:
         - PersonalShopping
       summary: '個人買い物メモ削除'
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
       responses:
         '204':
           description: '買い物メモ削除成功'
