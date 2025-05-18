@@ -29,13 +29,6 @@ type (
 func (g *getAccount) Execute(ctx context.Context, userID string) (GetAccountOutput, error) {
 	account, err := g.repo.Get(userID)
 	if err != nil {
-		if errors.Is(err, ErrAccountNotFound) {
-			g.logger.WithError(err).
-				With("user_id", userID).
-				Warn("account not found")
-			return GetAccountOutput{}, core.NewAppError(core.ErrUnauthorized, err)
-		}
-
 		g.logger.WithError(err).
 			Error("failed to get account")
 		return GetAccountOutput{}, err

@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"sharebasket/core"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
@@ -35,13 +34,6 @@ type (
 func (g *getPersonalItems) Execute(ctx context.Context, in GetPersonalItemsInput) ([]GetPersonalItemsOutput, error) {
 	account, err := g.accountRepo.Get(in.UserID)
 	if err != nil {
-		if errors.Is(err, ErrAccountNotFound) {
-			g.logger.WithError(err).
-				With("user_id", in.UserID).
-				Warn("account not found")
-			return []GetPersonalItemsOutput{}, core.NewAppError(core.ErrUnauthorized, err)
-		}
-
 		g.logger.WithError(err).
 			With("user_id", in.UserID).
 			Error("failed to get account")

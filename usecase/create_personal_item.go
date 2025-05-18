@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"sharebasket/core"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
@@ -34,13 +33,6 @@ type (
 func (c *createPersonalItem) Execute(ctx context.Context, in CreatePersonalItemInput) error {
 	account, err := c.accountRepo.Get(in.UserID)
 	if err != nil {
-		if errors.Is(err, ErrAccountNotFound) {
-			c.logger.WithError(err).
-				With("user_id", in.UserID).
-				Warn("account not found")
-			return core.NewAppError(core.ErrUnauthorized, err)
-		}
-
 		c.logger.WithError(err).
 			With("user_id", in.UserID).
 			Error("failed to get account")

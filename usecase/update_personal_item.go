@@ -33,13 +33,6 @@ type (
 func (u *updatePersonalItem) Execute(ctx context.Context, in UpdatePersonalItemInput) error {
 	account, err := u.accountRepo.Get(in.UserID)
 	if err != nil {
-		if errors.Is(err, ErrAccountNotFound) {
-			u.logger.WithError(err).
-				With("user_id", in.UserID).
-				Warn("account not found")
-			return core.NewAppError(core.ErrUnauthorized, err)
-		}
-
 		u.logger.WithError(err).
 			With("user_id", in.UserID).
 			Error("failed to get account")
