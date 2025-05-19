@@ -13,7 +13,7 @@ type (
 		NewVerifyToken() usecase.VerifyToken
 		NewGetAccount() usecase.GetAccount
 		NewGetCategories() usecase.GetCategories
-		NewCreatePersonalItem() usecase.CreatePersonalItem
+		NewPersonalItem() usecase.PersonalItem
 		NewGetPersonalItems() usecase.GetPersonalItems
 		NewUpdatePersonalItem() usecase.UpdatePersonalItem
 		NewDeletePersonalItem() usecase.DeletePersonalItem
@@ -60,8 +60,8 @@ func (u *usecaseImpl) NewGetPersonalItems() usecase.GetPersonalItems {
 	)
 }
 
-func (u *usecaseImpl) NewCreatePersonalItem() usecase.CreatePersonalItem {
-	return usecase.NewCreatePersonalItem(
+func (u *usecaseImpl) NewPersonalItem() usecase.PersonalItem {
+	return usecase.NewPersonalItem(
 		u.repo.NewAccount(),
 		u.repo.NewPersonalItem(),
 		u.logger,

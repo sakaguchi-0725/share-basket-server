@@ -7,6 +7,7 @@ import (
 	"sharebasket/core"
 	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+	"sharebasket/usecase/input"
 )
 
 type createPersonalItemRequest struct {
@@ -15,7 +16,7 @@ type createPersonalItemRequest struct {
 	CategoryID int64  `json:"categoryId"`
 }
 
-func NewCreatePersonalItem(usecase usecase.CreatePersonalItem, logger core.Logger) http.HandlerFunc {
+func NewCreatePersonalItem(usecase usecase.PersonalItem, logger core.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req createPersonalItemRequest
 
@@ -35,7 +36,7 @@ func NewCreatePersonalItem(usecase usecase.CreatePersonalItem, logger core.Logge
 			return
 		}
 
-		err = usecase.Execute(ctx, input)
+		err = usecase.Create(ctx, input)
 		if err != nil {
 			response.Error(w, err)
 			return
@@ -45,15 +46,15 @@ func NewCreatePersonalItem(usecase usecase.CreatePersonalItem, logger core.Logge
 	}
 }
 
-func (req *createPersonalItemRequest) makeInput(ctx context.Context, logger core.Logger) (usecase.CreatePersonalItemInput, error) {
+func (req *createPersonalItemRequest) makeInput(ctx context.Context, logger core.Logger) (input.CreatePersonalItem, error) {
 	userID, err := core.GetUserID(ctx)
 	if err != nil {
 		logger.WithError(err).
 			Info("failed to get user ID from context")
-		return usecase.CreatePersonalItemInput{}, err
+		return input.CreatePersonalItem{}, err
 	}
 
-	return usecase.CreatePersonalItemInput{
+	return input.CreatePersonalItem{
 		UserID:     userID,
 		Name:       req.Name,
 		Status:     req.Status,
