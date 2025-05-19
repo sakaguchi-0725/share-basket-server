@@ -5,6 +5,8 @@ import (
 	"sharebasket/core"
 	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+	"sharebasket/usecase/input"
+	"sharebasket/usecase/output"
 )
 
 type getPersonalItemsResponse struct {
@@ -14,7 +16,7 @@ type getPersonalItemsResponse struct {
 	CategoryID int64  `json:"categoryId"`
 }
 
-func NewGetPersonalItems(usecase usecase.GetPersonalItems, logger core.Logger) http.HandlerFunc {
+func NewGetPersonalItems(usecase usecase.PersonalItem, logger core.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -28,7 +30,7 @@ func NewGetPersonalItems(usecase usecase.GetPersonalItems, logger core.Logger) h
 
 		status := r.URL.Query().Get("status")
 
-		out, err := usecase.Execute(ctx, makeGetPersonalItemsInput(userID, status))
+		out, err := usecase.Get(ctx, makeGetPersonalItemsInput(userID, status))
 		if err != nil {
 			response.Error(w, err)
 			return
@@ -38,14 +40,14 @@ func NewGetPersonalItems(usecase usecase.GetPersonalItems, logger core.Logger) h
 	}
 }
 
-func makeGetPersonalItemsInput(userID, status string) usecase.GetPersonalItemsInput {
-	return usecase.GetPersonalItemsInput{
+func makeGetPersonalItemsInput(userID, status string) input.GetPersonalItem {
+	return input.GetPersonalItem{
 		UserID: userID,
 		Status: status,
 	}
 }
 
-func makeGetPersonalItemsResponse(out []usecase.GetPersonalItemsOutput) []getPersonalItemsResponse {
+func makeGetPersonalItemsResponse(out []output.GetPersonalItem) []getPersonalItemsResponse {
 	res := make([]getPersonalItemsResponse, len(out))
 
 	for i, v := range out {
