@@ -17,6 +17,14 @@ type (
 		Status     string
 		CategoryID int64
 	}
+
+	UpdatePersonalItem struct {
+		ID         int64
+		Name       string
+		Status     string
+		CategoryID int64
+		UserID     string
+	}
 )
 
 func (g GetPersonalItem) ParseShoppingStatus() (*model.ShoppingStatus, error) {

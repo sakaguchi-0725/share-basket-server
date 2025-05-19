@@ -35,7 +35,7 @@ func (d *deletePersonalItem) Execute(ctx context.Context, in DeletePersonalItemI
 
 	item, err := d.personalRepo.GetByID(in.ID)
 	if err != nil {
-		if errors.Is(err, ErrPersonalItemNotFound) {
+		if errors.Is(err, core.ErrDataNotFound) {
 			d.logger.WithError(err).
 				With("item_id", in.ID).
 				Warn("personal item not found")

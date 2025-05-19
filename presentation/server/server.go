@@ -59,7 +59,7 @@ func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 		r.Route("/personal", func(r chi.Router) {
 			r.Get("/items", handler.NewGetPersonalItems(usecase.NewPersonalItem(), logger))
 			r.Post("/items", handler.NewCreatePersonalItem(usecase.NewPersonalItem(), logger))
-			r.Put("/items/{id}", handler.NewUpdatePersonalItem(usecase.NewUpdatePersonalItem(), logger))
+			r.Put("/items/{id}", handler.NewUpdatePersonalItem(usecase.NewPersonalItem(), logger))
 			r.Delete("/items/{id}", handler.NewDeletePersonalItem(usecase.NewDeletePersonalItem(), logger))
 		})
 

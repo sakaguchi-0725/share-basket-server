@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"sharebasket/core"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
@@ -13,6 +14,7 @@ type (
 	PersonalItem interface {
 		Get(ctx context.Context, in input.GetPersonalItem) ([]output.GetPersonalItem, error)
 		Create(ctx context.Context, in input.CreatePersonalItem) error
+		Update(ctx context.Context, in input.UpdatePersonalItem) error
 	}
 
 	personalItemInteractor struct {
@@ -84,6 +86,78 @@ func (p *personalItemInteractor) Create(ctx context.Context, in input.CreatePers
 		p.logger.WithError(err).
 			With("item", item).
 			Error("failed to store personal item")
+		return err
+	}
+
+	return nil
+}
+
+// [個人]買い物メモ更新
+func (p *personalItemInteractor) Update(ctx context.Context, in input.UpdatePersonalItem) error {
+	account, err := p.accountRepo.Get(in.UserID)
+	if err != nil {
+		p.logger.WithError(err).
+			With("user_id", in.UserID).
+			Error("failed to get account")
+		return err
+	}
+
+	item, err := p.personalRepo.GetByID(in.ID)
+	if err != nil {
+		if errors.Is(err, core.ErrDataNotFound) {
+			p.logger.WithError(err).
+				With("item_id", in.ID).
+				Warn("personal item not found")
+			return core.NewInvalidError(err)
+		}
+
+		p.logger.WithError(err).
+			With("item_id", in.ID).
+			Error("failed to get personal item")
+		return err
+	}
+
+	// 買い物リストの所有権確認
+	if err := item.CheckOwner(account.ID); err != nil {
+		p.logger.WithError(err).
+			With("account_id", account.ID.String()).
+			With("item_id", in.ID).
+			Warn("unauthorized delete attempt - item owner mismatch")
+		return core.NewAppError(core.ErrForbidden, err)
+	}
+
+	// ステータスの更新
+	var status *model.ShoppingStatus
+	if in.Status != "" {
+		s, err := model.ParseShoppingStatus(in.Status)
+		if err != nil {
+			p.logger.WithError(err).
+				With("status", in.Status).
+				Warn("invalid shopping status")
+			return core.NewInvalidError(err)
+		}
+		status = &s
+	}
+
+	// カテゴリーIDの更新
+	var categoryID *int64
+	if in.CategoryID != 0 {
+		categoryID = &in.CategoryID
+	}
+
+	// アイテムの更新
+	if err := item.Update(in.Name, status, categoryID); err != nil {
+		p.logger.WithError(err).
+			With("name", in.Name).
+			With("status", status.String()).
+			With("category_id", categoryID).
+			Warn("failed to update shopping item model")
+		return core.NewInvalidError(err)
+	}
+
+	// 更新を保存
+	if err := p.personalRepo.Store(&item); err != nil {
+		p.logger.WithError(err).Error("failed to store shopping item")
 		return err
 	}
 

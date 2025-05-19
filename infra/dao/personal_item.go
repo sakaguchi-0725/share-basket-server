@@ -6,7 +6,6 @@ import (
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
 	"sharebasket/infra/db"
-	"sharebasket/usecase"
 	"time"
 
 	"gorm.io/gorm"
@@ -39,7 +38,7 @@ func (p *personalItemDao) Delete(id int64) error {
 	}
 
 	if result.RowsAffected == 0 {
-		return usecase.ErrPersonalItemNotFound
+		return core.ErrDataNotFound
 	}
 
 	return nil
@@ -51,7 +50,7 @@ func (p *personalItemDao) GetByID(id int64) (model.PersonalItem, error) {
 	err := p.conn.Where("id = ?", id).First(&dto).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.PersonalItem{}, usecase.ErrPersonalItemNotFound
+			return model.PersonalItem{}, core.ErrDataNotFound
 		}
 		return model.PersonalItem{}, err
 	}

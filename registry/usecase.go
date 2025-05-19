@@ -14,7 +14,6 @@ type (
 		NewGetAccount() usecase.GetAccount
 		NewGetCategories() usecase.GetCategories
 		NewPersonalItem() usecase.PersonalItem
-		NewUpdatePersonalItem() usecase.UpdatePersonalItem
 		NewDeletePersonalItem() usecase.DeletePersonalItem
 		NewCreateFamily() usecase.CreateFamily
 	}
@@ -37,14 +36,6 @@ func (u *usecaseImpl) NewCreateFamily() usecase.CreateFamily {
 
 func (u *usecaseImpl) NewDeletePersonalItem() usecase.DeletePersonalItem {
 	return usecase.NewDeletePersonalItem(
-		u.repo.NewAccount(),
-		u.repo.NewPersonalItem(),
-		u.logger,
-	)
-}
-
-func (u *usecaseImpl) NewUpdatePersonalItem() usecase.UpdatePersonalItem {
-	return usecase.NewUpdatePersonalItem(
 		u.repo.NewAccount(),
 		u.repo.NewPersonalItem(),
 		u.logger,

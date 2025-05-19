@@ -8,6 +8,7 @@ import (
 	"sharebasket/core"
 	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+	"sharebasket/usecase/input"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -19,7 +20,7 @@ type updatePersonalItemRequest struct {
 	CategoryID int64  `json:"categoryId"`
 }
 
-func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem, logger core.Logger) http.HandlerFunc {
+func NewUpdatePersonalItem(usecase usecase.PersonalItem, logger core.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := chi.URLParam(r, "id")
 
@@ -56,7 +57,7 @@ func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem, logger core.Logge
 			return
 		}
 
-		if err := usecase.Execute(ctx, in); err != nil {
+		if err := usecase.Update(ctx, in); err != nil {
 			response.Error(w, err)
 			return
 		}
@@ -65,13 +66,13 @@ func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem, logger core.Logge
 	}
 }
 
-func (req updatePersonalItemRequest) makeUpdatePersonalItemInput(ctx context.Context, id int64) (usecase.UpdatePersonalItemInput, error) {
+func (req updatePersonalItemRequest) makeUpdatePersonalItemInput(ctx context.Context, id int64) (input.UpdatePersonalItem, error) {
 	userID, err := core.GetUserID(ctx)
 	if err != nil {
-		return usecase.UpdatePersonalItemInput{}, err
+		return input.UpdatePersonalItem{}, err
 	}
 
-	return usecase.UpdatePersonalItemInput{
+	return input.UpdatePersonalItem{
 		ID:         id,
 		Name:       req.Name,
 		Status:     req.Status,
