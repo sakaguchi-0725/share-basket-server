@@ -6,12 +6,13 @@ import (
 	"sharebasket/core"
 	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+	"sharebasket/usecase/input"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
 
-func NewDeletePersonalItem(usecase usecase.DeletePersonalItem, logger core.Logger) http.HandlerFunc {
+func NewDeletePersonalItem(usecase usecase.PersonalItem, logger core.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := chi.URLParam(r, "id")
 
@@ -38,7 +39,7 @@ func NewDeletePersonalItem(usecase usecase.DeletePersonalItem, logger core.Logge
 			return
 		}
 
-		err = usecase.Execute(ctx, makeDeletePersonalItemInput(id, userID))
+		err = usecase.Delete(ctx, makeDeletePersonalItemInput(id, userID))
 		if err != nil {
 			response.Error(w, err)
 			return
@@ -48,8 +49,8 @@ func NewDeletePersonalItem(usecase usecase.DeletePersonalItem, logger core.Logge
 	}
 }
 
-func makeDeletePersonalItemInput(id int64, userID string) usecase.DeletePersonalItemInput {
-	return usecase.DeletePersonalItemInput{
+func makeDeletePersonalItemInput(id int64, userID string) input.DeletePersonalItem {
+	return input.DeletePersonalItem{
 		ID:     id,
 		UserID: userID,
 	}

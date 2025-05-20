@@ -15,6 +15,7 @@ type (
 		Get(ctx context.Context, in input.GetPersonalItem) ([]output.GetPersonalItem, error)
 		Create(ctx context.Context, in input.CreatePersonalItem) error
 		Update(ctx context.Context, in input.UpdatePersonalItem) error
+		Delete(ctx context.Context, in input.DeletePersonalItem) error
 	}
 
 	personalItemInteractor struct {
@@ -158,6 +159,49 @@ func (p *personalItemInteractor) Update(ctx context.Context, in input.UpdatePers
 	// 更新を保存
 	if err := p.personalRepo.Store(&item); err != nil {
 		p.logger.WithError(err).Error("failed to store shopping item")
+		return err
+	}
+
+	return nil
+}
+
+func (p *personalItemInteractor) Delete(ctx context.Context, in input.DeletePersonalItem) error {
+	account, err := p.accountRepo.Get(in.UserID)
+	if err != nil {
+		p.logger.WithError(err).
+			With("user_id", in.UserID).
+			Error("failed to get account")
+		return err
+	}
+
+	item, err := p.personalRepo.GetByID(in.ID)
+	if err != nil {
+		if errors.Is(err, core.ErrDataNotFound) {
+			p.logger.WithError(err).
+				With("item_id", in.ID).
+				Warn("personal item not found")
+			return core.NewInvalidError(err)
+		}
+
+		p.logger.WithError(err).
+			With("item_id", in.ID).
+			Error("failed to get personal item")
+		return err
+	}
+
+	// 買い物リストの所有権確認
+	if err := item.CheckOwner(account.ID); err != nil {
+		p.logger.WithError(err).
+			With("account_id", account.ID.String()).
+			With("item_id", in.ID).
+			Warn("unauthorized delete attempt - item owner mismatch")
+		return core.NewAppError(core.ErrForbidden, err)
+	}
+
+	if err := p.personalRepo.Delete(*item.ID); err != nil {
+		p.logger.WithError(err).
+			With("item_id", in.ID).
+			Error("failed to delete personal item from repository")
 		return err
 	}
 

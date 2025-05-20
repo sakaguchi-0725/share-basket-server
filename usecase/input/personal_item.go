@@ -25,6 +25,11 @@ type (
 		CategoryID int64
 		UserID     string
 	}
+
+	DeletePersonalItem struct {
+		ID     int64
+		UserID string
+	}
 )
 
 func (g GetPersonalItem) ParseShoppingStatus() (*model.ShoppingStatus, error) {
