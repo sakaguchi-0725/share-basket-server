@@ -35,6 +35,7 @@ func New(addr uint) *Server {
 func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 	s.Use(middleware.Logger())
 	s.Use(middleware.Recover())
+	s.Use(customMiddleware.Error())
 
 	s.GET("/health-check", handler.NewHealthCheck())
 	s.POST("/login", handler.NewLogin(usecase.NewLogin(), logger))
