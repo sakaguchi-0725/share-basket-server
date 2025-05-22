@@ -65,6 +65,7 @@ func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 
 		r.Route("/family", func(r chi.Router) {
 			r.Post("/", handler.NewCreateFamily(usecase.NewCreateFamily(), logger))
+			r.Get("/invitation", handler.NewInvitationFamily(usecase.NewInvitationFamily(), logger))
 		})
 	})
 }

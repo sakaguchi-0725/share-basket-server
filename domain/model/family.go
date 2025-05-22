@@ -61,6 +61,11 @@ func (f *Family) Join(id AccountID) error {
 	return nil
 }
 
+// 家族に招待可能か判定する
+func (f *Family) CanInvite() bool {
+	return len(f.MemberIDs)+1 > f.maxMembers()
+}
+
 func (f *Family) maxMembers() int {
 	if f.Owner.IsPremium {
 		return PremiumMaxMember
