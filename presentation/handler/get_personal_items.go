@@ -3,8 +3,9 @@ package handler
 import (
 	"net/http"
 	"sharebasket/core"
-	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+
+	"github.com/labstack/echo/v4"
 )
 
 type getPersonalItemsResponse struct {
@@ -14,27 +15,25 @@ type getPersonalItemsResponse struct {
 	CategoryID int64  `json:"categoryId"`
 }
 
-func NewGetPersonalItems(usecase usecase.GetPersonalItems, logger core.Logger) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+func NewGetPersonalItems(usecase usecase.GetPersonalItems, logger core.Logger) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		ctx := c.Request().Context()
 
 		userID, err := core.GetUserID(ctx)
 		if err != nil {
 			logger.WithError(err).
 				Info("failed to get user ID from context")
-			response.Error(w, err)
-			return
+			return err
 		}
 
-		status := r.URL.Query().Get("status")
+		status := c.QueryParam("status")
 
 		out, err := usecase.Execute(ctx, makeGetPersonalItemsInput(userID, status))
 		if err != nil {
-			response.Error(w, err)
-			return
+			return err
 		}
 
-		response.StatusOK(w, makeGetPersonalItemsResponse(out))
+		return c.JSON(http.StatusOK, makeGetPersonalItemsResponse(out))
 	}
 }
 

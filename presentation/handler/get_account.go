@@ -3,8 +3,9 @@ package handler
 import (
 	"net/http"
 	"sharebasket/core"
-	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+
+	"github.com/labstack/echo/v4"
 )
 
 type getAccountResponse struct {
@@ -12,24 +13,22 @@ type getAccountResponse struct {
 	Name string `json:"name"`
 }
 
-func NewGetAccount(usecase usecase.GetAccount, logger core.Logger) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+func NewGetAccount(usecase usecase.GetAccount, logger core.Logger) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		ctx := c.Request().Context()
 		userID, err := core.GetUserID(ctx)
 		if err != nil {
 			logger.WithError(err).
 				Info("failed to get user ID from context")
-			response.Error(w, err)
-			return
+			return err
 		}
 
 		out, err := usecase.Execute(ctx, userID)
 		if err != nil {
-			response.Error(w, err)
-			return
+			return err
 		}
 
-		response.StatusOK(w, makeGetAccountResponse(out))
+		return c.JSON(http.StatusOK, makeGetAccountResponse(out))
 	}
 }
 

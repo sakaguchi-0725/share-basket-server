@@ -2,11 +2,11 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"sharebasket/core"
-	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+
+	"github.com/labstack/echo/v4"
 )
 
 type createPersonalItemRequest struct {
@@ -15,33 +15,30 @@ type createPersonalItemRequest struct {
 	CategoryID int64  `json:"categoryId"`
 }
 
-func NewCreatePersonalItem(usecase usecase.CreatePersonalItem, logger core.Logger) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func NewCreatePersonalItem(usecase usecase.CreatePersonalItem, logger core.Logger) echo.HandlerFunc {
+	return func(c echo.Context) error {
 		var req createPersonalItemRequest
 
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		if err := c.Bind(&req); err != nil {
 			logger.WithError(err).
-				With("endpoint", r.URL.Path).
-				With("method", r.Method).
+				With("endpoint", c.Path()).
+				With("method", c.Request().Method).
 				Info("invalid request format")
-			response.Error(w, core.NewInvalidError(err))
-			return
+			return core.NewInvalidError(err)
 		}
 
-		ctx := r.Context()
+		ctx := c.Request().Context()
 		input, err := req.makeInput(ctx, logger)
 		if err != nil {
-			response.Error(w, err)
-			return
+			return err
 		}
 
 		err = usecase.Execute(ctx, input)
 		if err != nil {
-			response.Error(w, err)
-			return
+			return err
 		}
 
-		response.NoContent(w)
+		return c.NoContent(http.StatusNoContent)
 	}
 }
 

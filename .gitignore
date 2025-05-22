@@ -1,4 +1,5 @@
 .vscode/
 docker/postgres/
+docker/redis/
 .air/
 .env

@@ -2,12 +2,13 @@ package handler
 
 import (
 	"net/http"
-	"sharebasket/presentation/response"
+
+	"github.com/labstack/echo/v4"
 )
 
-func NewHealthCheck() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		response.StatusOK(w, map[string]string{
+func NewHealthCheck() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{
 			"message": "ok",
 		})
 	}

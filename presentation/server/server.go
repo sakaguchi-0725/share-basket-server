@@ -14,66 +14,56 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type Server struct {
-	addr   string
-	router *chi.Mux
-	server *http.Server
+	addr string
+	*echo.Echo
 }
 
 func New(addr uint) *Server {
-	r := chi.NewRouter()
 	addrStr := fmt.Sprintf(":%v", addr)
 
 	return &Server{
-		addr:   addrStr,
-		router: r,
-		server: &http.Server{
-			Addr:         addrStr,
-			Handler:      r,
-			ReadTimeout:  10 * time.Second,
-			WriteTimeout: 10 * time.Second,
-			IdleTimeout:  5 * time.Second,
-		},
+		addr: addrStr,
+		Echo: echo.New(),
 	}
 }
 
 func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
-	s.router.Use(middleware.Logger)
-	s.router.Use(middleware.Recoverer)
+	s.Use(middleware.Logger())
+	s.Use(middleware.Recover())
 
-	s.router.Get("/health-check", handler.NewHealthCheck())
-	s.router.Post("/login", handler.NewLogin(usecase.NewLogin(), logger))
-	s.router.Post("/signup", handler.NewSignUp(usecase.NewSignUp(), logger))
-	s.router.Post("/signup/confirm", handler.NewSignUpConfirm(usecase.NewSignUpConfirm(), logger))
-	s.router.Post("/logout", handler.NewLogout())
+	s.GET("/health-check", handler.NewHealthCheck())
+	s.POST("/login", handler.NewLogin(usecase.NewLogin(), logger))
+	s.POST("/signup", handler.NewSignUp(usecase.NewSignUp(), logger))
+	s.POST("/signup/confirm", handler.NewSignUpConfirm(usecase.NewSignUpConfirm(), logger))
+	s.POST("/logout", handler.NewLogout())
 
-	s.router.Group(func(r chi.Router) {
-		r.Use(customMiddleware.Auth(usecase.NewVerifyToken(), logger))
-		r.Get("/me", handler.NewGetAccount(usecase.NewGetAccount(), logger))
-		r.Get("/categories", handler.NewGetCategories(usecase.NewGetCategories()))
+	// 認証が必要なルートグループ
+	auth := s.Group("")
+	auth.Use(customMiddleware.Auth(usecase.NewVerifyToken(), logger))
+	auth.GET("/me", handler.NewGetAccount(usecase.NewGetAccount(), logger))
+	auth.GET("/categories", handler.NewGetCategories(usecase.NewGetCategories()))
 
-		r.Route("/personal", func(r chi.Router) {
-			r.Get("/items", handler.NewGetPersonalItems(usecase.NewGetPersonalItems(), logger))
-			r.Post("/items", handler.NewCreatePersonalItem(usecase.NewCreatePersonalItem(), logger))
-			r.Put("/items/{id}", handler.NewUpdatePersonalItem(usecase.NewUpdatePersonalItem(), logger))
-			r.Delete("/items/{id}", handler.NewDeletePersonalItem(usecase.NewDeletePersonalItem(), logger))
-		})
+	// パーソナルアイテム関連のルート
+	personal := auth.Group("/personal")
+	personal.GET("/items", handler.NewGetPersonalItems(usecase.NewGetPersonalItems(), logger))
+	personal.POST("/items", handler.NewCreatePersonalItem(usecase.NewCreatePersonalItem(), logger))
+	personal.PUT("/items/:id", handler.NewUpdatePersonalItem(usecase.NewUpdatePersonalItem(), logger))
+	personal.DELETE("/items/:id", handler.NewDeletePersonalItem(usecase.NewDeletePersonalItem(), logger))
 
-		r.Route("/family", func(r chi.Router) {
-			r.Post("/", handler.NewCreateFamily(usecase.NewCreateFamily(), logger))
-			r.Get("/invitation", handler.NewInvitationFamily(usecase.NewInvitationFamily(), logger))
-		})
-	})
+	// ファミリー関連のルート
+	family := auth.Group("/family")
+	family.POST("", handler.NewCreateFamily(usecase.NewCreateFamily(), logger))
+	family.GET("/invitation", handler.NewInvitationFamily(usecase.NewInvitationFamily(), logger))
 }
 
 func (s *Server) Run() {
 	go func() {
-		log.Println("HTTP server is running on", s.addr)
-		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := s.Start(s.addr); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("failed to serve: %v\n", err)
 		}
 	}()
@@ -85,7 +75,7 @@ func (s *Server) Run() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	if err := s.server.Shutdown(ctx); err != nil {
+	if err := s.Shutdown(ctx); err != nil {
 		log.Fatalf("server shutdown failed: %v", err)
 	}
 	log.Println("HTTP server shutdown completed")

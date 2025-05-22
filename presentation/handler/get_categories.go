@@ -2,8 +2,9 @@ package handler
 
 import (
 	"net/http"
-	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+
+	"github.com/labstack/echo/v4"
 )
 
 type getCategoriesResponse struct {
@@ -11,15 +12,14 @@ type getCategoriesResponse struct {
 	Name string `json:"name"`
 }
 
-func NewGetCategories(usecase usecase.GetCategories) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		out, err := usecase.Execute(r.Context())
+func NewGetCategories(usecase usecase.GetCategories) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		out, err := usecase.Execute(c.Request().Context())
 		if err != nil {
-			response.Error(w, err)
-			return
+			return err
 		}
 
-		response.StatusOK(w, makeGetCategoriesResponse(out))
+		return c.JSON(http.StatusOK, makeGetCategoriesResponse(out))
 	}
 }
 

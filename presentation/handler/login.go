@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 	"sharebasket/core"
-	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+
+	"github.com/labstack/echo/v4"
 )
 
 type loginRequest struct {
@@ -13,27 +13,25 @@ type loginRequest struct {
 	Password string `json:"password"`
 }
 
-func NewLogin(usecase usecase.Login, logger core.Logger) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func NewLogin(usecase usecase.Login, logger core.Logger) echo.HandlerFunc {
+	return func(c echo.Context) error {
 		var req loginRequest
 
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		if err := c.Bind(&req); err != nil {
 			logger.WithError(err).
-				With("endpoint", r.URL.Path).
-				With("method", r.Method).
+				With("endpoint", c.Path()).
+				With("method", c.Request().Method).
 				Info("invalid request format")
-			response.Error(w, core.NewInvalidError(err))
-			return
+			return core.NewInvalidError(err)
 		}
 
-		output, err := usecase.Execute(r.Context(), req.makeInput())
+		output, err := usecase.Execute(c.Request().Context(), req.makeInput())
 		if err != nil {
-			response.Error(w, err)
-			return
+			return err
 		}
 
-		setCookies(w, r, output)
-		response.NoContent(w)
+		setCookies(c, output)
+		return c.NoContent(http.StatusNoContent)
 	}
 }
 
@@ -44,13 +42,13 @@ func (l *loginRequest) makeInput() usecase.LoginInput {
 	}
 }
 
-func setCookies(w http.ResponseWriter, r *http.Request, o usecase.LoginOutput) {
+func setCookies(c echo.Context, o usecase.LoginOutput) {
 	accessToken := &http.Cookie{
 		Name:     "access_token",
 		Value:    o.AccessToken,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   r.TLS != nil,
+		Secure:   c.Request().TLS != nil,
 		SameSite: http.SameSiteStrictMode,
 		MaxAge:   86400,
 	}
@@ -60,11 +58,11 @@ func setCookies(w http.ResponseWriter, r *http.Request, o usecase.LoginOutput) {
 		Value:    o.RefreshToken,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   r.TLS != nil,
+		Secure:   c.Request().TLS != nil,
 		SameSite: http.SameSiteStrictMode,
 		MaxAge:   86400,
 	}
 
-	http.SetCookie(w, accessToken)
-	http.SetCookie(w, refreshToken)
+	c.SetCookie(accessToken)
+	c.SetCookie(refreshToken)
 }

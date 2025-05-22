@@ -4,47 +4,43 @@ import (
 	"fmt"
 	"net/http"
 	"sharebasket/core"
-	"sharebasket/presentation/response"
 	"sharebasket/usecase"
 	"strconv"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/labstack/echo/v4"
 )
 
-func NewDeletePersonalItem(usecase usecase.DeletePersonalItem, logger core.Logger) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		idStr := chi.URLParam(r, "id")
+func NewDeletePersonalItem(usecase usecase.DeletePersonalItem, logger core.Logger) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		idStr := c.Param("id")
 
 		id, err := strconv.ParseInt(idStr, 10, 64)
 		if err != nil {
 			logger.WithError(err).
 				With("item_id", idStr).
-				With("endpoint", r.URL.Path).
-				With("method", r.Method).
+				With("endpoint", c.Path()).
+				With("method", c.Request().Method).
 				Info("invalid item id")
-			response.Error(w, core.NewInvalidError(
+			return core.NewInvalidError(
 				fmt.Errorf("invalid item id: %w", err),
-			))
-			return
+			)
 		}
 
-		ctx := r.Context()
+		ctx := c.Request().Context()
 
 		userID, err := core.GetUserID(ctx)
 		if err != nil {
 			logger.WithError(err).
 				Info("failed to get user ID from context")
-			response.Error(w, core.NewInvalidError(err))
-			return
+			return core.NewInvalidError(err)
 		}
 
 		err = usecase.Execute(ctx, makeDeletePersonalItemInput(id, userID))
 		if err != nil {
-			response.Error(w, err)
-			return
+			return err
 		}
 
-		response.NoContent(w)
+		return c.NoContent(http.StatusNoContent)
 	}
 }
 

@@ -4,34 +4,35 @@ import (
 	"context"
 	"net/http"
 	"sharebasket/core"
-	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+
+	"github.com/labstack/echo/v4"
 )
 
-func Auth(v usecase.VerifyToken, logger core.Logger) func(http.Handler) http.Handler {
-	return func(h http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			cookie, err := r.Cookie("access_token")
+func Auth(v usecase.VerifyToken, logger core.Logger) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			ctx := c.Request().Context()
+
+			cookie, err := c.Cookie("access_token")
 			if err != nil {
 				if err == http.ErrNoCookie {
 					logger.WithError(err).Warn("access token is not found")
-					response.Error(w, core.NewAppError(core.ErrUnauthorized, err))
-					return
+					return core.NewAppError(core.ErrUnauthorized, err)
 				}
 
 				logger.WithError(err).Error("failed to get cookie")
-				response.Error(w, err)
-				return
+				return err
 			}
 
-			userID, err := v.Execute(r.Context(), cookie.Value)
+			userID, err := v.Execute(ctx, cookie.Value)
 			if err != nil {
-				response.Error(w, err)
-				return
+				return err
 			}
 
-			ctx := context.WithValue(r.Context(), core.UserIDKey, userID)
-			h.ServeHTTP(w, r.WithContext(ctx))
-		})
+			newCtx := context.WithValue(ctx, core.UserIDKey, userID)
+			c.SetRequest(c.Request().WithContext(newCtx))
+			return next(c)
+		}
 	}
 }

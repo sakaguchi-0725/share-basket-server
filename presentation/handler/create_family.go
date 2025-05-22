@@ -1,54 +1,46 @@
 package handler
 
 import (
-	"context"
-	"encoding/json"
 	"net/http"
 	"sharebasket/core"
-	"sharebasket/presentation/response"
 	"sharebasket/usecase"
+
+	"github.com/labstack/echo/v4"
 )
 
 type createFamilyRequest struct {
 	Name string `json:"name"`
 }
 
-func NewCreateFamily(usecase usecase.CreateFamily, logger core.Logger) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func NewCreateFamily(usecase usecase.CreateFamily, logger core.Logger) echo.HandlerFunc {
+	return func(c echo.Context) error {
 		var req createFamilyRequest
 
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		if err := c.Bind(&req); err != nil {
 			logger.WithError(err).
-				With("endpoint", r.URL.Path).
-				With("method", r.Method).
+				With("endpoint", c.Path()).
+				With("method", c.Request().Method).
 				Info("invalid request format")
-			response.Error(w, core.NewInvalidError(err))
-			return
+			return core.NewInvalidError(err)
 		}
 
-		ctx := r.Context()
-
-		input, err := req.makeInput(ctx)
+		input, err := req.makeInput(c)
 		if err != nil {
 			logger.WithError(err).
 				Info("failed to get user ID from context")
-
-			response.Error(w, err)
-			return
+			return err
 		}
 
-		err = usecase.Execute(ctx, input)
-		if err != nil {
-			response.Error(w, err)
-			return
+		if err := usecase.Execute(c.Request().Context(), input); err != nil {
+			return err
 		}
 
-		response.NoContent(w)
+		return c.NoContent(http.StatusNoContent)
 	}
 }
 
-func (req createFamilyRequest) makeInput(ctx context.Context) (usecase.CreateFamilyInput, error) {
-	id, err := core.GetUserID(ctx)
+func (req createFamilyRequest) makeInput(c echo.Context) (usecase.CreateFamilyInput, error) {
+	id, err := core.GetUserID(c.Request().Context())
 	if err != nil {
 		return usecase.CreateFamilyInput{}, err
 	}
