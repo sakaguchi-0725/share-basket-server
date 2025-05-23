@@ -13,13 +13,11 @@ type getAccountResponse struct {
 	Name string `json:"name"`
 }
 
-func NewGetAccount(usecase usecase.GetAccount, logger core.Logger) echo.HandlerFunc {
+func NewGetAccount(usecase usecase.GetAccount) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, err := core.GetUserID(ctx)
 		if err != nil {
-			logger.WithError(err).
-				Info("failed to get user ID from context")
 			return err
 		}
 

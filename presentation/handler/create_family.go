@@ -12,22 +12,16 @@ type createFamilyRequest struct {
 	Name string `json:"name"`
 }
 
-func NewCreateFamily(usecase usecase.CreateFamily, logger core.Logger) echo.HandlerFunc {
+func NewCreateFamily(usecase usecase.CreateFamily) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req createFamilyRequest
 
 		if err := c.Bind(&req); err != nil {
-			logger.WithError(err).
-				With("endpoint", c.Path()).
-				With("method", c.Request().Method).
-				Info("invalid request format")
 			return core.NewInvalidError(err)
 		}
 
 		input, err := req.makeInput(c)
 		if err != nil {
-			logger.WithError(err).
-				Info("failed to get user ID from context")
 			return err
 		}
 

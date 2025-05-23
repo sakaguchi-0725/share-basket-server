@@ -10,17 +10,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewDeletePersonalItem(usecase usecase.DeletePersonalItem, logger core.Logger) echo.HandlerFunc {
+func NewDeletePersonalItem(usecase usecase.DeletePersonalItem) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		idStr := c.Param("id")
 
 		id, err := strconv.ParseInt(idStr, 10, 64)
 		if err != nil {
-			logger.WithError(err).
-				With("item_id", idStr).
-				With("endpoint", c.Path()).
-				With("method", c.Request().Method).
-				Info("invalid item id")
 			return core.NewInvalidError(
 				fmt.Errorf("invalid item id: %w", err),
 			)
@@ -30,8 +25,6 @@ func NewDeletePersonalItem(usecase usecase.DeletePersonalItem, logger core.Logge
 
 		userID, err := core.GetUserID(ctx)
 		if err != nil {
-			logger.WithError(err).
-				Info("failed to get user ID from context")
 			return core.NewInvalidError(err)
 		}
 

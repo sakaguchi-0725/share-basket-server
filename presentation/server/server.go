@@ -38,28 +38,28 @@ func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 	s.Use(customMiddleware.Error(logger))
 
 	s.GET("/health-check", handler.NewHealthCheck())
-	s.POST("/login", handler.NewLogin(usecase.NewLogin(), logger))
-	s.POST("/signup", handler.NewSignUp(usecase.NewSignUp(), logger))
-	s.POST("/signup/confirm", handler.NewSignUpConfirm(usecase.NewSignUpConfirm(), logger))
+	s.POST("/login", handler.NewLogin(usecase.NewLogin()))
+	s.POST("/signup", handler.NewSignUp(usecase.NewSignUp()))
+	s.POST("/signup/confirm", handler.NewSignUpConfirm(usecase.NewSignUpConfirm()))
 	s.POST("/logout", handler.NewLogout())
 
 	// 認証が必要なルートグループ
 	auth := s.Group("")
-	auth.Use(customMiddleware.Auth(usecase.NewVerifyToken(), logger))
-	auth.GET("/me", handler.NewGetAccount(usecase.NewGetAccount(), logger))
+	auth.Use(customMiddleware.Auth(usecase.NewVerifyToken()))
+	auth.GET("/me", handler.NewGetAccount(usecase.NewGetAccount()))
 	auth.GET("/categories", handler.NewGetCategories(usecase.NewGetCategories()))
 
 	// パーソナルアイテム関連のルート
 	personal := auth.Group("/personal")
-	personal.GET("/items", handler.NewGetPersonalItems(usecase.NewGetPersonalItems(), logger))
-	personal.POST("/items", handler.NewCreatePersonalItem(usecase.NewCreatePersonalItem(), logger))
-	personal.PUT("/items/:id", handler.NewUpdatePersonalItem(usecase.NewUpdatePersonalItem(), logger))
-	personal.DELETE("/items/:id", handler.NewDeletePersonalItem(usecase.NewDeletePersonalItem(), logger))
+	personal.GET("/items", handler.NewGetPersonalItems(usecase.NewGetPersonalItems()))
+	personal.POST("/items", handler.NewCreatePersonalItem(usecase.NewCreatePersonalItem()))
+	personal.PUT("/items/:id", handler.NewUpdatePersonalItem(usecase.NewUpdatePersonalItem()))
+	personal.DELETE("/items/:id", handler.NewDeletePersonalItem(usecase.NewDeletePersonalItem()))
 
 	// ファミリー関連のルート
 	family := auth.Group("/family")
-	family.POST("", handler.NewCreateFamily(usecase.NewCreateFamily(), logger))
-	family.GET("/invitation", handler.NewInvitationFamily(usecase.NewInvitationFamily(), logger))
+	family.POST("", handler.NewCreateFamily(usecase.NewCreateFamily()))
+	family.GET("/invitation", handler.NewInvitationFamily(usecase.NewInvitationFamily()))
 }
 
 func (s *Server) Run() {

@@ -12,14 +12,12 @@ type invitationFamilyResponse struct {
 	Token string `json:"token"`
 }
 
-func NewInvitationFamily(usecase usecase.InvitationFamily, logger core.Logger) echo.HandlerFunc {
+func NewInvitationFamily(usecase usecase.InvitationFamily) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 
 		userID, err := core.GetUserID(ctx)
 		if err != nil {
-			logger.WithError(err).
-				Info("failed to get user ID from context")
 			return err
 		}
 

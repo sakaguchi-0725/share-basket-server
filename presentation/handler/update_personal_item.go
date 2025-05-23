@@ -17,17 +17,12 @@ type updatePersonalItemRequest struct {
 	CategoryID int64  `json:"categoryId"`
 }
 
-func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem, logger core.Logger) echo.HandlerFunc {
+func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		idStr := c.Param("id")
 
 		id, err := strconv.ParseInt(idStr, 10, 64)
 		if err != nil {
-			logger.WithError(err).
-				With("item_id", idStr).
-				With("endpoint", c.Path()).
-				With("method", c.Request().Method).
-				Info("invalid item id")
 			return core.NewInvalidError(
 				fmt.Errorf("invalid item id: %w", err),
 			)
@@ -35,10 +30,6 @@ func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem, logger core.Logge
 
 		var req updatePersonalItemRequest
 		if err := c.Bind(&req); err != nil {
-			logger.WithError(err).
-				With("endpoint", c.Path()).
-				With("method", c.Request().Method).
-				Info("invalid request format")
 			return core.NewInvalidError(core.ErrInvalidData)
 		}
 
@@ -46,8 +37,6 @@ func NewUpdatePersonalItem(usecase usecase.UpdatePersonalItem, logger core.Logge
 
 		in, err := req.makeUpdatePersonalItemInput(ctx, id)
 		if err != nil {
-			logger.WithError(err).
-				Info("failed to get user ID from context")
 			return err
 		}
 

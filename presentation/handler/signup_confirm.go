@@ -13,15 +13,11 @@ type signUpConfirmRequest struct {
 	ConfirmationCode string `json:"confirmationCode"`
 }
 
-func NewSignUpConfirm(usecase usecase.SignUpConfirm, logger core.Logger) echo.HandlerFunc {
+func NewSignUpConfirm(usecase usecase.SignUpConfirm) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req signUpConfirmRequest
 
 		if err := c.Bind(&req); err != nil {
-			logger.WithError(err).
-				With("endpoint", c.Path()).
-				With("method", c.Request().Method).
-				Info("invalid request format")
 			return core.NewInvalidError(err)
 		}
 

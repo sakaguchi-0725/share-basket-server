@@ -15,14 +15,12 @@ type getPersonalItemsResponse struct {
 	CategoryID int64  `json:"categoryId"`
 }
 
-func NewGetPersonalItems(usecase usecase.GetPersonalItems, logger core.Logger) echo.HandlerFunc {
+func NewGetPersonalItems(usecase usecase.GetPersonalItems) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 
 		userID, err := core.GetUserID(ctx)
 		if err != nil {
-			logger.WithError(err).
-				Info("failed to get user ID from context")
 			return err
 		}
 

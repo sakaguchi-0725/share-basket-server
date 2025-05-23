@@ -13,15 +13,11 @@ type loginRequest struct {
 	Password string `json:"password"`
 }
 
-func NewLogin(usecase usecase.Login, logger core.Logger) echo.HandlerFunc {
+func NewLogin(usecase usecase.Login) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req loginRequest
 
 		if err := c.Bind(&req); err != nil {
-			logger.WithError(err).
-				With("endpoint", c.Path()).
-				With("method", c.Request().Method).
-				Info("invalid request format")
 			return core.NewInvalidError(err)
 		}
 

@@ -15,20 +15,16 @@ type createPersonalItemRequest struct {
 	CategoryID int64  `json:"categoryId"`
 }
 
-func NewCreatePersonalItem(usecase usecase.CreatePersonalItem, logger core.Logger) echo.HandlerFunc {
+func NewCreatePersonalItem(usecase usecase.CreatePersonalItem) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var req createPersonalItemRequest
 
 		if err := c.Bind(&req); err != nil {
-			logger.WithError(err).
-				With("endpoint", c.Path()).
-				With("method", c.Request().Method).
-				Info("invalid request format")
 			return core.NewInvalidError(err)
 		}
 
 		ctx := c.Request().Context()
-		input, err := req.makeInput(ctx, logger)
+		input, err := req.makeInput(ctx)
 		if err != nil {
 			return err
 		}
@@ -42,11 +38,9 @@ func NewCreatePersonalItem(usecase usecase.CreatePersonalItem, logger core.Logge
 	}
 }
 
-func (req *createPersonalItemRequest) makeInput(ctx context.Context, logger core.Logger) (usecase.CreatePersonalItemInput, error) {
+func (req *createPersonalItemRequest) makeInput(ctx context.Context) (usecase.CreatePersonalItemInput, error) {
 	userID, err := core.GetUserID(ctx)
 	if err != nil {
-		logger.WithError(err).
-			Info("failed to get user ID from context")
 		return usecase.CreatePersonalItemInput{}, err
 	}
 
