@@ -1,63 +1,80 @@
 package core
 
-type (
-	ErrorCode int
-
-	AppError struct {
-		code ErrorCode
-		error
-	}
+import (
+	"fmt"
+	"path/filepath"
+	"runtime"
 )
 
-const (
-	ErrBadRequest ErrorCode = iota + 1
-	ErrUnauthorized
-	ErrForbidden
-	ErrEmailAlreadyExists
-	ErrExpiredCode
-	ErrExpiredToken
-	ErrNotFound
-)
-
-func (e ErrorCode) String() string {
-	switch e {
-	case ErrBadRequest:
-		return "BAD_REQUEST"
-	case ErrEmailAlreadyExists:
-		return "EMAIL_ALREADY_EXISTS"
-	case ErrForbidden:
-		return "FORBIDDEN"
-	case ErrUnauthorized:
-		return "UNAUTHORIZED"
-	case ErrExpiredCode:
-		return "EXPIRED_CODE"
-	case ErrExpiredToken:
-		return "EXPIRED_TOKEN"
-	case ErrNotFound:
-		return "DATA_NOT_FOUND"
-	default:
-		return "INTERNAL_SERVER_ERROR"
-	}
+type AppError struct {
+	code    ErrorCode
+	file    string
+	line    int
+	message string
+	error
 }
 
 func NewAppError(code ErrorCode, err error) *AppError {
-	return &AppError{
-		code:  code,
-		error: err,
+	_, file, line, ok := runtime.Caller(1)
+	if !ok {
+		file = "unknown"
+		line = 0
 	}
+
+	return &AppError{
+		code:    code,
+		error:   err,
+		file:    filepath.Base(file),
+		line:    line,
+		message: code.DefaultMessage(),
+	}
+}
+
+// カスタムメッセージを設定
+func (e *AppError) WithMessage(message string) *AppError {
+	e.message = message
+	return e
 }
 
 func NewInvalidError(err error) *AppError {
+	_, file, line, ok := runtime.Caller(1)
+	if !ok {
+		file = "unknown"
+		line = 0
+	}
+
 	return &AppError{
-		code:  ErrBadRequest,
-		error: err,
+		code:    ErrBadRequest,
+		error:   err,
+		file:    filepath.Base(file),
+		line:    line,
+		message: ErrBadRequest.DefaultMessage(),
 	}
 }
 
+func (e *AppError) Unwrap() error {
+	return e.error
+}
+
+func (e *AppError) Is(target error) bool {
+	if t, ok := target.(*AppError); ok {
+		return e.code == t.code
+	}
+	return false
+}
+
 func (e *AppError) Error() string {
-	return e.error.Error()
+	return fmt.Sprintf("%s at %s:%d: %s", e.code.String(), e.file, e.line, e.error.Error())
 }
 
 func (e *AppError) Code() ErrorCode {
 	return e.code
+}
+
+func (e *AppError) StackTrace() string {
+	return fmt.Sprintf("%s:%d", e.file, e.line)
+}
+
+func (e *AppError) Message() string {
+	return e.message
 }
