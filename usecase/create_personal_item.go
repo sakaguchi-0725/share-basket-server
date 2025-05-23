@@ -22,7 +22,6 @@ type (
 	createPersonalItem struct {
 		accountRepo  repository.Account
 		personalRepo repository.PersonalItem
-		logger       core.Logger
 	}
 )
 
@@ -33,9 +32,6 @@ type (
 func (c *createPersonalItem) Execute(ctx context.Context, in CreatePersonalItemInput) error {
 	account, err := c.accountRepo.Get(in.UserID)
 	if err != nil {
-		c.logger.WithError(err).
-			With("user_id", in.UserID).
-			Error("failed to get account")
 		return err
 	}
 
@@ -43,36 +39,25 @@ func (c *createPersonalItem) Execute(ctx context.Context, in CreatePersonalItemI
 	if in.Status != "" {
 		status, err = model.ParseShoppingStatus(in.Status)
 		if err != nil {
-			c.logger.WithError(err).
-				With("status", in.Status).
-				Warn("invalid shopping status")
 			return core.NewInvalidError(err)
 		}
 	}
 
 	item, err := model.NewPersonalItem(in.Name, core.Ptr(status), in.CategoryID, account.ID)
 	if err != nil {
-		c.logger.WithError(err).
-			With("name", in.Name).
-			With("category_id", in.CategoryID).
-			Warn("invalid personal item parameters")
 		return core.NewInvalidError(err)
 	}
 
 	if err := c.personalRepo.Store(&item); err != nil {
-		c.logger.WithError(err).
-			With("item", item).
-			Error("failed to store personal item")
 		return err
 	}
 
 	return nil
 }
 
-func NewCreatePersonalItem(a repository.Account, p repository.PersonalItem, l core.Logger) CreatePersonalItem {
+func NewCreatePersonalItem(a repository.Account, p repository.PersonalItem) CreatePersonalItem {
 	return &createPersonalItem{
 		accountRepo:  a,
 		personalRepo: p,
-		logger:       l,
 	}
 }

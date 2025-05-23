@@ -19,9 +19,10 @@ func main() {
 		log.Fatalf("failed to initialize repository: %v", err)
 	}
 
-	logger := core.NewLogger()
 	service := registry.NewService(repo)
-	usecase := registry.NewUseCase(repo, service, logger)
+	usecase := registry.NewUseCase(repo, service)
+
+	logger := core.NewLogger()
 
 	srv := server.New(8080)
 	srv.MapHandler(usecase, logger)

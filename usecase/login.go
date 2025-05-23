@@ -25,8 +25,7 @@ type (
 	}
 
 	login struct {
-		auth   repository.Authenticator
-		logger core.Logger
+		auth repository.Authenticator
 	}
 )
 
@@ -34,15 +33,9 @@ func (l *login) Execute(ctx context.Context, in LoginInput) (LoginOutput, error)
 	accessToken, refreshToken, err := l.auth.Login(ctx, in.Email, in.Password)
 	if err != nil {
 		if errors.Is(err, ErrLoginFailed) || errors.Is(err, core.ErrInvalidData) {
-			l.logger.WithError(err).
-				With("email", in.Email).
-				Warn("invalid login input")
 			return LoginOutput{}, core.NewAppError(core.ErrUnauthorized, err)
 		}
 
-		l.logger.WithError(err).
-			With("email", in.Email).
-			Error("login process failed")
 		return LoginOutput{}, err
 	}
 
@@ -52,9 +45,8 @@ func (l *login) Execute(ctx context.Context, in LoginInput) (LoginOutput, error)
 	}, nil
 }
 
-func NewLogin(a repository.Authenticator, l core.Logger) Login {
+func NewLogin(a repository.Authenticator) Login {
 	return &login{
-		auth:   a,
-		logger: l,
+		auth: a,
 	}
 }

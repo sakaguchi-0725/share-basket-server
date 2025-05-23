@@ -19,17 +19,12 @@ type (
 		accountRepo   repository.Account
 		familyRepo    repository.Family
 		familyService service.Family
-		logger        core.Logger
 	}
 )
 
 func (i *invitationFamily) Execute(ctx context.Context, userID string) (string, error) {
-	// userIDからAccount取得
 	account, err := i.accountRepo.Get(userID)
 	if err != nil {
-		i.logger.WithError(err).
-			With("user_id", userID).
-			Error("failed to get account")
 		return "", err
 	}
 
@@ -66,12 +61,10 @@ func NewInvitationFamily(
 	a repository.Account,
 	f repository.Family,
 	s service.Family,
-	l core.Logger,
 ) InvitationFamily {
 	return &invitationFamily{
 		accountRepo:   a,
 		familyRepo:    f,
 		familyService: s,
-		logger:        l,
 	}
 }

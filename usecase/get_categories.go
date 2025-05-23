@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"sharebasket/core"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
 )
@@ -18,16 +17,13 @@ type (
 	}
 
 	getCategories struct {
-		repo   repository.Category
-		logger core.Logger
+		repo repository.Category
 	}
 )
 
 func (g *getCategories) Execute(ctx context.Context) ([]GetCategoriesOutput, error) {
 	categories, err := g.repo.GetAll()
 	if err != nil {
-		g.logger.WithError(err).
-			Error("failed to get category")
 		return []GetCategoriesOutput{}, err
 	}
 
@@ -47,9 +43,8 @@ func (g *getCategories) makeOutput(categories []model.Category) []GetCategoriesO
 	return outputs
 }
 
-func NewGetCategories(r repository.Category, l core.Logger) GetCategories {
+func NewGetCategories(r repository.Category) GetCategories {
 	return &getCategories{
-		repo:   r,
-		logger: l,
+		repo: r,
 	}
 }

@@ -27,31 +27,22 @@ type (
 	getPersonalItems struct {
 		accountRepo  repository.Account
 		personalRepo repository.PersonalItem
-		logger       core.Logger
 	}
 )
 
 func (g *getPersonalItems) Execute(ctx context.Context, in GetPersonalItemsInput) ([]GetPersonalItemsOutput, error) {
 	account, err := g.accountRepo.Get(in.UserID)
 	if err != nil {
-		g.logger.WithError(err).
-			With("user_id", in.UserID).
-			Error("failed to get account")
 		return []GetPersonalItemsOutput{}, err
 	}
 
 	status, err := in.status()
 	if err != nil {
-		g.logger.WithError(err).
-			With("status", in.Status).
-			Warn("invalid shopping status")
 		return []GetPersonalItemsOutput{}, err
 	}
 
 	items, err := g.personalRepo.GetAll(account.ID, status)
 	if err != nil {
-		g.logger.WithError(err).
-			Error("failed to get personal shopping item")
 		return []GetPersonalItemsOutput{}, err
 	}
 
@@ -86,10 +77,9 @@ func makeGetPersonalItemsOutput(items []model.PersonalItem) []GetPersonalItemsOu
 	return outputs
 }
 
-func NewGetPersonalItems(a repository.Account, p repository.PersonalItem, l core.Logger) GetPersonalItems {
+func NewGetPersonalItems(a repository.Account, p repository.PersonalItem) GetPersonalItems {
 	return &getPersonalItems{
 		accountRepo:  a,
 		personalRepo: p,
-		logger:       l,
 	}
 }

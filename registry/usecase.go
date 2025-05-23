@@ -1,7 +1,6 @@
 package registry
 
 import (
-	"sharebasket/core"
 	"sharebasket/usecase"
 )
 
@@ -24,7 +23,6 @@ type (
 	usecaseImpl struct {
 		repo    Repository
 		service Service
-		logger  core.Logger
 	}
 )
 
@@ -33,7 +31,6 @@ func (u *usecaseImpl) NewInvitationFamily() usecase.InvitationFamily {
 		u.repo.NewAccount(),
 		u.repo.NewFamily(),
 		u.service.NewFamily(),
-		u.logger,
 	)
 }
 
@@ -42,7 +39,6 @@ func (u *usecaseImpl) NewCreateFamily() usecase.CreateFamily {
 		u.repo.NewAccount(),
 		u.repo.NewFamily(),
 		u.service.NewFamily(),
-		u.logger,
 	)
 }
 
@@ -50,7 +46,6 @@ func (u *usecaseImpl) NewDeletePersonalItem() usecase.DeletePersonalItem {
 	return usecase.NewDeletePersonalItem(
 		u.repo.NewAccount(),
 		u.repo.NewPersonalItem(),
-		u.logger,
 	)
 }
 
@@ -58,7 +53,6 @@ func (u *usecaseImpl) NewUpdatePersonalItem() usecase.UpdatePersonalItem {
 	return usecase.NewUpdatePersonalItem(
 		u.repo.NewAccount(),
 		u.repo.NewPersonalItem(),
-		u.logger,
 	)
 }
 
@@ -66,7 +60,6 @@ func (u *usecaseImpl) NewGetPersonalItems() usecase.GetPersonalItems {
 	return usecase.NewGetPersonalItems(
 		u.repo.NewAccount(),
 		u.repo.NewPersonalItem(),
-		u.logger,
 	)
 }
 
@@ -74,20 +67,19 @@ func (u *usecaseImpl) NewCreatePersonalItem() usecase.CreatePersonalItem {
 	return usecase.NewCreatePersonalItem(
 		u.repo.NewAccount(),
 		u.repo.NewPersonalItem(),
-		u.logger,
 	)
 }
 
 func (u *usecaseImpl) NewGetAccount() usecase.GetAccount {
-	return usecase.NewGetAccount(u.repo.NewAccount(), u.logger)
+	return usecase.NewGetAccount(u.repo.NewAccount())
 }
 
 func (u *usecaseImpl) NewGetCategories() usecase.GetCategories {
-	return usecase.NewGetCategories(u.repo.NewCategory(), u.logger)
+	return usecase.NewGetCategories(u.repo.NewCategory())
 }
 
 func (u *usecaseImpl) NewLogin() usecase.Login {
-	return usecase.NewLogin(u.repo.NewAuthenticator(), u.logger)
+	return usecase.NewLogin(u.repo.NewAuthenticator())
 }
 
 func (u *usecaseImpl) NewSignUp() usecase.SignUp {
@@ -97,22 +89,20 @@ func (u *usecaseImpl) NewSignUp() usecase.SignUp {
 		u.repo.NewAccount(),
 		u.service.NewUser(),
 		u.repo.NewTransaction(),
-		u.logger,
 	)
 }
 
 func (u *usecaseImpl) NewSignUpConfirm() usecase.SignUpConfirm {
-	return usecase.NewSignUpConfirm(u.repo.NewAuthenticator(), u.logger)
+	return usecase.NewSignUpConfirm(u.repo.NewAuthenticator())
 }
 
 func (u *usecaseImpl) NewVerifyToken() usecase.VerifyToken {
-	return usecase.NewVerifyToken(u.repo.NewAuthenticator(), u.logger)
+	return usecase.NewVerifyToken(u.repo.NewAuthenticator())
 }
 
-func NewUseCase(r Repository, s Service, l core.Logger) UseCase {
+func NewUseCase(r Repository, s Service) UseCase {
 	return &usecaseImpl{
 		repo:    r,
 		service: s,
-		logger:  l,
 	}
 }

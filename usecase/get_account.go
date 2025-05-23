@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"sharebasket/core"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
 )
@@ -21,16 +20,13 @@ type (
 	}
 
 	getAccount struct {
-		repo   repository.Account
-		logger core.Logger
+		repo repository.Account
 	}
 )
 
 func (g *getAccount) Execute(ctx context.Context, userID string) (GetAccountOutput, error) {
 	account, err := g.repo.Get(userID)
 	if err != nil {
-		g.logger.WithError(err).
-			Error("failed to get account")
 		return GetAccountOutput{}, err
 	}
 
@@ -44,9 +40,8 @@ func (g *getAccount) makeOutput(acc model.Account) GetAccountOutput {
 	}
 }
 
-func NewGetAccount(r repository.Account, l core.Logger) GetAccount {
+func NewGetAccount(r repository.Account) GetAccount {
 	return &getAccount{
-		repo:   r,
-		logger: l,
+		repo: r,
 	}
 }
