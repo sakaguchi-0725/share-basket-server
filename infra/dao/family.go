@@ -184,10 +184,10 @@ func (f *familyDto) ToModel(members []familyMemberDto) model.Family {
 	}
 }
 
-func NewFamily(c *db.Conn) repository.Family {
+func NewFamily(c *db.Conn, redisHost string) repository.Family {
 	return &familyDao{
 		client: redis.NewClient(&redis.Options{
-			Addr:     "localhost:6379", // TODO: 環境変数から受け取る
+			Addr:     redisHost,
 			Password: "",
 			DB:       0,
 		}),

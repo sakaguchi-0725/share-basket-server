@@ -178,16 +178,13 @@ func (c *cognitoClient) fetchJWKS(kid string) (*rsa.PublicKey, error) {
 	return nil, errors.New("public key not found in JWKS")
 }
 
-func NewCognitoClient(ctx context.Context) (CognitoClient, error) {
-	region := core.GetEnv("AWS_REGION", "ap-northeast-1")
-	userPoolID := core.GetEnv("COGNITO_USER_POOL_ID", "")
-
-	cfg, err := config.LoadDefaultConfig(ctx,
-		config.WithRegion(region),
+func NewCognitoClient(ctx context.Context, cfg core.AWSConfig) (CognitoClient, error) {
+	awsCfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(cfg.Region),
 		config.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider(
-				core.GetEnv("AWS_ACCESS_KEY_ID", ""),
-				core.GetEnv("AWS_SECRET_ACCESS_KEY", ""),
+				cfg.AccessKeyID,
+				cfg.SecretAccessKey,
 				"",
 			),
 		),
@@ -198,13 +195,13 @@ func NewCognitoClient(ctx context.Context) (CognitoClient, error) {
 	}
 
 	return &cognitoClient{
-		client:     cognitoidentityprovider.NewFromConfig(cfg),
-		id:         core.GetEnv("COGNITO_CLIENT_ID", ""),
-		secret:     core.GetEnv("COGNITO_CLIENT_SECRET", ""),
-		userPoolID: userPoolID,
+		client:     cognitoidentityprovider.NewFromConfig(awsCfg),
+		id:         cfg.CognitoClientID,
+		secret:     cfg.CognitoClientSecret,
+		userPoolID: cfg.CognitoUserPoolID,
 		jwksURL: fmt.Sprintf(
 			"https://cognito-idp.%s.amazonaws.com/%s/.well-known/jwks.json",
-			region, userPoolID,
+			cfg.Region, cfg.CognitoUserPoolID,
 		),
 		keys: make(map[string]*rsa.PublicKey),
 	}, nil

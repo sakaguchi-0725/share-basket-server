@@ -2,6 +2,7 @@ package registry
 
 import (
 	"context"
+	"sharebasket/core"
 	"sharebasket/domain/repository"
 	"sharebasket/infra/auth"
 	"sharebasket/infra/dao"
@@ -21,13 +22,14 @@ type (
 	}
 
 	repositoryImpl struct {
-		conn   *db.Conn
-		client auth.CognitoClient
+		conn      *db.Conn
+		client    auth.CognitoClient
+		redisHost string
 	}
 )
 
 func (r *repositoryImpl) NewFamily() repository.Family {
-	return dao.NewFamily(r.conn)
+	return dao.NewFamily(r.conn, r.redisHost)
 }
 
 func (r *repositoryImpl) NewPersonalItem() repository.PersonalItem {
@@ -54,14 +56,15 @@ func (r *repositoryImpl) NewUser() repository.User {
 	return dao.NewUser(r.conn)
 }
 
-func NewRepository(c *db.Conn) (Repository, error) {
-	client, err := auth.NewCognitoClient(context.Background())
+func NewRepository(c *db.Conn, cfg *core.Config) (Repository, error) {
+	client, err := auth.NewCognitoClient(context.Background(), cfg.AWS)
 	if err != nil {
 		return nil, err
 	}
 
 	return &repositoryImpl{
-		conn:   c,
-		client: client,
+		conn:      c,
+		client:    client,
+		redisHost: cfg.RedisHost,
 	}, nil
 }

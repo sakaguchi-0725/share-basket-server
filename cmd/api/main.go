@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"sharebasket/core"
 	"sharebasket/infra/db"
@@ -9,12 +10,17 @@ import (
 )
 
 func main() {
-	conn, err := db.New()
+	cfg, err := core.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	repo, err := registry.NewRepository(conn)
+	conn, err := db.New(cfg.DB)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	repo, err := registry.NewRepository(conn, cfg)
 	if err != nil {
 		log.Fatalf("failed to initialize repository: %v", err)
 	}
@@ -22,9 +28,9 @@ func main() {
 	service := registry.NewService(repo)
 	usecase := registry.NewUseCase(repo, service)
 
-	logger := core.NewLogger()
+	logger := core.NewLogger(cfg.Env)
 
-	srv := server.New(8080)
+	srv := server.New(fmt.Sprintf(":%v", cfg.Port))
 	srv.MapHandler(usecase, logger)
 	srv.Run()
 }

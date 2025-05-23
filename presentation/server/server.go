@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -23,11 +22,9 @@ type Server struct {
 	*echo.Echo
 }
 
-func New(addr uint) *Server {
-	addrStr := fmt.Sprintf(":%v", addr)
-
+func New(addr string) *Server {
 	return &Server{
-		addr: addrStr,
+		addr: addr,
 		Echo: echo.New(),
 	}
 }

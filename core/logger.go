@@ -61,9 +61,7 @@ func (l *logger) attrsToArgs() []any {
 	return args
 }
 
-func NewLogger() Logger {
-	env := GetEnv("APP_ENV", "dev")
-
+func NewLogger(env string) Logger {
 	var handler slog.Handler
 	if env == "prod" {
 		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
