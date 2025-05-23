@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"sharebasket/core"
 
@@ -12,7 +13,7 @@ type errorResponse struct {
 	Message string `json:"message"`
 }
 
-func Error() echo.MiddlewareFunc {
+func Error(logger core.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			err := next(c)
@@ -38,11 +39,29 @@ func Error() echo.MiddlewareFunc {
 					status = http.StatusInternalServerError
 				}
 
+				errLogger := logger.
+					With("error_code", appErr.Code().String()).
+					With("stack_trace", appErr.StackTrace()).
+					With("status", status).
+					With("path", c.Request().URL.Path)
+
+				logMsg := fmt.Sprintf("AppError: %s", appErr.Error())
+
+				if status >= http.StatusInternalServerError {
+					errLogger.Error(logMsg)
+				} else {
+					errLogger.Warn(logMsg)
+				}
+
 				return c.JSON(status, &errorResponse{
 					Code:    appErr.Code().String(),
-					Message: appErr.Error(),
+					Message: appErr.Message(),
 				})
 			}
+
+			logger.WithError(err).
+				With("path", c.Request().URL.Path).
+				Error(fmt.Sprintf("予期しないエラー: %v", err))
 
 			return c.JSON(http.StatusInternalServerError, &errorResponse{
 				Code:    "INTERNAL_SERVER_ERROR",
