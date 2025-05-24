@@ -3,7 +3,6 @@ package dao
 import (
 	"context"
 	"errors"
-	"fmt"
 	"sharebasket/core"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
@@ -39,6 +38,30 @@ type (
 		duration time.Duration
 	}
 )
+
+func (f *familyDao) GetByToken(ctx context.Context, token string) (model.Family, error) {
+	id := f.client.Get(ctx, token).String()
+
+	var family familyDto
+
+	err := f.conn.Where("id = ?", id).First(&family).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.Family{}, core.NewInvalidError(err)
+		}
+
+		return model.Family{}, err
+	}
+
+	var members []familyMemberDto
+
+	err = f.conn.Where("family_id", family.ID).Find(&members).Error
+	if err != nil {
+		return model.Family{}, nil
+	}
+
+	return family.ToModel(members), nil
+}
 
 func (f *familyDao) HasOwnedFamily(accountID model.AccountID) (bool, error) {
 	var count int64
@@ -94,45 +117,6 @@ func (f *familyDao) HasFamily(accountID model.AccountID) (bool, error) {
 	}
 
 	return count > 0, nil
-}
-
-func (f *familyDao) Join(family *model.Family) error {
-	var existsMembers []familyMemberDto
-
-	err := f.conn.Where("family_id = ?", family.ID).Find(&existsMembers).Error
-	if err != nil {
-		return err
-	}
-
-	// 既存のメンバーIDを検索するためのマップ
-	existingMemberIDs := make(map[string]bool)
-	for _, member := range existsMembers {
-		existingMemberIDs[member.AccountID] = true
-	}
-
-	// 追加が必要な新しいメンバーを保持するスライス
-	var newMembers []familyMemberDto
-	for _, memberID := range family.MemberIDs {
-		// memberIDが既存のメンバーに含まれていないか確認
-		if !existingMemberIDs[memberID.String()] {
-			newMembers = append(newMembers, familyMemberDto{
-				FamilyID:  family.ID.String(),
-				AccountID: memberID.String(),
-			})
-		}
-	}
-
-	if len(newMembers) == 0 {
-		// ドメイン側でバリデーション済みのため、通常は通らない。
-		// 念のため明示的に分岐。
-		return nil
-	}
-
-	if err := f.conn.Create(&newMembers).Error; err != nil {
-		return fmt.Errorf("failed to insert new members: %w", err)
-	}
-
-	return nil
 }
 
 func (f *familyDao) Store(family *model.Family) error {

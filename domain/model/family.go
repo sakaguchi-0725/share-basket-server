@@ -47,8 +47,8 @@ func (f *Family) Join(id AccountID) error {
 		return errors.New("this account is already a member")
 	}
 
-	// 家族のメンバー上限を超えていないかチェック
-	if len(f.MemberIDs)+1 > f.maxMembers() {
+	// 家族に参加可能かチェック
+	if !f.CanInvite() {
 		return fmt.Errorf("cannnot join member: limit is %d", f.maxMembers())
 	}
 

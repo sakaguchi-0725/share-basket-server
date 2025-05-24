@@ -18,6 +18,7 @@ type (
 		NewDeletePersonalItem() usecase.DeletePersonalItem
 		NewCreateFamily() usecase.CreateFamily
 		NewInvitationFamily() usecase.InvitationFamily
+		NewJoinFamily() usecase.JoinFamily
 	}
 
 	usecaseImpl struct {
@@ -25,6 +26,10 @@ type (
 		service Service
 	}
 )
+
+func (u *usecaseImpl) NewJoinFamily() usecase.JoinFamily {
+	return usecase.NewJoinFamily(u.repo.NewAccount(), u.repo.NewFamily())
+}
 
 func (u *usecaseImpl) NewInvitationFamily() usecase.InvitationFamily {
 	return usecase.NewInvitationFamily(

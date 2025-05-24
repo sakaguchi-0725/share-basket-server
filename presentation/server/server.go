@@ -57,6 +57,7 @@ func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 	family := auth.Group("/family")
 	family.POST("", handler.NewCreateFamily(usecase.NewCreateFamily()))
 	family.GET("/invitation", handler.NewInvitationFamily(usecase.NewInvitationFamily()))
+	family.POST("/join/{token}", handler.NewJoinFamily(usecase.NewJoinFamily()))
 }
 
 func (s *Server) Run() {
