@@ -11,11 +11,6 @@ const (
 	PremiumMaxMember    = 4
 )
 
-var (
-	ErrNonPremiumMaxMembers = errors.New("non-premium users can have up to 2 family members")
-	ErrPremiumMaxMembers    = errors.New("premium users can have up to 4 family members")
-)
-
 type Family struct {
 	ID        FamilyID
 	Name      string

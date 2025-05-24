@@ -5,8 +5,6 @@ import (
 	"sharebasket/core"
 )
 
-var ErrNotOwner = errors.New("you don't have permission to this item")
-
 type PersonalItem struct {
 	ID         *int64
 	Name       string
@@ -41,7 +39,7 @@ func NewPersonalItem(name string, status *ShoppingStatus, categoryID int64, accI
 // 指定されたアカウントがこのアイテムの所有者かを確認
 func (p *PersonalItem) CheckOwner(accID AccountID) error {
 	if p.AccountID != accID {
-		return ErrNotOwner
+		return errors.New("you don't have permission to this item")
 	}
 	return nil
 }

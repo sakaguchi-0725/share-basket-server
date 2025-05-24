@@ -2,10 +2,6 @@ package model
 
 import "errors"
 
-var (
-	ErrRequiredAccountName = errors.New("account name is required")
-)
-
 type Account struct {
 	ID        AccountID
 	Name      string
@@ -17,11 +13,11 @@ type Account struct {
 // nameとuserIDが空文字列の場合はエラーを返す。
 func NewAccount(id AccountID, name, userID string) (Account, error) {
 	if name == "" {
-		return Account{}, ErrRequiredAccountName
+		return Account{}, errors.New("account name is required")
 	}
 
 	if userID == "" {
-		return Account{}, ErrRequiredUserID
+		return Account{}, errors.New("user id is required")
 	}
 
 	return Account{

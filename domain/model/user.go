@@ -2,11 +2,6 @@ package model
 
 import "errors"
 
-var (
-	ErrRequiredUserID = errors.New("user id is required")
-	ErrRequiredEmail  = errors.New("email is required")
-)
-
 type User struct {
 	ID    string
 	Email string
@@ -16,11 +11,11 @@ type User struct {
 // idとemail が空文字列の場合はエラーを返す。
 func NewUser(id, email string) (User, error) {
 	if id == "" {
-		return User{}, ErrRequiredUserID
+		return User{}, errors.New("user id is required")
 	}
 
 	if email == "" {
-		return User{}, ErrRequiredEmail
+		return User{}, errors.New("email is required")
 	}
 
 	return User{

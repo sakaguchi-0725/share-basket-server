@@ -6,10 +6,6 @@ import (
 	"github.com/google/uuid"
 )
 
-var (
-	ErrInvalidAccountID = errors.New("invalid account id")
-)
-
 type AccountID string
 
 func NewAccountID() AccountID {
@@ -19,7 +15,7 @@ func NewAccountID() AccountID {
 func ParseAccountID(s string) (AccountID, error) {
 	id, err := uuid.Parse(s)
 	if err != nil {
-		return "", ErrInvalidAccountID
+		return "", errors.New("invalid account id")
 	}
 
 	return AccountID(id.String()), nil
