@@ -29,36 +29,36 @@ func New(addr string) *Server {
 	}
 }
 
-func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
+func (s *Server) MapHandler(usecase *registry.UseCase, logger core.Logger) {
 	s.Use(middleware.Logger())
 	s.Use(middleware.Recover())
 	s.Use(customMiddleware.Error(logger))
 
 	s.GET("/health-check", handler.NewHealthCheck())
-	s.POST("/login", handler.NewLogin(usecase.NewLogin()))
-	s.POST("/signup", handler.NewSignUp(usecase.NewSignUp()))
-	s.POST("/signup/confirm", handler.NewSignUpConfirm(usecase.NewSignUpConfirm()))
+	s.POST("/login", handler.NewLogin(usecase.Login))
+	s.POST("/signup", handler.NewSignUp(usecase.SignUp))
+	s.POST("/signup/confirm", handler.NewSignUpConfirm(usecase.SignUpConfirm))
 	s.POST("/logout", handler.NewLogout())
 
 	// 認証が必要なルートグループ
 	auth := s.Group("")
-	auth.Use(customMiddleware.Auth(usecase.NewVerifyToken()))
-	auth.GET("/me", handler.NewGetAccount(usecase.NewGetAccount()))
-	auth.GET("/categories", handler.NewGetCategories(usecase.NewGetCategories()))
+	auth.Use(customMiddleware.Auth(usecase.VerifyToken))
+	auth.GET("/me", handler.NewGetAccount(usecase.GetAccount))
+	auth.GET("/categories", handler.NewGetCategories(usecase.GetCategories))
 
-	// パーソナルアイテム関連のルート
+	// 個人買い物関連のルート
 	personal := auth.Group("/personal")
-	personal.GET("/items", handler.NewGetPersonalItems(usecase.NewGetPersonalItems()))
-	personal.POST("/items", handler.NewCreatePersonalItem(usecase.NewCreatePersonalItem()))
-	personal.PUT("/items/:id", handler.NewUpdatePersonalItem(usecase.NewUpdatePersonalItem()))
-	personal.DELETE("/items/:id", handler.NewDeletePersonalItem(usecase.NewDeletePersonalItem()))
+	personal.GET("/items", handler.NewGetPersonalItems(usecase.GetPersonalItems))
+	personal.POST("/items", handler.NewCreatePersonalItem(usecase.CreatePersonalItem))
+	personal.PUT("/items/:id", handler.NewUpdatePersonalItem(usecase.UpdatePersonalItem))
+	personal.DELETE("/items/:id", handler.NewDeletePersonalItem(usecase.DeletePersonalItem))
 
-	// ファミリー関連のルート
+	// 家族関連のルート
 	family := auth.Group("/family")
-	family.POST("", handler.NewCreateFamily(usecase.NewCreateFamily()))
-	family.GET("/invitation", handler.NewInvitationFamily(usecase.NewInvitationFamily()))
-	family.POST("/join/{token}", handler.NewJoinFamily(usecase.NewJoinFamily()))
-	family.POST("/items", handler.NewCreateFamilyItem(usecase.NewCreateFamilyItem()))
+	family.POST("", handler.NewCreateFamily(usecase.CreateFamily))
+	family.GET("/invitation", handler.NewInvitationFamily(usecase.InvitationFamily))
+	family.POST("/join/{token}", handler.NewJoinFamily(usecase.JoinFamily))
+	family.POST("/items", handler.NewCreateFamilyItem(usecase.CreateFamilyItem))
 }
 
 func (s *Server) Run() {
