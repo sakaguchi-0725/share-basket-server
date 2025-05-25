@@ -58,6 +58,7 @@ func (s *Server) MapHandler(usecase registry.UseCase, logger core.Logger) {
 	family.POST("", handler.NewCreateFamily(usecase.NewCreateFamily()))
 	family.GET("/invitation", handler.NewInvitationFamily(usecase.NewInvitationFamily()))
 	family.POST("/join/{token}", handler.NewJoinFamily(usecase.NewJoinFamily()))
+	family.POST("/items", handler.NewCreateFamilyItem(usecase.NewCreateFamilyItem()))
 }
 
 func (s *Server) Run() {

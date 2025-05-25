@@ -19,6 +19,7 @@ type (
 		NewPersonalItem() repository.PersonalItem
 		NewTransaction() repository.Transaction
 		NewFamily() repository.Family
+		NewFamilyItem() repository.FamilyItem
 	}
 
 	repositoryImpl struct {
@@ -27,6 +28,10 @@ type (
 		redisHost string
 	}
 )
+
+func (r *repositoryImpl) NewFamilyItem() repository.FamilyItem {
+	return dao.NewFamilyItem(r.conn)
+}
 
 func (r *repositoryImpl) NewFamily() repository.Family {
 	return dao.NewFamily(r.conn, r.redisHost)

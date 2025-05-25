@@ -39,6 +39,41 @@ type (
 	}
 )
 
+func (f *familyDao) GetByAccountID(id model.AccountID) (model.Family, error) {
+	// オーナーかどうか確認
+	isOwner, err := f.HasOwnedFamily(id)
+	if err != nil {
+		return model.Family{}, err
+	}
+
+	// オーナーの場合
+	if isOwner {
+		return f.GetOwnedFamily(id)
+	}
+
+	// メンバーの場合
+	var member familyMemberDto
+	err = f.conn.Preload("Family").
+		Where("account_id = ?", id.String()).
+		First(&member).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.Family{}, core.NewInvalidError(errors.New("account is not a member of any family"))
+		}
+		return model.Family{}, err
+	}
+
+	// 家族のメンバー一覧を取得
+	var members []familyMemberDto
+	err = f.conn.Where("family_id = ?", member.Family.ID).Find(&members).Error
+	if err != nil {
+		return model.Family{}, err
+	}
+
+	return member.Family.ToModel(members), nil
+}
+
 func (f *familyDao) GetByToken(ctx context.Context, token string) (model.Family, error) {
 	id := f.client.Get(ctx, token).String()
 
@@ -135,19 +170,6 @@ func newFamilyDto(f *model.Family) familyDto {
 		Name:    f.Name,
 		OwnerID: f.Owner.ID.String(),
 	}
-}
-
-func newFamilyMemberDtos(f *model.Family) []familyMemberDto {
-	members := make([]familyMemberDto, len(f.MemberIDs))
-
-	for i, v := range f.MemberIDs {
-		members[i] = familyMemberDto{
-			FamilyID:  f.ID.String(),
-			AccountID: v.String(),
-		}
-	}
-
-	return members
 }
 
 func (f *familyDto) ToModel(members []familyMemberDto) model.Family {

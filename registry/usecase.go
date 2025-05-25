@@ -19,6 +19,7 @@ type (
 		NewCreateFamily() usecase.CreateFamily
 		NewInvitationFamily() usecase.InvitationFamily
 		NewJoinFamily() usecase.JoinFamily
+		NewCreateFamilyItem() usecase.CreateFamilyItem
 	}
 
 	usecaseImpl struct {
@@ -26,6 +27,15 @@ type (
 		service Service
 	}
 )
+
+func (u *usecaseImpl) NewCreateFamilyItem() usecase.CreateFamilyItem {
+	return usecase.NewCreateFamilyItem(
+		u.repo.NewAccount(),
+		u.repo.NewFamily(),
+		u.repo.NewFamilyItem(),
+		u.service.NewFamily(),
+	)
+}
 
 func (u *usecaseImpl) NewJoinFamily() usecase.JoinFamily {
 	return usecase.NewJoinFamily(u.repo.NewAccount(), u.repo.NewFamily())
