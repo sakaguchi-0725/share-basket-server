@@ -30,7 +30,7 @@ type (
 )
 
 func (c *createFamilyItem) Execute(ctx context.Context, in CreateFamilyItemInput) error {
-	account, err := c.accountRepo.Get(in.UserID)
+	account, err := c.accountRepo.Get(ctx, in.UserID)
 	if err != nil {
 		return err
 	}

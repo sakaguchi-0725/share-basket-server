@@ -23,7 +23,7 @@ type (
 )
 
 func (j *joinFamily) Execute(ctx context.Context, in JoinFamilyInput) error {
-	account, err := j.accountRepo.Get(in.UserID)
+	account, err := j.accountRepo.Get(ctx, in.UserID)
 	if err != nil {
 		return err
 	}

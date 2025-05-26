@@ -25,12 +25,8 @@ type (
 	}
 )
 
-// ユーザーの個人アイテムを作成するメソッドです。
-// 指定されたユーザーIDに対応するアカウントを検証し、新しい個人アイテムを作成してリポジトリに保存します。
-// アカウントが見つからない場合は認証エラーを、入力が無効な場合は不正エラーを返します。
-// 成功した場合はnilを返します。
 func (c *createPersonalItem) Execute(ctx context.Context, in CreatePersonalItemInput) error {
-	account, err := c.accountRepo.Get(in.UserID)
+	account, err := c.accountRepo.Get(ctx, in.UserID)
 	if err != nil {
 		return err
 	}

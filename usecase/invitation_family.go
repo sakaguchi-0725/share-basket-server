@@ -23,7 +23,7 @@ type (
 )
 
 func (i *invitationFamily) Execute(ctx context.Context, userID string) (string, error) {
-	account, err := i.accountRepo.Get(userID)
+	account, err := i.accountRepo.Get(ctx, userID)
 	if err != nil {
 		return "", err
 	}
