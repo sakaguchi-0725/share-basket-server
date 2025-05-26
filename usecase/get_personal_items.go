@@ -41,7 +41,7 @@ func (g *getPersonalItems) Execute(ctx context.Context, in GetPersonalItemsInput
 		return []GetPersonalItemsOutput{}, err
 	}
 
-	items, err := g.personalRepo.GetAll(account.ID, status)
+	items, err := g.personalRepo.GetAll(ctx, account.ID, status)
 	if err != nil {
 		return []GetPersonalItemsOutput{}, err
 	}

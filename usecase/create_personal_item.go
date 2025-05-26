@@ -44,7 +44,7 @@ func (c *createPersonalItem) Execute(ctx context.Context, in CreatePersonalItemI
 		return core.NewInvalidError(err)
 	}
 
-	if err := c.personalRepo.Store(&item); err != nil {
+	if err := c.personalRepo.Store(ctx, &item); err != nil {
 		return err
 	}
 
