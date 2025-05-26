@@ -25,7 +25,7 @@ type (
 )
 
 func (g *getAccount) Execute(ctx context.Context, userID string) (GetAccountOutput, error) {
-	account, err := g.repo.Get(userID)
+	account, err := g.repo.Get(ctx, userID)
 	if err != nil {
 		return GetAccountOutput{}, err
 	}

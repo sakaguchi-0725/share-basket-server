@@ -26,12 +26,8 @@ type (
 	}
 )
 
-// 新しい家族を作成します。
-// 指定されたユーザーIDに対応するアカウントを検証し、新しい家族を作成してリポジトリに保存します。
-// アカウントが見つからない場合は認証エラーを、入力が無効な場合は不正エラーを返します。
-// 成功した場合はnilを返します。
 func (c *createFamily) Execute(ctx context.Context, in CreateFamilyInput) error {
-	account, err := c.accountRepo.Get(in.UserID)
+	account, err := c.accountRepo.Get(ctx, in.UserID)
 	if err != nil {
 		return err
 	}

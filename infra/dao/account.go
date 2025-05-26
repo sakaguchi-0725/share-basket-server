@@ -28,7 +28,7 @@ type (
 	}
 )
 
-func (a *account) Get(userID string) (model.Account, error) {
+func (a *account) Get(ctx context.Context, userID string) (model.Account, error) {
 	var dto accountDto
 
 	err := a.conn.Where("user_id = ?", userID).First(&dto).Error

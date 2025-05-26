@@ -24,7 +24,7 @@ type (
 )
 
 func (d *deletePersonalItem) Execute(ctx context.Context, in DeletePersonalItemInput) error {
-	account, err := d.accountRepo.Get(in.UserID)
+	account, err := d.accountRepo.Get(ctx, in.UserID)
 	if err != nil {
 		return err
 	}

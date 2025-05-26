@@ -30,7 +30,7 @@ type (
 )
 
 func (u *updatePersonalItem) Execute(ctx context.Context, in UpdatePersonalItemInput) error {
-	account, err := u.accountRepo.Get(in.UserID)
+	account, err := u.accountRepo.Get(ctx, in.UserID)
 	if err != nil {
 		return err
 	}

@@ -6,6 +6,6 @@ import (
 )
 
 type Account interface {
-	Get(userID string) (model.Account, error)
+	Get(ctx context.Context, userID string) (model.Account, error)
 	Store(ctx context.Context, acc *model.Account) error
 }

@@ -31,7 +31,7 @@ type (
 )
 
 func (g *getPersonalItems) Execute(ctx context.Context, in GetPersonalItemsInput) ([]GetPersonalItemsOutput, error) {
-	account, err := g.accountRepo.Get(in.UserID)
+	account, err := g.accountRepo.Get(ctx, in.UserID)
 	if err != nil {
 		return []GetPersonalItemsOutput{}, err
 	}
