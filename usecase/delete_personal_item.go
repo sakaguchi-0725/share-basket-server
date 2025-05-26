@@ -29,7 +29,7 @@ func (d *deletePersonalItem) Execute(ctx context.Context, in DeletePersonalItemI
 		return err
 	}
 
-	item, err := d.personalRepo.GetByID(in.ID)
+	item, err := d.personalRepo.GetByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, ErrPersonalItemNotFound) {
 			return core.NewInvalidError(err)
@@ -43,7 +43,7 @@ func (d *deletePersonalItem) Execute(ctx context.Context, in DeletePersonalItemI
 		return core.NewAppError(core.ErrForbidden, err)
 	}
 
-	if err := d.personalRepo.Delete(*item.ID); err != nil {
+	if err := d.personalRepo.Delete(ctx, *item.ID); err != nil {
 		return err
 	}
 

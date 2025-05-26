@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"context"
 	"errors"
 	"sharebasket/core"
 	"sharebasket/domain/model"
@@ -32,7 +33,7 @@ type (
 	}
 )
 
-func (p *personalItemDao) Delete(id int64) error {
+func (p *personalItemDao) Delete(ctx context.Context, id int64) error {
 	result := p.conn.Delete(&personalItemDto{}, id)
 	if result.Error != nil {
 		return result.Error
@@ -45,7 +46,7 @@ func (p *personalItemDao) Delete(id int64) error {
 	return nil
 }
 
-func (p *personalItemDao) GetByID(id int64) (model.PersonalItem, error) {
+func (p *personalItemDao) GetByID(ctx context.Context, id int64) (model.PersonalItem, error) {
 	var dto personalItemDto
 
 	err := p.conn.Where("id = ?", id).First(&dto).Error
@@ -59,7 +60,7 @@ func (p *personalItemDao) GetByID(id int64) (model.PersonalItem, error) {
 	return dto.toModel(), nil
 }
 
-func (p *personalItemDao) GetAll(accID model.AccountID, status *model.ShoppingStatus) ([]model.PersonalItem, error) {
+func (p *personalItemDao) GetAll(ctx context.Context, accID model.AccountID, status *model.ShoppingStatus) ([]model.PersonalItem, error) {
 	var dtos personalItemDtos
 
 	query := p.conn.DB
@@ -74,7 +75,7 @@ func (p *personalItemDao) GetAll(accID model.AccountID, status *model.ShoppingSt
 	return dtos.toModels(), nil
 }
 
-func (p *personalItemDao) Store(item *model.PersonalItem) error {
+func (p *personalItemDao) Store(ctx context.Context, item *model.PersonalItem) error {
 	dto := newPersonalItemDto(item)
 
 	if err := p.conn.Save(&dto).Error; err != nil {

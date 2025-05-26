@@ -35,7 +35,7 @@ func (u *updatePersonalItem) Execute(ctx context.Context, in UpdatePersonalItemI
 		return err
 	}
 
-	item, err := u.personalRepo.GetByID(in.ID)
+	item, err := u.personalRepo.GetByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, ErrPersonalItemNotFound) {
 			return core.NewInvalidError(err)
@@ -71,7 +71,7 @@ func (u *updatePersonalItem) Execute(ctx context.Context, in UpdatePersonalItemI
 	}
 
 	// 更新を保存
-	if err := u.personalRepo.Store(&item); err != nil {
+	if err := u.personalRepo.Store(ctx, &item); err != nil {
 		return err
 	}
 

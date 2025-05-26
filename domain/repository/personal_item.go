@@ -1,10 +1,13 @@
 package repository
 
-import "sharebasket/domain/model"
+import (
+	"context"
+	"sharebasket/domain/model"
+)
 
 type PersonalItem interface {
-	GetAll(accID model.AccountID, status *model.ShoppingStatus) ([]model.PersonalItem, error)
-	Store(item *model.PersonalItem) error
-	GetByID(id int64) (model.PersonalItem, error)
-	Delete(id int64) error
+	GetAll(ctx context.Context, accID model.AccountID, status *model.ShoppingStatus) ([]model.PersonalItem, error)
+	Store(ctx context.Context, item *model.PersonalItem) error
+	GetByID(ctx context.Context, id int64) (model.PersonalItem, error)
+	Delete(ctx context.Context, id int64) error
 }
