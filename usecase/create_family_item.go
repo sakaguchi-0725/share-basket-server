@@ -61,7 +61,7 @@ func (c *createFamilyItem) Execute(ctx context.Context, in CreateFamilyItemInput
 		return core.NewInvalidError(err)
 	}
 
-	err = c.familyItemRepo.Store(&item)
+	err = c.familyItemRepo.Store(ctx, &item)
 	if err != nil {
 		return err
 	}
