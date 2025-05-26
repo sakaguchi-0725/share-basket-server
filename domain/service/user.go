@@ -1,9 +1,12 @@
 package service
 
-import "sharebasket/domain/repository"
+import (
+	"context"
+	"sharebasket/domain/repository"
+)
 
 type User interface {
-	IsEmailAvailable(email string) (bool, error)
+	IsEmailAvailable(ctx context.Context, email string) (bool, error)
 }
 
 type userService struct {
@@ -11,8 +14,8 @@ type userService struct {
 }
 
 // 入力されたemailがすでに登録されていないか検証する。
-func (u *userService) IsEmailAvailable(email string) (bool, error) {
-	exists, err := u.repo.ExistsByEmail(email)
+func (u *userService) IsEmailAvailable(ctx context.Context, email string) (bool, error) {
+	exists, err := u.repo.ExistsByEmail(ctx, email)
 	if err != nil {
 		return false, err
 	}

@@ -24,7 +24,7 @@ type (
 )
 
 // 指定されたメールアドレスを持つユーザーが存在するかを確認する。
-func (u *user) ExistsByEmail(email string) (bool, error) {
+func (u *user) ExistsByEmail(ctx context.Context, email string) (bool, error) {
 	var count int64
 
 	err := u.conn.Model(&userDto{}).Where("email = ?", email).Count(&count).Error
