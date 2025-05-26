@@ -33,7 +33,7 @@ func (c *createFamily) Execute(ctx context.Context, in CreateFamilyInput) error 
 	}
 
 	// すでに家族オーナー、または家族メンバーではないか判定
-	hasFamily, err := c.familyService.HasFamily(account.ID)
+	hasFamily, err := c.familyService.HasFamily(ctx, account.ID)
 	if err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func (c *createFamily) Execute(ctx context.Context, in CreateFamilyInput) error 
 		return core.NewInvalidError(err)
 	}
 
-	err = c.familyRepo.Store(&family)
+	err = c.familyRepo.Store(ctx, &family)
 	if err != nil {
 		return err
 	}

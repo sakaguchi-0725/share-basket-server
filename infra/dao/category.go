@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"context"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
 	"sharebasket/infra/db"
@@ -22,7 +23,7 @@ type (
 	}
 )
 
-func (c *categoryDao) GetAll() ([]model.Category, error) {
+func (c *categoryDao) GetAll(ctx context.Context) ([]model.Category, error) {
 	var dtos categoryDtos
 
 	err := c.conn.Find(&dtos).Error
