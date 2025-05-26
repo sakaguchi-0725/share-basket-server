@@ -22,7 +22,7 @@ type (
 )
 
 func (g *getCategories) Execute(ctx context.Context) ([]GetCategoriesOutput, error) {
-	categories, err := g.repo.GetAll()
+	categories, err := g.repo.GetAll(ctx)
 	if err != nil {
 		return []GetCategoriesOutput{}, err
 	}

@@ -1,7 +1,10 @@
 package repository
 
-import "sharebasket/domain/model"
+import (
+	"context"
+	"sharebasket/domain/model"
+)
 
 type Category interface {
-	GetAll() ([]model.Category, error)
+	GetAll(ctx context.Context) ([]model.Category, error)
 }
