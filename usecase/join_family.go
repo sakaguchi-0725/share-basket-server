@@ -37,7 +37,7 @@ func (j *joinFamily) Execute(ctx context.Context, in JoinFamilyInput) error {
 		return core.NewInvalidError(err)
 	}
 
-	if err := j.familyRepo.Store(&family); err != nil {
+	if err := j.familyRepo.Store(ctx, &family); err != nil {
 		return err
 	}
 

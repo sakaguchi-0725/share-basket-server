@@ -1,14 +1,15 @@
 package service
 
 import (
+	"context"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
 )
 
 type (
 	Family interface {
-		HasFamily(accountID model.AccountID) (bool, error)
-		HasOwnedFamily(accountID model.AccountID) (bool, error)
+		HasFamily(ctx context.Context, accountID model.AccountID) (bool, error)
+		HasOwnedFamily(ctx context.Context, accountID model.AccountID) (bool, error)
 	}
 
 	familyService struct {
@@ -17,13 +18,13 @@ type (
 )
 
 // 自身がオーナーの家族があるか確認する
-func (f *familyService) HasOwnedFamily(accountID model.AccountID) (bool, error) {
-	return f.repo.HasOwnedFamily(accountID)
+func (f *familyService) HasOwnedFamily(ctx context.Context, accountID model.AccountID) (bool, error) {
+	return f.repo.HasOwnedFamily(ctx, accountID)
 }
 
 // HasFamily は指定されたアカウントIDが家族のオーナーまたはメンバーとして存在するかを確認する
-func (f *familyService) HasFamily(accountID model.AccountID) (bool, error) {
-	return f.repo.HasFamily(accountID)
+func (f *familyService) HasFamily(ctx context.Context, accountID model.AccountID) (bool, error) {
+	return f.repo.HasFamily(ctx, accountID)
 }
 
 func NewFamily(r repository.Family) Family {

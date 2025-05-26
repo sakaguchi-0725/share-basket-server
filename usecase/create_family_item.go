@@ -36,7 +36,7 @@ func (c *createFamilyItem) Execute(ctx context.Context, in CreateFamilyItemInput
 	}
 
 	// 家族に参加しているか確認
-	hasFamily, err := c.familyService.HasFamily(account.ID)
+	hasFamily, err := c.familyService.HasFamily(ctx, account.ID)
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (c *createFamilyItem) Execute(ctx context.Context, in CreateFamilyItemInput
 			WithMessage("家族に参加していません")
 	}
 
-	family, err := c.familyRepo.GetByAccountID(account.ID)
+	family, err := c.familyRepo.GetByAccountID(ctx, account.ID)
 	if err != nil {
 		return err
 	}

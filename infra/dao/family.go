@@ -39,16 +39,16 @@ type (
 	}
 )
 
-func (f *familyDao) GetByAccountID(id model.AccountID) (model.Family, error) {
+func (f *familyDao) GetByAccountID(ctx context.Context, id model.AccountID) (model.Family, error) {
 	// オーナーかどうか確認
-	isOwner, err := f.HasOwnedFamily(id)
+	isOwner, err := f.HasOwnedFamily(ctx, id)
 	if err != nil {
 		return model.Family{}, err
 	}
 
 	// オーナーの場合
 	if isOwner {
-		return f.GetOwnedFamily(id)
+		return f.GetOwnedFamily(ctx, id)
 	}
 
 	// メンバーの場合
@@ -98,7 +98,7 @@ func (f *familyDao) GetByToken(ctx context.Context, token string) (model.Family,
 	return family.ToModel(members), nil
 }
 
-func (f *familyDao) HasOwnedFamily(accountID model.AccountID) (bool, error) {
+func (f *familyDao) HasOwnedFamily(ctx context.Context, accountID model.AccountID) (bool, error) {
 	var count int64
 	err := f.conn.Model(&familyDto{}).
 		Where("owner_id = ?", accountID.String()).
@@ -111,7 +111,7 @@ func (f *familyDao) HasOwnedFamily(accountID model.AccountID) (bool, error) {
 	return count > 0, nil
 }
 
-func (f *familyDao) GetOwnedFamily(accountID model.AccountID) (model.Family, error) {
+func (f *familyDao) GetOwnedFamily(ctx context.Context, accountID model.AccountID) (model.Family, error) {
 	var family familyDto
 
 	err := f.conn.Where("owner_id = ?", accountID.String()).First(&family).Error
@@ -140,7 +140,7 @@ func (f *familyDao) Invitation(ctx context.Context, token string, familyID model
 }
 
 // HasFamily は指定されたアカウントIDが家族のオーナーまたはメンバーとして存在するかを確認する
-func (f *familyDao) HasFamily(accountID model.AccountID) (bool, error) {
+func (f *familyDao) HasFamily(ctx context.Context, accountID model.AccountID) (bool, error) {
 	var count int64
 	err := f.conn.Model(&familyDto{}).
 		Joins("LEFT JOIN family_members ON families.id = family_members.family_id").
@@ -154,7 +154,7 @@ func (f *familyDao) HasFamily(accountID model.AccountID) (bool, error) {
 	return count > 0, nil
 }
 
-func (f *familyDao) Store(family *model.Family) error {
+func (f *familyDao) Store(ctx context.Context, family *model.Family) error {
 	dto := newFamilyDto(family)
 
 	if err := f.conn.Save(&dto).Error; err != nil {

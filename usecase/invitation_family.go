@@ -29,7 +29,7 @@ func (i *invitationFamily) Execute(ctx context.Context, userID string) (string, 
 	}
 
 	// 自身がオーナーの家族が存在するかチェック
-	hasFamily, err := i.familyService.HasOwnedFamily(account.ID)
+	hasFamily, err := i.familyService.HasOwnedFamily(ctx, account.ID)
 	if err != nil {
 		return "", err
 	}
@@ -38,7 +38,7 @@ func (i *invitationFamily) Execute(ctx context.Context, userID string) (string, 
 		return "", core.NewInvalidError(errors.New("account does not have owner privileges for any family"))
 	}
 
-	family, err := i.familyRepo.GetOwnedFamily(account.ID)
+	family, err := i.familyRepo.GetOwnedFamily(ctx, account.ID)
 	if err != nil {
 		return "", err
 	}
