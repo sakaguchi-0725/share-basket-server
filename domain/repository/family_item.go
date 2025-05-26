@@ -1,8 +1,11 @@
 package repository
 
-import "sharebasket/domain/model"
+import (
+	"context"
+	"sharebasket/domain/model"
+)
 
 type FamilyItem interface {
-	Get(id model.FamilyID) ([]model.FamilyItem, error)
-	Store(item *model.FamilyItem) error
+	Get(ctx context.Context, id model.FamilyID, status *model.ShoppingStatus) ([]model.FamilyItem, error)
+	Store(ctx context.Context, item *model.FamilyItem) error
 }
