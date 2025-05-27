@@ -30,12 +30,6 @@ func NewAppError(code ErrorCode, err error) *AppError {
 	}
 }
 
-// カスタムメッセージを設定
-func (e *AppError) WithMessage(message string) *AppError {
-	e.message = message
-	return e
-}
-
 func NewInvalidError(err error) *AppError {
 	_, file, line, ok := runtime.Caller(1)
 	if !ok {
@@ -50,6 +44,28 @@ func NewInvalidError(err error) *AppError {
 		line:    line,
 		message: ErrBadRequest.DefaultMessage(),
 	}
+}
+
+func NewUnauthorizedError(err error) *AppError {
+	_, file, line, ok := runtime.Caller(1)
+	if !ok {
+		file = "unknown"
+		line = 0
+	}
+
+	return &AppError{
+		code:    ErrUnauthorized,
+		error:   err,
+		file:    filepath.Base(file),
+		line:    line,
+		message: ErrBadRequest.DefaultMessage(),
+	}
+}
+
+// カスタムメッセージを設定
+func (e *AppError) WithMessage(message string) *AppError {
+	e.message = message
+	return e
 }
 
 func (e *AppError) Unwrap() error {
