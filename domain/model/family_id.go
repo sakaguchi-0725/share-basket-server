@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"sharebasket/core"
 
 	"github.com/google/uuid"
 )
@@ -15,7 +16,7 @@ func NewFamilyID() FamilyID {
 func ParseFamilyID(s string) (FamilyID, error) {
 	id, err := uuid.Parse(s)
 	if err != nil {
-		return "", fmt.Errorf("invalid family ID: %w", err)
+		return "", core.NewInvalidError(fmt.Errorf("invalid family ID: %w", err))
 	}
 
 	return FamilyID(id.String()), nil

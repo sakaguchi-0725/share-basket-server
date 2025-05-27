@@ -22,11 +22,11 @@ func NewFamilyItem(
 	createdBy AccountID,
 ) (FamilyItem, error) {
 	if name == "" {
-		return FamilyItem{}, errors.New("family shopping item name is required")
+		return FamilyItem{}, core.NewInvalidError(errors.New("family shopping item name is required"))
 	}
 
 	if categoryID <= 0 {
-		return FamilyItem{}, errors.New("category ID is required")
+		return FamilyItem{}, core.NewInvalidError(errors.New("category ID is required"))
 	}
 
 	// ステータスが指定されていない場合、UnPurchasedにする
