@@ -15,11 +15,11 @@ type PersonalItem struct {
 
 func NewPersonalItem(name string, status *ShoppingStatus, categoryID int64, accID AccountID) (PersonalItem, error) {
 	if name == "" {
-		return PersonalItem{}, errors.New("personal shopping item name is required")
+		return PersonalItem{}, core.NewInvalidError(errors.New("personal shopping item name is required"))
 	}
 
 	if categoryID <= 0 {
-		return PersonalItem{}, errors.New("category ID is required")
+		return PersonalItem{}, core.NewInvalidError(errors.New("category ID is required"))
 	}
 
 	// ステータスが指定されていない場合、UnPurchasedにする

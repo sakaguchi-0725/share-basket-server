@@ -1,6 +1,9 @@
 package model
 
-import "errors"
+import (
+	"errors"
+	"sharebasket/core"
+)
 
 type ShoppingStatus string
 
@@ -15,7 +18,7 @@ func ParseShoppingStatus(s string) (ShoppingStatus, error) {
 		return ShoppingStatus(s), nil
 	}
 
-	return "", errors.New("invalid shopping status")
+	return "", core.NewInvalidError(errors.New("invalid shopping status"))
 }
 
 func (s ShoppingStatus) String() string {

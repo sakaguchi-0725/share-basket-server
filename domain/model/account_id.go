@@ -1,7 +1,8 @@
 package model
 
 import (
-	"errors"
+	"fmt"
+	"sharebasket/core"
 
 	"github.com/google/uuid"
 )
@@ -15,7 +16,7 @@ func NewAccountID() AccountID {
 func ParseAccountID(s string) (AccountID, error) {
 	id, err := uuid.Parse(s)
 	if err != nil {
-		return "", errors.New("invalid account id")
+		return "", core.NewInvalidError(fmt.Errorf("invalid account ID: %w", err))
 	}
 
 	return AccountID(id.String()), nil

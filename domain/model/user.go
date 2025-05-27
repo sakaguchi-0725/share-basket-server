@@ -1,6 +1,9 @@
 package model
 
-import "errors"
+import (
+	"errors"
+	"sharebasket/core"
+)
 
 type User struct {
 	ID    string
@@ -11,11 +14,11 @@ type User struct {
 // idとemail が空文字列の場合はエラーを返す。
 func NewUser(id, email string) (User, error) {
 	if id == "" {
-		return User{}, errors.New("user id is required")
+		return User{}, core.NewInvalidError(errors.New("user id is required"))
 	}
 
 	if email == "" {
-		return User{}, errors.New("email is required")
+		return User{}, core.NewInvalidError(errors.New("email is required"))
 	}
 
 	return User{

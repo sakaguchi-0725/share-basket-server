@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"sharebasket/core"
 	"slices"
 )
 
@@ -33,23 +34,24 @@ func NewFamily(id FamilyID, name string, owner Account) (Family, error) {
 	}, nil
 }
 
-// HasMembers は、家族にメンバーが存在するかどうかを判定します。
-// メンバーが1人以上存在する場合はtrueを返します。
+// 家族にメンバーが存在するかどうかを判定。
 func (f *Family) HasMembers() bool {
 	return len(f.MemberIDs) != 0
 }
 
-// Join は、新しいメンバーを家族に追加します。
-// オーナーのサブスクリプションタイプに応じたメンバー数の制限を超える場合にはエラーを返します。
+// 新しいメンバーを家族に追加。
+// オーナーのサブスクリプションタイプに応じたメンバー数の制限を超える場合にはエラー返す。
 func (f *Family) Join(id AccountID) error {
 	// すでに参加しているメンバーではないかチェック
 	if slices.Contains(f.MemberIDs, id) {
-		return errors.New("this account is already a member")
+		return core.NewInvalidError(errors.New("this account is already a member"))
 	}
 
 	// 家族に参加可能かチェック
 	if !f.CanInvite() {
-		return fmt.Errorf("cannnot join member: limit is %d", f.maxMembers())
+		return core.NewInvalidError(
+			fmt.Errorf("cannnot join member: limit is %d", f.maxMembers()),
+		)
 	}
 
 	f.MemberIDs = append(f.MemberIDs, id)
