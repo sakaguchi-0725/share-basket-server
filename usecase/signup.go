@@ -38,7 +38,7 @@ type (
 // サインアップ中にエラーが発生した場合、トランザクションをロールバックし、
 // 作成途中のユーザーを削除する。
 func (s *signUp) Execute(ctx context.Context, in SignUpInput) (err error) {
-	available, err := s.userService.IsEmailAvailable(in.Email)
+	available, err := s.userService.IsEmailAvailable(ctx, in.Email)
 	if err != nil {
 		return fmt.Errorf("failed to check email availability: %w", err)
 	}

@@ -6,6 +6,6 @@ import (
 )
 
 type User interface {
-	ExistsByEmail(email string) (bool, error)
+	ExistsByEmail(ctx context.Context, email string) (bool, error)
 	Store(ctx context.Context, user *model.User) error
 }
