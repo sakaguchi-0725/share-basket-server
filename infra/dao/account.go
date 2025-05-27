@@ -3,11 +3,11 @@ package dao
 import (
 	"context"
 	"errors"
+	"sharebasket/core"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
 	"sharebasket/infra/db"
 	"sharebasket/infra/transaction"
-	"sharebasket/usecase"
 	"time"
 
 	"gorm.io/gorm"
@@ -34,7 +34,7 @@ func (a *account) Get(ctx context.Context, userID string) (model.Account, error)
 	err := a.conn.Where("user_id = ?", userID).First(&dto).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Account{}, usecase.ErrAccountNotFound
+			return model.Account{}, core.NewInvalidError(ErrRecordNotFound)
 		}
 		return model.Account{}, err
 	}

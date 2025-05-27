@@ -59,7 +59,7 @@ func (f *familyDao) GetByAccountID(ctx context.Context, id model.AccountID) (mod
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Family{}, core.NewInvalidError(errors.New("account is not a member of any family"))
+			return model.Family{}, core.NewInvalidError(ErrRecordNotFound)
 		}
 		return model.Family{}, err
 	}
@@ -82,7 +82,7 @@ func (f *familyDao) GetByToken(ctx context.Context, token string) (model.Family,
 	err := f.conn.Where("id = ?", id).First(&family).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Family{}, core.NewInvalidError(err)
+			return model.Family{}, core.NewInvalidError(ErrRecordNotFound)
 		}
 
 		return model.Family{}, err
@@ -117,7 +117,7 @@ func (f *familyDao) GetOwnedFamily(ctx context.Context, accountID model.AccountI
 	err := f.conn.Where("owner_id = ?", accountID.String()).First(&family).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Family{}, core.ErrDataNotFound
+			return model.Family{}, core.NewInvalidError(ErrRecordNotFound)
 		}
 		return model.Family{}, err
 	}
@@ -139,7 +139,7 @@ func (f *familyDao) Invitation(ctx context.Context, token string, familyID model
 	return nil
 }
 
-// HasFamily は指定されたアカウントIDが家族のオーナーまたはメンバーとして存在するかを確認する
+// 指定されたアカウントIDが家族のオーナーまたはメンバーとして存在するかを確認する
 func (f *familyDao) HasFamily(ctx context.Context, accountID model.AccountID) (bool, error) {
 	var count int64
 	err := f.conn.Model(&familyDto{}).
