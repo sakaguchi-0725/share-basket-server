@@ -32,11 +32,11 @@ func (c *cognito) Login(ctx context.Context, email string, password string) (acc
 
 	if err != nil {
 		if errors.As(err, &notAuthorizedException) {
-			return "", "", usecase.ErrLoginFailed
+			return "", "", core.NewAppError(core.ErrUnauthorized, ErrLoginFailed).WithMessage("ログインに失敗しました")
 		}
 
 		if errors.As(err, &invalidParameterException) || errors.As(err, &invalidPasswordException) {
-			return "", "", core.ErrInvalidData
+			return "", "", core.NewInvalidError(ErrInvalidInput)
 		}
 
 		return "", "", err
@@ -45,7 +45,7 @@ func (c *cognito) Login(ctx context.Context, email string, password string) (acc
 	accessTokenPtr := result.AuthenticationResult.AccessToken
 	refreshTokenPtr := result.AuthenticationResult.RefreshToken
 	if accessTokenPtr == nil || refreshTokenPtr == nil {
-		return "", "", usecase.ErrLoginFailed
+		return "", "", core.NewAppError(core.ErrUnauthorized, ErrLoginFailed)
 	}
 
 	return core.Derefer(accessTokenPtr), core.Derefer(refreshTokenPtr), nil
@@ -57,17 +57,17 @@ func (c *cognito) SignUp(ctx context.Context, email string, password string) (st
 
 	if err != nil {
 		if errors.As(err, &usernameExistsException) {
-			return "", usecase.ErrEmailAlreadyExists
+			return "", core.NewInvalidError(ErrEmailExists).WithMessage("このメールアドレスは使用できません")
 		}
 		if errors.As(err, &invalidParameterException) || errors.As(err, &invalidPasswordException) {
-			return "", core.ErrInvalidData
+			return "", core.NewInvalidError(ErrInvalidInput)
 		}
 		return "", fmt.Errorf("failed to sign up: %w", err)
 	}
 
 	cognitoUID := result.UserSub
 	if cognitoUID == nil {
-		return "", core.ErrInvalidData
+		return "", core.NewInvalidError(ErrInvalidInput)
 	}
 
 	return core.Derefer(cognitoUID), nil
@@ -78,11 +78,11 @@ func (c *cognito) SignUpConfirm(ctx context.Context, email string, confirmationC
 
 	if err != nil {
 		if errors.As(err, &invalidParameterException) || errors.As(err, &codeMismatchException) {
-			return core.ErrInvalidData
+			return core.NewInvalidError(ErrInvalidInput)
 		}
 
 		if errors.As(err, &expiredCodeException) {
-			return usecase.ErrExpiredConfirmationCode
+			return core.NewInvalidError(ErrExpiredCode).WithMessage("確認コードの有効期限が切れてます")
 		}
 
 		return err
@@ -94,21 +94,21 @@ func (c *cognito) SignUpConfirm(ctx context.Context, email string, confirmationC
 func (c *cognito) VerifyToken(ctx context.Context, token string) (string, error) {
 	parsedToken, err := c.client.ParseToken(ctx, token)
 	if err != nil {
-		return "", usecase.ErrInvalidAccessToken
+		return "", core.NewUnauthorizedError(ErrInvalidAccessToken)
 	}
 
 	if !parsedToken.Valid {
-		return "", usecase.ErrInvalidAccessToken
+		return "", core.NewUnauthorizedError(ErrInvalidAccessToken)
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return "", usecase.ErrInvalidAccessToken
+		return "", core.NewUnauthorizedError(ErrInvalidAccessToken)
 	}
 
 	exp, ok := claims["exp"].(float64)
 	if !ok {
-		return "", usecase.ErrInvalidAccessToken
+		return "", core.NewUnauthorizedError(ErrInvalidAccessToken)
 	}
 
 	if int64(exp) < time.Now().Unix() {
@@ -117,7 +117,7 @@ func (c *cognito) VerifyToken(ctx context.Context, token string) (string, error)
 
 	email, ok := claims["username"].(string)
 	if !ok {
-		return "", usecase.ErrInvalidAccessToken
+		return "", core.NewUnauthorizedError(errors.New("expired access token"))
 	}
 
 	return email, nil
