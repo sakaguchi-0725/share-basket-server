@@ -20,9 +20,9 @@ type (
 	}
 
 	createFamily struct {
-		accountRepo   repository.Account
-		familyRepo    repository.Family
-		familyService service.Family
+		accountRepo    repository.Account
+		familyRepo     repository.Family
+		accountService service.Account
 	}
 )
 
@@ -33,7 +33,7 @@ func (c *createFamily) Execute(ctx context.Context, in CreateFamilyInput) error 
 	}
 
 	// すでに家族オーナー、または家族メンバーではないか判定
-	hasFamily, err := c.familyService.HasFamily(ctx, account.ID)
+	hasFamily, err := c.accountService.HasFamily(ctx, account.ID)
 	if err != nil {
 		return err
 	}
@@ -57,10 +57,10 @@ func (c *createFamily) Execute(ctx context.Context, in CreateFamilyInput) error 
 	return nil
 }
 
-func NewCreateFamily(a repository.Account, f repository.Family, s service.Family) CreateFamily {
+func NewCreateFamily(a repository.Account, f repository.Family, as service.Account) CreateFamily {
 	return &createFamily{
-		accountRepo:   a,
-		familyRepo:    f,
-		familyService: s,
+		accountRepo:    a,
+		familyRepo:     f,
+		accountService: as,
 	}
 }
