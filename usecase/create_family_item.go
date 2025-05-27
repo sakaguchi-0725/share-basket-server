@@ -25,7 +25,7 @@ type (
 		accountRepo    repository.Account
 		familyRepo     repository.Family
 		familyItemRepo repository.FamilyItem
-		familyService  service.Family
+		accountService service.Account
 	}
 )
 
@@ -36,7 +36,7 @@ func (c *createFamilyItem) Execute(ctx context.Context, in CreateFamilyItemInput
 	}
 
 	// 家族に参加しているか確認
-	hasFamily, err := c.familyService.HasFamily(ctx, account.ID)
+	hasFamily, err := c.accountService.HasFamily(ctx, account.ID)
 	if err != nil {
 		return err
 	}
@@ -86,12 +86,12 @@ func NewCreateFamilyItem(
 	a repository.Account,
 	rf repository.Family,
 	rfi repository.FamilyItem,
-	sf service.Family,
+	as service.Account,
 ) CreateFamilyItem {
 	return &createFamilyItem{
 		accountRepo:    a,
 		familyRepo:     rf,
 		familyItemRepo: rfi,
-		familyService:  sf,
+		accountService: as,
 	}
 }

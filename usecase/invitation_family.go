@@ -16,9 +16,9 @@ type (
 	}
 
 	invitationFamily struct {
-		accountRepo   repository.Account
-		familyRepo    repository.Family
-		familyService service.Family
+		accountRepo    repository.Account
+		familyRepo     repository.Family
+		accountService service.Account
 	}
 )
 
@@ -29,7 +29,7 @@ func (i *invitationFamily) Execute(ctx context.Context, userID string) (string, 
 	}
 
 	// 自身がオーナーの家族が存在するかチェック
-	hasFamily, err := i.familyService.HasOwnedFamily(ctx, account.ID)
+	hasFamily, err := i.accountService.HasOwnedFamily(ctx, account.ID)
 	if err != nil {
 		return "", err
 	}
@@ -60,11 +60,11 @@ func (i *invitationFamily) Execute(ctx context.Context, userID string) (string, 
 func NewInvitationFamily(
 	a repository.Account,
 	f repository.Family,
-	s service.Family,
+	as service.Account,
 ) InvitationFamily {
 	return &invitationFamily{
-		accountRepo:   a,
-		familyRepo:    f,
-		familyService: s,
+		accountRepo:    a,
+		familyRepo:     f,
+		accountService: as,
 	}
 }

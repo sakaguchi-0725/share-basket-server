@@ -54,19 +54,19 @@ func NewUseCase(r *Repository, s *Service) *UseCase {
 		CreateFamily: usecase.NewCreateFamily(
 			r.Account,
 			r.Family,
-			s.Family,
+			s.Account,
 		),
 		InvitationFamily: usecase.NewInvitationFamily(
 			r.Account,
 			r.Family,
-			s.Family,
+			s.Account,
 		),
 		JoinFamily: usecase.NewJoinFamily(r.Account, r.Family),
 		CreateFamilyItem: usecase.NewCreateFamilyItem(
 			r.Account,
 			r.Family,
 			r.FamilyItem,
-			s.Family,
+			s.Account,
 		),
 	}
 }
