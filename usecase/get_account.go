@@ -2,12 +2,9 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
 )
-
-var ErrAccountNotFound = errors.New("account not found")
 
 type (
 	GetAccount interface {

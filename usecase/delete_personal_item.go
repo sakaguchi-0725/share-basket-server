@@ -2,8 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
-	"sharebasket/core"
 	"sharebasket/domain/repository"
 )
 
@@ -31,16 +29,12 @@ func (d *deletePersonalItem) Execute(ctx context.Context, in DeletePersonalItemI
 
 	item, err := d.personalRepo.GetByID(ctx, in.ID)
 	if err != nil {
-		if errors.Is(err, ErrPersonalItemNotFound) {
-			return core.NewInvalidError(err)
-		}
-
 		return err
 	}
 
 	// 買い物リストの所有権確認
 	if err := item.CheckOwner(account.ID); err != nil {
-		return core.NewAppError(core.ErrForbidden, err)
+		return err
 	}
 
 	if err := d.personalRepo.Delete(ctx, *item.ID); err != nil {

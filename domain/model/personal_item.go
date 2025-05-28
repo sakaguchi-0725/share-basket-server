@@ -39,7 +39,7 @@ func NewPersonalItem(name string, status *ShoppingStatus, categoryID int64, accI
 // 指定されたアカウントがこのアイテムの所有者かを確認
 func (p *PersonalItem) CheckOwner(accID AccountID) error {
 	if p.AccountID != accID {
-		return errors.New("you don't have permission to this item")
+		return core.NewAppError(core.ErrForbidden, errors.New("you don't have permission to this item"))
 	}
 	return nil
 }
@@ -57,7 +57,7 @@ func (p *PersonalItem) Update(name string, status *ShoppingStatus, categoryID *i
 
 	if categoryID != nil {
 		if *categoryID <= 0 {
-			return errors.New("category ID must be positive")
+			return core.NewInvalidError(errors.New("category ID must be positive"))
 		}
 		p.CategoryID = *categoryID
 	}
