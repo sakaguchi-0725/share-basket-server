@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"sharebasket/core"
 	"sharebasket/domain/repository"
 )
 
@@ -34,7 +33,7 @@ func (j *joinFamily) Execute(ctx context.Context, in JoinFamilyInput) error {
 	}
 
 	if err := family.Join(account.ID); err != nil {
-		return core.NewInvalidError(err)
+		return err
 	}
 
 	if err := j.familyRepo.Store(ctx, &family); err != nil {

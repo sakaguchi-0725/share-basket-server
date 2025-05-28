@@ -56,7 +56,7 @@ func (in GetPersonalItemsInput) status() (*model.ShoppingStatus, error) {
 
 	status, err := model.ParseShoppingStatus(in.Status)
 	if err != nil {
-		return nil, core.NewInvalidError(err)
+		return nil, err
 	}
 
 	return &status, nil

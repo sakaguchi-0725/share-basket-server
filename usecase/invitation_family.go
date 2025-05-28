@@ -35,7 +35,9 @@ func (i *invitationFamily) Execute(ctx context.Context, userID string) (string, 
 	}
 
 	if !hasFamily {
-		return "", core.NewInvalidError(errors.New("account does not have owner privileges for any family"))
+		return "", core.NewInvalidError(
+			errors.New("account does not have owner privileges for any family"),
+		).WithMessage("家族オーナーではありません")
 	}
 
 	family, err := i.familyRepo.GetOwnedFamily(ctx, account.ID)
@@ -45,7 +47,9 @@ func (i *invitationFamily) Execute(ctx context.Context, userID string) (string, 
 
 	// 招待可能上限数を超える場合
 	if !family.CanInvite() {
-		return "", core.NewInvalidError(errors.New("invitation limit reached for this family"))
+		return "", core.NewInvalidError(
+			errors.New("invitation limit reached for this family"),
+		).WithMessage("これ以上メンバーを追加できません")
 	}
 
 	token := uuid.NewString()

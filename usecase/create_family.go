@@ -39,14 +39,15 @@ func (c *createFamily) Execute(ctx context.Context, in CreateFamilyInput) error 
 	}
 
 	if hasFamily {
-		return core.NewInvalidError(errors.New("account already has family"))
+		return core.NewInvalidError(errors.New("account already has family")).
+			WithMessage("すでに家族に参加しています")
 	}
 
 	id := model.NewFamilyID()
 
 	family, err := model.NewFamily(id, in.Name, account)
 	if err != nil {
-		return core.NewInvalidError(err)
+		return err
 	}
 
 	err = c.familyRepo.Store(ctx, &family)

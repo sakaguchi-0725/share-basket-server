@@ -53,12 +53,12 @@ func (c *createFamilyItem) Execute(ctx context.Context, in CreateFamilyItemInput
 
 	status, err := in.ShoppingStatus()
 	if err != nil {
-		return core.NewInvalidError(err)
+		return err
 	}
 
 	item, err := model.NewFamilyItem(in.Name, status, in.CategoryID, family.ID, account.ID)
 	if err != nil {
-		return core.NewInvalidError(err)
+		return err
 	}
 
 	err = c.familyItemRepo.Store(ctx, &item)

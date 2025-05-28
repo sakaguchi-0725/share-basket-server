@@ -35,13 +35,13 @@ func (c *createPersonalItem) Execute(ctx context.Context, in CreatePersonalItemI
 	if in.Status != "" {
 		status, err = model.ParseShoppingStatus(in.Status)
 		if err != nil {
-			return core.NewInvalidError(err)
+			return err
 		}
 	}
 
 	item, err := model.NewPersonalItem(in.Name, core.Ptr(status), in.CategoryID, account.ID)
 	if err != nil {
-		return core.NewInvalidError(err)
+		return err
 	}
 
 	if err := c.personalRepo.Store(ctx, &item); err != nil {

@@ -2,13 +2,9 @@ package usecase
 
 import (
 	"context"
-	"errors"
-	"sharebasket/core"
 	"sharebasket/domain/model"
 	"sharebasket/domain/repository"
 )
-
-var ErrPersonalItemNotFound = errors.New("personal item is not found")
 
 type (
 	UpdatePersonalItem interface {
@@ -37,16 +33,12 @@ func (u *updatePersonalItem) Execute(ctx context.Context, in UpdatePersonalItemI
 
 	item, err := u.personalRepo.GetByID(ctx, in.ID)
 	if err != nil {
-		if errors.Is(err, ErrPersonalItemNotFound) {
-			return core.NewInvalidError(err)
-		}
-
 		return err
 	}
 
 	// 買い物リストの所有権確認
 	if err := item.CheckOwner(account.ID); err != nil {
-		return core.NewAppError(core.ErrForbidden, err)
+		return err
 	}
 
 	// ステータスの更新
@@ -54,7 +46,7 @@ func (u *updatePersonalItem) Execute(ctx context.Context, in UpdatePersonalItemI
 	if in.Status != "" {
 		s, err := model.ParseShoppingStatus(in.Status)
 		if err != nil {
-			return core.NewInvalidError(err)
+			return err
 		}
 		status = &s
 	}
@@ -67,7 +59,7 @@ func (u *updatePersonalItem) Execute(ctx context.Context, in UpdatePersonalItemI
 
 	// アイテムの更新
 	if err := item.Update(in.Name, status, categoryID); err != nil {
-		return core.NewInvalidError(err)
+		return err
 	}
 
 	// 更新を保存
