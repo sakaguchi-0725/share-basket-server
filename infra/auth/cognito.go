@@ -7,7 +7,6 @@ import (
 	"log"
 	"sharebasket/core"
 	"sharebasket/domain/repository"
-	"sharebasket/usecase"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
@@ -112,12 +111,12 @@ func (c *cognito) VerifyToken(ctx context.Context, token string) (string, error)
 	}
 
 	if int64(exp) < time.Now().Unix() {
-		return "", usecase.ErrExpiredAccessToken
+		return "", core.NewUnauthorizedError(ErrExpiredCode)
 	}
 
 	email, ok := claims["username"].(string)
 	if !ok {
-		return "", core.NewUnauthorizedError(errors.New("expired access token"))
+		return "", core.NewUnauthorizedError(ErrExpiredCode)
 	}
 
 	return email, nil
