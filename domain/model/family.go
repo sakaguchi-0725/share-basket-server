@@ -44,14 +44,15 @@ func (f *Family) HasMembers() bool {
 func (f *Family) Join(id AccountID) error {
 	// すでに参加しているメンバーではないかチェック
 	if slices.Contains(f.MemberIDs, id) {
-		return core.NewInvalidError(errors.New("this account is already a member"))
+		return core.NewInvalidError(errors.New("this account is already a member")).
+			WithMessage("すでに参加しています")
 	}
 
 	// 家族に参加可能かチェック
 	if !f.CanInvite() {
 		return core.NewInvalidError(
 			fmt.Errorf("cannnot join member: limit is %d", f.maxMembers()),
-		)
+		).WithMessage("これ以上メンバーを追加できません")
 	}
 
 	f.MemberIDs = append(f.MemberIDs, id)
