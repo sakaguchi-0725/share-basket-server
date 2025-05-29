@@ -13,4 +13,5 @@ type Family interface {
 	Invitation(ctx context.Context, token string, familyID model.FamilyID) error
 	HasOwnedFamily(ctx context.Context, accountID model.AccountID) (bool, error)
 	GetOwnedFamily(ctx context.Context, accountID model.AccountID) (model.Family, error)
+	HasMembership(ctx context.Context, accountID model.AccountID, familyID model.FamilyID) (bool, error)
 }

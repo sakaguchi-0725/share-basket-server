@@ -10,6 +10,7 @@ type (
 	Account interface {
 		HasFamily(ctx context.Context, id model.AccountID) (bool, error)
 		HasOwnedFamily(ctx context.Context, id model.AccountID) (bool, error)
+		HasMembership(ctx context.Context, accountID model.AccountID, familyID model.FamilyID) (bool, error)
 	}
 
 	accountService struct {
@@ -25,6 +26,11 @@ func (a *accountService) HasFamily(ctx context.Context, id model.AccountID) (boo
 // 自身がオーナーの家族があるか確認する
 func (a *accountService) HasOwnedFamily(ctx context.Context, id model.AccountID) (bool, error) {
 	return a.repo.HasOwnedFamily(ctx, id)
+}
+
+// アカウントが特定の家族のメンバーシップを持っているか確認する
+func (a *accountService) HasMembership(ctx context.Context, accountID model.AccountID, familyID model.FamilyID) (bool, error) {
+	return a.repo.HasMembership(ctx, accountID, familyID)
 }
 
 func NewAccount(r repository.Family) Account {
