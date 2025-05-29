@@ -39,6 +39,19 @@ type (
 	}
 )
 
+func (f *familyDao) HasMembership(ctx context.Context, accountID model.AccountID, familyID model.FamilyID) (bool, error) {
+	var count int64
+	err := f.conn.Model(&familyMemberDto{}).
+		Where("account_id = ? AND family_id = ?", accountID.String(), familyID.String()).
+		Count(&count).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
 func (f *familyDao) GetByAccountID(ctx context.Context, id model.AccountID) (model.Family, error) {
 	// オーナーかどうか確認
 	isOwner, err := f.HasOwnedFamily(ctx, id)
