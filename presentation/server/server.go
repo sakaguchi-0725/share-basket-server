@@ -59,6 +59,7 @@ func (s *Server) MapHandler(usecase *registry.UseCase, logger core.Logger) {
 	family.GET("/invitation", handler.NewInvitationFamily(usecase.InvitationFamily))
 	family.POST("/join/{token}", handler.NewJoinFamily(usecase.JoinFamily))
 	family.POST("/items", handler.NewCreateFamilyItem(usecase.CreateFamilyItem))
+	family.GET("/{familyID}/items", handler.NewGetFamilyItems(usecase.GetFamilyItems))
 }
 
 func (s *Server) Run() {
