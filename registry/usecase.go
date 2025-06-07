@@ -19,6 +19,7 @@ type UseCase struct {
 	InvitationFamily   usecase.InvitationFamily
 	JoinFamily         usecase.JoinFamily
 	CreateFamilyItem   usecase.CreateFamilyItem
+	GetFamilyItems     usecase.GetFamilyItems
 }
 
 func NewUseCase(r *Repository, s *Service) *UseCase {
@@ -68,5 +69,6 @@ func NewUseCase(r *Repository, s *Service) *UseCase {
 			r.FamilyItem,
 			s.Account,
 		),
+		GetFamilyItems: usecase.NewGetFamilyItems(r.FamilyItem),
 	}
 }
